@@ -82,7 +82,6 @@ public class PaymybuddysappApplication implements CommandLineRunner {
 
 		Optional<User> optionalUser = userService.getUserById(idUser);
 		User user = optionalUser.get();
-
 		System.out.println("\nUtilisateurs ajouté par " + user.getFirstName() + " " + user.getLastName() + ":");
 		user.getUsersConnexions().forEach(userConnexion-> System.out.println(userConnexion.getFirstName()));
 	}
