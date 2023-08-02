@@ -62,4 +62,26 @@ public class User {
     )
     private List<User> usersConnexions;
 
+    @ManyToMany(
+            mappedBy = "usersConnexions",// pas besoin d'ajouter @JoinTable une seconde fois
+            fetch = FetchType.LAZY,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE }
+    )
+    private List<User> usersConnected;
+
+
+    //Ci-dessous les méthodes utilitaire (helpers methods)
+    //aide à la synchronisation des objets
+    //elles sont placés soit du coté OneToMany (la où on gère la liste d'élément)
+    //soit du côté ou il y a le @JoinTable pour ManytoMany (un seul coté ici vu que user est lié à lui-même)
+    public void addConnexion (User user) {
+        usersConnexions.add(user);
+        user.getUsersConnected().add(this);
+    }
+
+    public void removeConnexion (User user){
+        usersConnexions.remove(user);
+        user.getUsersConnected().remove(this);
+    }
+
 }
