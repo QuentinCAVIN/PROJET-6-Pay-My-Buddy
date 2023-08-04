@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService{
     }
 
     public void deleteUser(int id) {
-        deleteUser(id);
+        userRepository.deleteById(id);
     }
 
 }

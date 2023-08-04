@@ -1,5 +1,7 @@
 package com.paymybuddy.paymybuddysapp.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -9,6 +11,12 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "user")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id") //permet d'éviter les boucles infinis quand on vient récupérer un user
+// qui a deux attributs List <User>
+// https://www.baeldung.com/jackson-bidirectional-relationships-and-infinite-recursion
+
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

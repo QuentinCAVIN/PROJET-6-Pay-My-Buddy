@@ -125,5 +125,4 @@ public class PaymybuddysappApplication implements CommandLineRunner {
 		afficherQuiAAjouteLutilisateurCommeBuddy(emailUserToAddAndDelete);
 
 	}
-
 }

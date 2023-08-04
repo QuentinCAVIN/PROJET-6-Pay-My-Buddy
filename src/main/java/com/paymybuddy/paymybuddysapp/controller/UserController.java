@@ -2,6 +2,7 @@ package com.paymybuddy.paymybuddysapp.controller;
 
 import com.paymybuddy.paymybuddysapp.model.User;
 import com.paymybuddy.paymybuddysapp.service.UserService;
+import jakarta.transaction.NotSupportedException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.lang.annotation.AnnotationTypeMismatchException;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -19,16 +21,18 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/user")
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+    public ResponseEntity<User> createUser(/*@Valid*/ @RequestBody User user) {
 
-        Optional<User> userAlreadyPresent = userService.getUserByEmail(user.getEmail());
+        Optional<User> optionalUser = userService.getUserByEmail(user.getEmail());
 
-        if (userAlreadyPresent.get() == null) {
-            throw new NoSuchElementException();
-            //TODO: voir si necessaire d'implémenter des classes d'erreur custom
+        if (optionalUser.isPresent()) {
+            throw new NoSuchElementException("user déja présent");
+            //TODO: modifier exception, voir si necessaire d'implémenter des classes d'erreur custom
+        } else {
+            User userSaved = userService.createUser(user);
+            return ResponseEntity.status(HttpStatus.CREATED).body(userSaved);
         }
-        User userSaved = userService.createUser(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(userSaved);
+
     }
 
     @PutMapping("/user/{id}")
@@ -62,6 +66,19 @@ public class UserController {
 
             return ResponseEntity.status(HttpStatus.OK).body(userSaved);
 
+        } else {
+            throw new NoSuchElementException();
+        }
+    }
+
+    @GetMapping("/user/{id}")
+    public ResponseEntity<User> getUser(@PathVariable("id") int id) {
+
+        Optional<User> optionalUser = userService.getUserById(id);
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            return ResponseEntity.status(HttpStatus.OK).body(user);
         } else {
             throw new NoSuchElementException();
         }
