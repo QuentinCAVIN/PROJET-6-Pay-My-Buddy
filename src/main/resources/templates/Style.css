@@ -1,0 +1,11 @@
+@import "bootstrap/scss/utilities";
+
+body {}
+
+.custom-height1 {
+    height: 150px;
+}
+
+.custom-width1 {
+    width: 475px;
+}
