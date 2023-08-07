@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhml" xmlns:th="http://www.thymeleaf.org">
 
 <head>
 	<meta charset="utf-8" />
@@ -24,30 +24,38 @@
 
 	<div class="custom-width1 border rounded p-3 d-flex flex-column align-items-center  ">
 
+		<!-- Donnée transmise par un formulaire -->
+		<form method="post" th:action="@{/saveUser}" th:object="${user}">
+			<!-- th: object=${user} fait le lien avec le ModelAttribute (voir UserController). -->
+
 
 		<div class="mb-4">
+
 			<h2><span class="badge bg-success bg-gradient">Pay My Buddy</span></h2>
 		</div>
 
 
 
-		<p>Please fill in the following information:</p>
+		<p>Please fill in the following information: TEMP</p>
 
 
 
 		<div class="w-100 my-1">
 			<div class="input-group mb-3">
 				<span class="input-group-text"><i class="bi bi-envelope"></i></span>
-				<input type="email" class="form-control form-control-lg" id="exampleFormControlInput1"
+				<input type="email" class="form-control form-control-lg" th:field="*{email}" id="exampleFormControlInput1"
 					placeholder="Email">
 			</div>
+
+
+
 
 		</div>
 
 		<div class="w-100 my-1">
 			<div class="input-group ">
 				<span class="input-group-text"><i class="bi bi-asterisk"></i></span>
-				<input type="password" class="form-control form-control-lg " id="exampleFormControlInput1"
+				<input type="password" class="form-control form-control-lg" th:field="*{password}" id="exampleFormControlInput1"
 					placeholder="Password">
 			</div>
 		</div>
@@ -55,7 +63,7 @@
 		<div class="w-100 my-1">
 			<div class="input-group ">
 				<span class="input-group-text"><i class="bi bi-asterisk"></i></span>
-				<input type="password" class="form-control form-control-lg " id="exampleFormControlInput1"
+				<input type="password" class="form-control form-control-lg "  id="exampleFormControlInput1"
 					placeholder="Confirm your password">
 			</div>
 		</div>
@@ -63,7 +71,7 @@
 		<div class="w-100 my-1">
 			<div class="input-group ">
 				<span class="input-group-text"><i class="bi bi-asterisk"></i></span>
-				<input type="text" class="form-control form-control-lg " id="exampleFormControlInput1"
+				<input type="text" class="form-control form-control-lg " th:field="*{firstName}" id="exampleFormControlInput1"
 					placeholder="First name">
 			</div>
 		</div>
@@ -71,7 +79,7 @@
 		<div class="w-100 my-1">
 			<div class="input-group ">
 				<span class="input-group-text"><i class="bi bi-asterisk"></i></span>
-				<input type="text" class="form-control form-control-lg " id="exampleFormControlInput1"
+				<input type="text" class="form-control form-control-lg " th:field="*{lastName}" id="exampleFormControlInput1"
 					placeholder="Last name">
 			</div>
 		</div>
@@ -79,7 +87,7 @@
 		<div class="w-100 my-1">
 			<div class="input-group mb-3">
 				<span class="input-group-text"><i class="bi bi-envelope"></i></span>
-				<input type="date" class="form-control form-control-lg" id="exampleFormControlInput1"
+				<input type="date" class="form-control form-control-lg" th:field="*{dateOfBirth}" id="exampleFormControlInput1"
 					placeholder="Date of birth">
 			</div>
 
@@ -88,15 +96,21 @@
 		<div class="w-100 my-1">
 			<div class="input-group ">
 				<span class="input-group-text"><i class="bi bi-asterisk"></i></span>
-				<input type="text" class="form-control form-control-lg " id="exampleFormControlInput1"
+				<input type="text" class="form-control form-control-lg" th:field="*{streetAndNumber}" id="exampleFormControlInput1"
 					placeholder="Street and number">
 			</div>
 		</div>
 
+
+
+
+
+
+
 		<div class="w-100 my-1">
 			<div class="input-group ">
 				<span class="input-group-text"><i class="bi bi-asterisk"></i></span>
-				<input type="number" class="form-control form-control-lg " id="exampleFormControlInput1"
+				<input type="number" class="form-control form-control-lg" th:field="*{zip}" id="exampleFormControlInput1"
 					placeholder="Zip code">
 			</div>
 		</div>
@@ -104,7 +118,7 @@
 		<div class="w-100 my-1">
 			<div class="input-group ">
 				<span class="input-group-text"><i class="bi bi-asterisk"></i></span>
-				<input type="text" class="form-control form-control-lg " id="exampleFormControlInput1"
+				<input type="text" class="form-control form-control-lg" th:field="*{city}" id="exampleFormControlInput1"
 					placeholder="City">
 			</div>
 		</div>
@@ -112,7 +126,7 @@
 		<div class="w-100 my-1">
 			<div class="input-group mb-3">
 				<span class="input-group-text"><i class="bi bi-envelope"></i></span>
-				<input type="text" class="form-control form-control-lg" id="exampleFormControlInput1"
+				<input type="text" class="form-control form-control-lg" th:field="*{country}" id="exampleFormControlInput1"
 					placeholder="Country">
 			</div>
 
@@ -121,7 +135,7 @@
 		<div class="w-100 my-1">
 			<div class="input-group ">
 				<span class="input-group-text"><i class="bi bi-asterisk"></i></span>
-				<input type="text" class="form-control form-control-lg " id="exampleFormControlInput1"
+				<input type="text" class="form-control form-control-lg " th:field="*{cityOfBirth}" id="exampleFormControlInput1"
 					placeholder="City of birth">
 			</div>
 		</div>
@@ -129,7 +143,7 @@
 		<div class="w-100 my-1">
 			<div class="input-group ">
 				<span class="input-group-text"><i class="bi bi-asterisk"></i></span>
-				<input type="text" class="form-control form-control-lg " id="exampleFormControlInput1"
+				<input type="text" class="form-control form-control-lg " th:field="*{countryOfBirth}" id="exampleFormControlInput1"
 					placeholder="Country of birth">
 			</div>
 		</div>
@@ -137,25 +151,28 @@
 		<div class="w-100 my-1">
 			<div class="input-group ">
 				<span class="input-group-text"><i class="bi bi-asterisk"></i></span>
-				<input type="tel" class="form-control form-control-lg " id="exampleFormControlInput1"
+				<input type="tel" class="form-control form-control-lg " th:field="*{phone}"  id="exampleFormControlInput1"
 					placeholder="Phone number">
 			</div>
 		</div>
 
+
+
 		<div class="w-100 my-1">
 			<div class="input-group ">
 				<span class="input-group-text"><i class="bi bi-asterisk"></i></span>
-				<input type="number" class="form-control form-control-lg " id="exampleFormControlInput1"
+				<input type="number" class="form-control form-control-lg " th:field="*{zipOfBirth}" id="exampleFormControlInput1"
 					placeholder="Zip code of birth">
 			</div>
 		</div>
 
 
 		<div class="custom-height1 d-flex flex-column justify-content-end my-3">
-			<button type="button " class="btn btn-primary m-2 ">Validate</button>
+			<button type="submit" class="btn btn-primary m-2">Validate</button>
 		</div>
 
-	</div>
+
+	</form>
 	</div>
 
 

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -84,6 +85,8 @@ public class UserController {
         }
     }
 
+
+
     @Transactional
     @DeleteMapping("/user/{id}")
     public ResponseEntity deleteFireStation(@PathVariable("id") int id) {
@@ -99,6 +102,5 @@ public class UserController {
         }
     }
 }
-
 
 
