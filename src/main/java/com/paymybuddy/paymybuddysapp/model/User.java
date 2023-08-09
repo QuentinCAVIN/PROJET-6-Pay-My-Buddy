@@ -3,13 +3,18 @@ package com.paymybuddy.paymybuddysapp.model;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+//Remplace le @data + génère tous les constructeurs possibles
+
 @Entity
 @Table(name = "user")
 @JsonIdentityInfo(
@@ -23,16 +28,20 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "first_name")
+    @Column(nullable=false, unique=true)
+    //Annotation JPA, utile pour construire automatiquement la BDD
+    private String email;
 
+    @Column(name = "first_name",nullable=false)
     private String firstName;
 
-    @Column(name = "last_name")
+    @Column(name = "last_name",nullable = false)
     private String lastName;
 
+    @Column(nullable=false)
     private String password;
 
-    @Column(name = "date_of_birth")
+   /* @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
     @Column(name = "number_and_street")
@@ -53,9 +62,10 @@ public class User {
     private String phone;
 
     @Column(name = "zip_of_birth")
-    private int zipOfBirth;
-
-    private String email;
+    private int zipOfBirth; */
+    // TODO: Attributs retirés pour gain de temps
+    //  trop de ligne à écrire pour les tests unitaire et manuel.
+    //  A voir si on retir définitivement
 
     @ManyToMany(
             fetch = FetchType.LAZY, /*Quand on récupère un user, les users associés ne sont pas récupérés.

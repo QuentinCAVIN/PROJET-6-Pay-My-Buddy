@@ -11,11 +11,13 @@ public class BankAccount {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(nullable=false)
     private String iban;
 
+    @Column(nullable=false)
     private String name;
 
-    @Column(name = "account_balance")
+    @Column(name = "account_balance" ,nullable=false)
     private double accountBalance;
 
     @Column(name = "user_id")
