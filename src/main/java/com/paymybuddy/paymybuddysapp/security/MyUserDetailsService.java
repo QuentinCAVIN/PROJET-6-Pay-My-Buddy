@@ -23,42 +23,39 @@ import java.util.Optional;
 @Service
 public class MyUserDetailsService implements UserDetailsService {
 
-    @Autowired
-    private UserService userService;
+    private UserRepository userRepository;
+    //J'utilise useRepository plutôt que UserService pour régler un problème de boucle de Beans
+
+    public MyUserDetailsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
 
-    /* quand l'utilisateur entre son adresse mail, Spring va créer une instance de UserDetail a partir des informations
+
+    /*Quand l'utilisateur entre son adresse mail, Spring va créer une instance de UserDetail à partir des informations
      présente dans la BDD et vérifier que le mot de passe saisi par l'utilisateur
-      correspond bien au mot de passe du UserDetail/*
-     */
-
-
+      correspond bien au mot de passe de UserDetail*/
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userService.getUserByEmail(email);
+        User user = userRepository.findByEmail(email);
+
         if (user == null) {
             throw new UsernameNotFoundException("No user found with username: " + email);
         }
+        // TODO: modifier la méthode en fin de projet en fonction des besoins de role:
 
-        boolean enabled = true;
-        boolean accountNonExpired = true;
-        boolean credentialsNonExpired = true;
-        boolean accountNonLocked = true;
-
-        //A Supprimer, c'est juste pour tester
+        //Si besoin d'utiliser plusieurs roles, à supprimer
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        //
 
+        //+ remplacer authorities par "getAuthorities(user.getRoles())"
         return new org.springframework.security.core.userdetails.User(
-                user.getEmail(), user.getPassword(), enabled, accountNonExpired,
-                credentialsNonExpired, accountNonLocked,authorities);
-                //getAuthorities(Collections.singletonList("USER")/* a remplacer par getAuthorities(user.getRoles()
-                //quand je voudrais ajouter des roles différent aux utilisateurs + ajouter un attribut "roles" à User */));
-}
+                user.getEmail(), user.getPassword(), authorities);
+    }
 
-
-    /*methode qui va servir à convertir une liste de String en liste de GrantedAuthority.
-     Liste necessaire pour créer un User de userdetails*/
+    //Methode qui va servir à convertir une liste de String en liste de GrantedAuthority.
+    //Nécessaire pour créer un UserDetails user
     private static List<GrantedAuthority> getAuthorities(List<String> roles) {
         List<GrantedAuthority> authorities = new ArrayList<>();
         for (String role : roles) {

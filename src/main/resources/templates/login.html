@@ -23,17 +23,34 @@
 
 
 	<div class="custom-width1 border rounded p-3 d-flex flex-column align-items-center  ">
+		<div th:if="${param.error}">
+			<div class="alert alert-danger">Invalid Email or Password</div>
+		</div>
+		<div th:if="${param.logout}">
+			<div class="alert alert-success"> You have been logged out.</div>
+		</div>
+
 
 
 		<div class="mb-4">
 			<h2><span class="badge bg-success bg-gradient">Pay My Buddy</span></h2>
 		</div>
+
+		<!-- Le formulaire est déclaré dans la config (SecurityFilterCHain). SPringSecurity intercepte
+		la requête quand on valide le formulaire et gére le processus d'Authentification via la classe
+		UserDetailsService (ici MyUserDetailsService) en appelant sa methode loadUserByUsername-->
 		<form th:action="@{/login}" method="post">
 		<div class="w-100 my-3">
 			<div class="input-group mb-3">
 				<span class="input-group-text"><i class="bi bi-envelope"></i></span>
 				<input type="email"  class="form-control form-control-lg" name="username"
 					placeholder="Email">
+				<!--Les données entrées dans le formulaire sont envoyées. L'attribut "name" des champs du formulaire
+				correspondent aux noms des paramètres passés à la methode loadUserByUsername.
+				Ici Spring extrait la valeur corespondante à username et l'envoie en parametre de loadUserByUsername.
+				Ma methode MyUserDetailsService va construire un objet UserDetail
+				et Spring va vérifier si il correspond au mot de passe.
+				 -->
 			</div>
 
 		</div>
@@ -57,10 +74,6 @@
 		<div class="custom-height1 d-flex flex-column justify-content-end my-3">
 			<button type="submit" class="btn btn-primary m-2 ">Login</button>
 
-
-
-
- <!-- Le Bouton ne fonctionne pas, chercher pourquoi-->
 			<a th:href="@{/registration}">Register/Signup here</a>
 
 		</div>

@@ -2,23 +2,15 @@ package com.paymybuddy.paymybuddysapp.controller;
 
 import com.paymybuddy.paymybuddysapp.model.User;
 import com.paymybuddy.paymybuddysapp.service.UserService;
-import jakarta.annotation.security.RolesAllowed;
-import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-
-import java.util.List;
 
 
 @Controller
 public class UserWebController {
-
 
     private UserService userService;
 
@@ -26,30 +18,16 @@ public class UserWebController {
         this.userService = userService;
     }
 
-
-    @GetMapping("/index")
-    public String home(Model model) {
+    @GetMapping("/home")
+    public String home(Model model) { // Spring va fournir une instance de cet objet Model (keske C?)
         Iterable<User> users = userService.getUsers();
-        model.addAttribute("users", users);
+        model.addAttribute("users", users); //addAttibute va permettre d'ajouter
+        // au model, un objet. Le premier paramètre c'est le nom de l'objet sur la page html
+        // ,le second c'est l'objet.
+        //c'est grace à ça, et avec Thymeleaf, qu'on va pouvoir utiliser les objets dans le html
+        //en utilisant les noms de l'objet ${users}
 
         return "home";
-    }
-   @GetMapping("/login")
-
-    public String login() {
-
-
-        return "login";
-    }
-
-    @PostMapping("/registration/saveUser")
-    public ModelAndView saveUser(@ModelAttribute User user) {
-        //@ModelAttribute permet à Spring de récupérer les données saisi dans un formulaire
-        //correctement annoté (<form method="post" th:action="@{/saveUser}" th:object="${user}">).
-        //Et donc construire un objet employee avec.
-
-        userService.createUser(user);
-        return new ModelAndView("redirect:/index");
     }
 
     @GetMapping("/registration")
@@ -57,33 +35,27 @@ public class UserWebController {
         User user = new User();
         model.addAttribute("user", user);
         return "newAccount";
-       //return "registertuto";
     }
 
-    //Methode Tuto
-    @GetMapping("/users")
-    public String users(Model model){
-        Iterable<User> users = userService.getUsers();
-        model.addAttribute("users", users);
-        return "userstuto";
+    @PostMapping("/registration/saveUser")
+    public ModelAndView saveUser(@ModelAttribute User user) {
+        //@ModelAttribute permet à Spring de récupérer les données saisis dans un formulaire
+        //correctement annoté (<form method="post" th:action="@{/saveUser}" th:object="${user}">).
+        //Et donc construire un objet user avec.
+
+        userService.createUser(user);
+        return new ModelAndView("redirect:/index");
     }
 
+    @GetMapping("/deleteUser/{id}")
+    public ModelAndView deleteUser(@PathVariable("id") final int id) {
+        userService.deleteUser(id);
+        return new ModelAndView("redirect:/home");
+    } //TODO : la methode ne fonctionne pas sur les utilisateurs associé a d'autres utilisateur (CASCADE RESTRICT)
 
 
-
-
-
-}/*	th:field="*{email}"
-			th:field="*{password}"
-                    th:field="*{firstName}"
-                    th:field="*{lastName}"
-                    th:field="*{dateOfBirt}"
-                    th:field="*{streetAndNumber}"
-                    th:field="*{zip}"
-                    th:field="*{city}"
-                    th:field="*{country}"
-                    th:field="*{cityOfBirth}"
-                    th:field="*{countryOfBirth}"
-                    th:field="*{phone}"
-                    th:field="*{zipOfBirth}*/
-
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
+}
