@@ -1,23 +1,21 @@
 package com.paymybuddy.paymybuddysapp.service;
 
 import com.paymybuddy.paymybuddysapp.model.User;
-import com.paymybuddy.paymybuddysapp.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.List;
 
 @Service
 public interface UserService {
 
-    Iterable<User> getUsers();
-
-    Optional<User> getUserById(int id);
+    List<User> getUsers();
 
 
-    Optional<User> getUserByEmail(String email);
+    User getUserByEmail(String email);
 
     User createUser(User user);
+
+    User getUserById(int id);
 
     void deleteUser(int id);
 
