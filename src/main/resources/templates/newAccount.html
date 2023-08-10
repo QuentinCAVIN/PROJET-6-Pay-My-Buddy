@@ -31,6 +31,14 @@
 			<h2><span class="badge bg-success bg-gradient">Pay My Buddy</span></h2>
 		</div>
 
+			<div th:if="${param.success}">
+				<!-- Cette balise s'affichera uniquement si la page a été chargé avec le paramètre
+				/register?success -->
+				<div class="alert alert-info">
+					Your account has been successfully registered
+				</div>
+			</div>
+
 		<p>Please fill in the following information: TEMP</p>
 
 		<div class="w-100 my-1">
@@ -41,8 +49,8 @@
 					placeholder="Email">  <!-- th:field donne la correspondance avec les attributs de l’objet associé
             attention à la synthaxe particuliére *{attribut1}-->
 			</div>
-
-
+			<p th:errors = "*{email}" class="text-danger"
+			   th:if="${#fields.hasErrors('email')}"></p>
 		</div>
 
 		<div class="w-100 my-1">
@@ -51,6 +59,8 @@
 				<input type="password" class="form-control form-control-lg" th:field="*{password}" id="password"
 					placeholder="Password">
 			</div>
+			<p th:errors = "*{password}" class="text-danger"
+			   th:if="${#fields.hasErrors('password')}"></p>
 		</div>
 
 		<!--<div class="w-100 my-1">
@@ -67,7 +77,12 @@
 				<span class="input-group-text"><i class="bi bi-asterisk"></i></span>
 				<input type="text" class="form-control form-control-lg " th:field="*{firstName}" id="firstName"
 					placeholder="First name">
+
+				<!-- La balise s'affiche si la page est chargé avec des erreurs (voir controller)
+				le message d'erreur correspond aux messages liés aux annotations de UserDto-->
 			</div>
+			<p th:errors = "*{firstName}" class="text-danger"
+			   th:if="${#fields.hasErrors('firstName')}"></p>
 		</div>
 
 		<div class="w-100 my-1">
@@ -76,6 +91,8 @@
 				<input type="text" class="form-control form-control-lg " th:field="*{lastName}" id="lastName"
 					placeholder="Last name">
 			</div>
+			<p th:errors = "*{lastName}" class="text-danger"
+			   th:if="${#fields.hasErrors('lastName')}"></p>
 		</div>
 
 		<!--<div class="w-100 my-1">

@@ -34,7 +34,7 @@
 					<div class="col">
 						<h1>Send Money</h1>
 						<h2>it's GREAT</h2>
-						<button>Pay My Buddy</button>
+						<a th:href="@{/logout}"><button>Logout</button></a>
 					</div>
 					<div class="col">
 						<div class="mb-3">
@@ -98,7 +98,7 @@
 						<td th:text = "${user.email}"></td>
 						<td th:text="${user.password}">
 							<!--
-							${nom de l'objet} permet d'accéder à un objet ajouté au model (cf: UserWebController)
+							${nom de l'objet} permet d'accéder à un objet ajouté au model (cf: AuthentificationController)
 							${objet.attribut} fonctionne aussi
 
 							 th:if et th:each permettent respectivement d'implémenter une condition

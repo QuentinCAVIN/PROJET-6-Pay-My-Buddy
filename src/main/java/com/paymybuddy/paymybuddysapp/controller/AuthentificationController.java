@@ -1,0 +1,98 @@
+package com.paymybuddy.paymybuddysapp.controller;
+
+import com.paymybuddy.paymybuddysapp.dto.UserDto;
+import com.paymybuddy.paymybuddysapp.model.User;
+import com.paymybuddy.paymybuddysapp.service.UserService;
+
+import jakarta.validation.Valid;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+
+
+import java.util.List;
+
+
+@Controller
+public class AuthentificationController {
+
+    private UserService userService;
+
+
+    public AuthentificationController(UserService userService) { //ça ne peut pas être remplacé par lombock?(@Data)
+        this.userService = userService;
+    }
+
+    @GetMapping("/home")
+    public String home(Model model) { // Spring va fournir une instance de cet objet Model (keske C?)
+        List<UserDto> users = userService.getUsersDto();
+        model.addAttribute("users", users); //addAttibute va permettre d'ajouter
+        // au model, un objet. Le premier paramètre c'est le nom de l'objet sur la page html
+        // ,le second c'est l'objet.
+        //c'est grace à ça, et avec Thymeleaf, qu'on va pouvoir utiliser les objets dans le html
+        //en utilisant les noms de l'objet ${users}
+
+        return "home";
+    }
+
+    @GetMapping("/registration")
+    public String showRegistrationForm(Model model) {
+        UserDto userDto = new UserDto();
+        model.addAttribute("user", userDto);
+        return "newAccount";
+    }
+
+
+
+
+    @PostMapping("/registration/saveUser")
+    public String saveUser(@Valid @ModelAttribute("user") UserDto userDto,
+                                 //@ModelAttribute permet à Spring de récupérer les données saisies dans un formulaire
+                                 //correctement annoté (<form method="post" th:action="@{/saveUser}" th:object="${user}">).
+                                 //Et donc construire un objet user avec.
+
+                                 BindingResult result,
+                                 //Sert à collecter et gérer les résultats des @Valid
+
+                                 Model model) {
+
+        User optionalUser = userService.getUserByEmail(userDto.getEmail());
+
+        if (optionalUser != null) {//J'ai vu un exemple que je ne comprends pas du tout :
+            // if(existingUser != null && existingUser.getEmail() != null && !existingUser.getEmail().isEmpty())
+
+        result.rejectValue("email", null, "There is already an account " +
+                "registered with the same email"); // Spring va rejeter la valeur associée au champ email présent dans
+                //le formulaire
+        }
+
+        if(result.hasErrors()){ // On recharge la page en cas d'erreur
+            //Spring ajoute automatiquement l'objet BindingResult au model
+            //la nouvelle page prendra les erreurs en compte(th:errors).
+
+            model.addAttribute("user",userDto);
+            //On conserve les informations saisies en ajoutant le userDto courant,
+
+            return "/newAccount";
+
+        }
+        userService.saveUser(userDto);
+        return "redirect:/registration?success";
+        //On recharge la page
+    }
+
+    @GetMapping("/deleteUser/{id}")
+    public ModelAndView deleteUser(@PathVariable("id") final int id) {
+        userService.deleteUser(id);
+        return new ModelAndView("redirect:/home");
+    } //TODO : la methode ne fonctionne pas sur les utilisateurs associé a d'autres utilisateur (CASCADE RESTRICT)
+
+
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
+}
