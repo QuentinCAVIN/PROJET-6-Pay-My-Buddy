@@ -2,11 +2,7 @@ package com.paymybuddy.paymybuddysapp.security;
 
 import com.paymybuddy.paymybuddysapp.model.User;
 import com.paymybuddy.paymybuddysapp.repository.UserRepository;
-import com.paymybuddy.paymybuddysapp.service.UserService;
-import jakarta.transaction.Transactional;
-import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,9 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 
 @Service

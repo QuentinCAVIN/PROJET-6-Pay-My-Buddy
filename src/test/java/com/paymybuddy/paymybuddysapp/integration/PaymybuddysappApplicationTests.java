@@ -1,4 +1,4 @@
-package com.paymybuddy.paymybuddysapp;
+package com.paymybuddy.paymybuddysapp.integration;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
