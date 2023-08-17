@@ -12,6 +12,8 @@ public interface UserService {
 
     User getUserByEmail(String email);
 
+    UserDto getUserDtoByEmail(String email);
+
     User saveUser(UserDto userDto);
 
     User getUserById(int id);

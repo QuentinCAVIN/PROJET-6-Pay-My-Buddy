@@ -26,6 +26,13 @@
 		<div th:if="${param.error}">
 			<div class="alert alert-danger">Invalid Email or Password</div>
 		</div>
+		<div th:if="${param.success}">
+			<!-- Cette balise s'affichera uniquement si la page a été chargé avec le paramètre
+            /login?success -->
+			<div class="alert alert-info">
+				Your account has been successfully registered
+			</div>
+		</div>
 		<div th:if="${param.logout}">
 			<div class="alert alert-success"> You have been logged out.</div>
 		</div>
@@ -89,20 +96,6 @@
 	</footer>
 
 
-
-
-
-
 </body>
 
 </html>
-
-
-
-
-
-
-
-
-<!-- Site modele:
-https://nicepage.com/fr/website-mockup/preview/faune-et-nature-21253?device=desktop-->

@@ -45,6 +45,20 @@ public class UserServiceImpl implements UserService{
         return  usersDto;
     }
 
+    public UserDto getUserDtoByEmail(String email) {
+
+        User user = userRepository.findByEmail(email);
+
+        UserDto userDto = new UserDto();
+        userDto.setId(user.getId());
+        userDto.setEmail(user.getEmail());
+        userDto.setFirstName(user.getFirstName());
+        userDto.setLastName(user.getLastName());
+        userDto.setPassword(user.getPassword());
+
+        return userDto;
+    }
+
     public User getUserById(int id){
         return userRepository.getReferenceById(id);
     }

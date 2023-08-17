@@ -1,10 +1,13 @@
 package com.paymybuddy.paymybuddysapp.integration;
 
 
-import com.paymybuddy.paymybuddysapp.service.UserService;
+import com.paymybuddy.paymybuddysapp.dto.UserDto;
+import com.paymybuddy.paymybuddysapp.repository.UserRepository;
 
+import com.paymybuddy.paymybuddysapp.service.UserService;
+import org.hamcrest.CoreMatchers;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,7 +23,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-
 @SpringBootTest
 @AutoConfigureMockMvc
 
@@ -30,91 +32,183 @@ public class AuthentificationIT {
     MockMvc mockMvc;
 
     @Autowired
+    UserRepository userRepository;
+
+    UserDto dummy = new UserDto(1, "test", "tset", "test@tset", "1234");
+
+    @Autowired
     UserService userService;
 
+    @BeforeEach
+    public void setup() {
 
-    @Nested
-    @DisplayName("When everything goes as planned")
-    class WhenValidationIsSuccessful {
-
-        @Test
-        @WithAnonymousUser
-        @DisplayName("Accessing /login should return OK status code and display the login view ")
-        public void loginReturnStotusOKAndLoginView() throws Exception {
-
-            mockMvc.perform(MockMvcRequestBuilders.get("/login"))
-                    .andExpect(MockMvcResultMatchers.status().isOk())
-                    .andExpect(MockMvcResultMatchers.view().name("login"));
-
-            /*.andExpect(MockMvcResultMatchers.content().string(CoreMatchers.containsString("a")))*/;
-            // Pour vérifier un contenu précis dans la page
-
-        }
-
-        @Test
-        @WithAnonymousUser
-        @DisplayName("An unauthenticated user should be redirected to the login page")
-        public void unauthenticatedUserShouldBeRedirectedToLoginPage() throws Exception {
-
-            mockMvc.perform(MockMvcRequestBuilders.get("/home"))
-                    .andDo(MockMvcResultHandlers.print())//Dispensable
-                    .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-                    .andExpect(MockMvcResultMatchers.redirectedUrl("http://localhost/login"))
-                    //TODO: Voir si je remplace par un chemin relatif
-                    /*.andExpect(MockMvcResultMatchers.view().name("login"))*/;
-            /*.andExpect(MockMvcResultMatchers.content().string(CoreMatchers.containsString("a")))*/;
-
-        }
-
-
-        @Test
-        @WithAnonymousUser
-        @DisplayName("Accessing /registration should return OK status code " +
-                "and display the registration view with a user model attribute")
-        public void registrationReturnStotusOKAndRegistrationViewWithModelAttribute() throws Exception {
-
-            mockMvc.perform(MockMvcRequestBuilders.get("/registration"))
-
-                    .andExpect(MockMvcResultMatchers.view().name("newAccount"))
-                    .andExpect(MockMvcResultMatchers.status().isOk())
-                    .andExpect(MockMvcResultMatchers.model().attributeExists("user"));
-
-            /*.andExpect(MockMvcResultMatchers.model().attribute("user",user)); Pour vérifier une valeur précise*/
-        }
-
-        @Test
-        @WithAnonymousUser
-        @DisplayName("Validate the registration form creates a new user")
-        public void validateRegistrationFormCreateNewUser() throws Exception {
-
-            mockMvc.perform(MockMvcRequestBuilders.post("/registration/saveUser")
-                    .param("firstName","test")
-                    .param("lastName", "tset")
-                    .param("email", "test@tset")
-                    .param("password", "1234"))
-
-                    .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-                    .andExpect(MockMvcResultMatchers.redirectedUrl("/registration?success"));
-
-           assertThat(userService.getUserByEmail("test@tset").getFirstName()).isEqualTo("test");
-        }
-
-        @Test
-        @WithMockUser
-        @DisplayName("an authenticated user should access his home page")
-        public void authenticatedUserShouldAccessHisHomePage() throws Exception {
-
-            mockMvc.perform(MockMvcRequestBuilders.get("/home"))
-
-                    .andExpect(MockMvcResultMatchers.view().name("home"))
-                    .andExpect(MockMvcResultMatchers.status().isOk())
-                    .andExpect(MockMvcResultMatchers.model().attributeExists("users"));
-        }
-    }
-
-    @Nested
-    @DisplayName("When everything goes as planned")
-    class WhenValidationFailed {
+        userRepository.deleteAll();
 
     }
+
+
+    @Test
+    @WithMockUser
+    @DisplayName("An authenticated user should access his home page")
+    public void authenticatedUserShouldAccessHisHomePage() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/home"))
+
+                .andExpect(MockMvcResultMatchers.view().name("home"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.model().attributeExists("users"));
+    }
+
+
+    @Test
+    @WithAnonymousUser
+    @DisplayName("An unauthenticated user should be redirected to the login page")
+    public void unauthenticatedUserShouldBeRedirectedToLoginPage() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/home"))
+                .andDo(MockMvcResultHandlers.print())//Dispensable
+                .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+                .andExpect(MockMvcResultMatchers.redirectedUrl("http://localhost/login"));
+        //TODO: Voir si je remplace par un chemin relatif
+    }
+
+
+    @Test
+    @WithAnonymousUser
+    @DisplayName("Accessing /login should display the login view ")
+    public void loginShouldDisplayLoginView() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/login"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("login"));
+    }
+
+
+    @Test
+    @WithAnonymousUser
+    @DisplayName("An unregistered user should not log in")
+    public void unregistredUserShouldNotLogIn() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/login")
+                        .param("username", dummy.getEmail())
+                        .param("password", dummy.getPassword()))
+                .andExpect(MockMvcResultMatchers.redirectedUrl("/login?error"));
+    }
+
+
+    @Test
+    @WithAnonymousUser
+    @DisplayName("A registered user can log in")
+    public void registeredUserCanLogIn() throws Exception {
+
+        //User registers
+        validateRegistrationFormShouldCreateNewUserInDB();
+
+        //User log in
+        mockMvc.perform(MockMvcRequestBuilders.post("/login")
+                        .param("username", dummy.getEmail())
+                        .param("password", dummy.getPassword()))
+                .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+                .andExpect(MockMvcResultMatchers.redirectedUrl("/home"));
+    }
+
+
+    @Test
+    @WithAnonymousUser
+    @DisplayName("Accessing /registration should display the registration view with a user model attribute")
+    public void registrationShouldDisplayRegistrationViewWithModelAttribute() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/registration"))
+
+                .andExpect(MockMvcResultMatchers.view().name("newAccount"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.model().attributeExists("user"));
+    }
+
+
+    @Test
+    @WithAnonymousUser
+    @DisplayName("Validate the registration form should create a new user in database")
+    public void validateRegistrationFormShouldCreateNewUserInDB() throws Exception {
+
+        //User registers
+        mockMvc.perform(MockMvcRequestBuilders.post("/registration/saveUser")
+                        .param("firstName", dummy.getFirstName())
+                        .param("lastName", dummy.getLastName())
+                        .param("email", dummy.getEmail())
+                        .param("password", dummy.getPassword()))
+
+                .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+                .andExpect(MockMvcResultMatchers.redirectedUrl("/login?success"));
+
+        //Check if user is present in DB
+        UserDto userInDB = userService.getUserDtoByEmail(dummy.getEmail());
+        assertThat(userInDB).isEqualTo(dummy);
+    }
+
+
+    @Test
+    @WithAnonymousUser
+    @DisplayName("Validate the form with an email already registered should display an error message")
+    public void validateFormWithEmailAlreadyRegisteredShouldDisplayErrorMessage() throws Exception {
+
+        //First registration
+        validateRegistrationFormShouldCreateNewUserInDB();
+
+        //Second registration with the same email
+        mockMvc.perform(MockMvcRequestBuilders.post("/registration/saveUser")
+                        .param("firstName", dummy.getFirstName())
+                        .param("lastName", dummy.getLastName())
+                        .param("email", dummy.getEmail())
+                        .param("password", dummy.getPassword()))
+
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("/newAccount"))
+                .andExpect(MockMvcResultMatchers.content()
+                        .string(CoreMatchers.containsString("There is already an account associated with the "
+                                + dummy.getEmail() + " email.")))
+                //TODO : Voir si il est necessaire de retirer le test de la présence du message d'erreur sur la page,
+                // pour se limiter au test du backend
+
+                // information retrieved in the model attribute
+                .andExpect(MockMvcResultMatchers.model().attribute("user", dummy));
+                //Nécessaire de redéfinir la methode equals pour utiliser cette ligne
+    }
+
+
+    @Test
+    @WithAnonymousUser
+    @DisplayName("Validating the form without filling in the fields should display error messages")
+    public void validateFormWithoutFillingInFieldShouldDisplayErrorMessages() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/registration/saveUser"))
+
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("/newAccount"))
+                .andExpect(MockMvcResultMatchers.content()
+                        .string(CoreMatchers.containsString("First name should not be empty")))
+                .andExpect(MockMvcResultMatchers.content()
+                        .string(CoreMatchers.containsString("Last name should not be empty")))
+                .andExpect(MockMvcResultMatchers.content()
+                        .string(CoreMatchers.containsString("Email should not be empty")))
+                .andExpect(MockMvcResultMatchers.content()
+                        .string(CoreMatchers.containsString("Password should not be empty")));
+    }
+
+
+    @Test
+    @WithAnonymousUser
+    @DisplayName("A user can log out")
+    public void userCanLogOut() throws Exception {
+
+        //User registers and log in
+        registeredUserCanLogIn();
+
+        //User log out
+        mockMvc.perform(MockMvcRequestBuilders.get("/logout"));
+
+        //User cant connect to his home page
+        unauthenticatedUserShouldBeRedirectedToLoginPage();
+    }
+
 }

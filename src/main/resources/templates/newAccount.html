@@ -31,14 +31,6 @@
 			<h2><span class="badge bg-success bg-gradient">Pay My Buddy</span></h2>
 		</div>
 
-			<div th:if="${param.success}">
-				<!-- Cette balise s'affichera uniquement si la page a été chargé avec le paramètre
-				/register?success -->
-				<div class="alert alert-info">
-					Your account has been successfully registered
-				</div>
-			</div>
-
 		<p>Please fill in the following information:</p>
 
 		<div class="w-100 my-1">
@@ -47,7 +39,7 @@
 
 				<input type="email" class="form-control form-control-lg" th:field="*{email}" id="email"
 					placeholder="Email">  <!-- th:field donne la correspondance avec les attributs de l’objet associé
-            attention à la synthaxe particuliére *{attribut1}-->
+            attention à la synthaxe particulière *{attribut1}-->
 			</div>
 			<p th:errors = "*{email}" class="text-danger"
 			   th:if="${#fields.hasErrors('email')}"></p>

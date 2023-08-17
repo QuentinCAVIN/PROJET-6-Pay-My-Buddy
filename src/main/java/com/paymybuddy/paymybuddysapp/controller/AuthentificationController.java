@@ -56,8 +56,9 @@ public class AuthentificationController {
         if (optionalUser != null) {//J'ai vu un exemple que je ne comprends pas du tout :
             // if(existingUser != null && existingUser.getEmail() != null && !existingUser.getEmail().isEmpty())
 
-            result.rejectValue("email", null, "There is already an account " +
-                    "registered with the same email"); // Spring va rejeter la valeur associée au champ email présent dans
+            result.rejectValue("email", null,
+                    "There is already an account associated with the "
+                    + optionalUser.getEmail() + " email."); // Spring va rejeter la valeur associée au champ email présent dans
             //le formulaire
         }
 
@@ -72,7 +73,7 @@ public class AuthentificationController {
 
         }
         userService.saveUser(userDto);
-        return "redirect:/registration?success";
+        return "redirect:/login?success";
         //On recharge la page
     }
 
