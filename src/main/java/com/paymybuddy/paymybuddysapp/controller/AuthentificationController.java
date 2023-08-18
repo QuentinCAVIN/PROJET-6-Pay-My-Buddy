@@ -8,7 +8,6 @@ import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -44,7 +43,8 @@ public class AuthentificationController {
     public String saveUser(@Valid @ModelAttribute("user") UserDto userDto,
                            //@ModelAttribute permet à Spring de récupérer les données saisies dans un formulaire
                            //correctement annoté (<form method="post" th:action="@{/saveUser}" th:object="${user}">).
-                           //Et donc construire un objet user avec.
+                           //Et donc construire un objet user avec. Le nom doit correspondre au nom du UserDto vide
+                           //"chargé" dans la page html par "showRegistrationForm".
 
                            BindingResult result,
                            //Sert à collecter et gérer les résultats des @Valid
@@ -58,8 +58,8 @@ public class AuthentificationController {
 
             result.rejectValue("email", null,
                     "There is already an account associated with the "
-                    + optionalUser.getEmail() + " email."); // Spring va rejeter la valeur associée au champ email présent dans
-            //le formulaire
+                    + optionalUser.getEmail() + " email."); // Spring va rejeter la valeur associée au champ email
+            // présent dans le formulaire
         }
 
         if (result.hasErrors()) { // On recharge la page en cas d'erreur
@@ -72,7 +72,7 @@ public class AuthentificationController {
             return "/newAccount";
 
         }
-        userService.saveUser(userDto);
+        userService.saveUserDto(userDto);
         return "redirect:/login?success";
         //On recharge la page
     }

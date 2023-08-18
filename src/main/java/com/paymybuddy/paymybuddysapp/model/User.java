@@ -65,7 +65,7 @@ public class User {
     private int zipOfBirth; */
     // TODO: Attributs retirés pour gain de temps
     //  trop de ligne à écrire pour les tests unitaire et manuel.
-    //  A voir si on retir définitivement
+    //  A voir si on peut retirer définitivement
 
     @ManyToMany(
             fetch = FetchType.LAZY, /*Quand on récupère un user, les users associés ne sont pas récupérés.
@@ -78,8 +78,11 @@ public class User {
     @JoinTable(
             name = "user_user",// la table de jointure des relations ManyToMany dans la BDD
             joinColumns = @JoinColumn(name = "user1_id"), //clé étrangère dans la table de jointure
-            inverseJoinColumns = @JoinColumn(name = "user2_id")//clé étrangère de la seconde entité concernée
+            inverseJoinColumns = @JoinColumn(name = "user2_id"),//clé étrangère de la seconde entité concernée
+            uniqueConstraints = @UniqueConstraint(columnNames = {"user1_id", "user2_id"})
+            //Va empêcher la création d'un doublon dans la table.
     )
+
     private List<User> usersConnexions;
 
     @ManyToMany(
@@ -87,6 +90,7 @@ public class User {
             fetch = FetchType.LAZY,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE }
     )
+
     private List<User> usersConnected;
 
 
