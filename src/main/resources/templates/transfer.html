@@ -67,8 +67,9 @@
         <form class="row">
             <div class="form-group col-md-4">
                 <select id="inputState" class="form-control">
-                    <option selected>Select a connection</option>
-                    <option>...</option>
+                    <option  selected>Select a connection</option>
+                    <option  th:each = "user : ${buddies}" th:text = "${user.firstName}"></option>
+                    <!-- Va permettre d'utiliser la liste de buddy de l'utilisateurdans le menu déroulant-->
                 </select>
             </div>
 
@@ -133,6 +134,8 @@
                 <td th:text = "${user.lastName}"></td>
                 <td th:text = "${user.email}"></td>
                 <td ><a th:href="@{/transfer/deleteBuddy(email=${user.email})}">Delete</a></td>
+                <!--Ici on passe un paramètre email à l'endpoint qui correspond à l'email du buddy-->
+
             </tr>
             </tbody>
         </table>

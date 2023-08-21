@@ -1,6 +1,7 @@
 package com.paymybuddy.paymybuddysapp.service;
 
 import com.paymybuddy.paymybuddysapp.dto.UserDto;
+import org.hibernate.Hibernate;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.stereotype.Service;
@@ -74,6 +75,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         userRepository.save(user);
     }
+
 
     public void deleteUser(int id) {
 

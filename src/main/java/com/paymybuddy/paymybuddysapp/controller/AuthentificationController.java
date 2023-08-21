@@ -4,6 +4,7 @@ import com.paymybuddy.paymybuddysapp.dto.UserDto;
 import com.paymybuddy.paymybuddysapp.model.User;
 import com.paymybuddy.paymybuddysapp.service.UserService;
 
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -91,10 +92,11 @@ public class AuthentificationController {
     }
 
 
+    @Transactional
     @GetMapping("/deleteUser/{id}")
     public ModelAndView deleteUser(@PathVariable("id") final int id) {
         userService.deleteUser(id);
         return new ModelAndView("redirect:/home");
-    } //TODO : la methode ne fonctionne pas sur les utilisateurs associé a d'autres utilisateur (CASCADE RESTRICT)
-    // TODO : Methode non testée pour l'instant
+    }
+    // TODO : Methode non testée pour l'instant, a Intégrer d'abord au bonne endroit
 }

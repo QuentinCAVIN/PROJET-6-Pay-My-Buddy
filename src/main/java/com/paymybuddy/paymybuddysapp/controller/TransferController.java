@@ -3,6 +3,7 @@ package com.paymybuddy.paymybuddysapp.controller;
 import com.paymybuddy.paymybuddysapp.dto.UserDto;
 import com.paymybuddy.paymybuddysapp.model.User;
 import com.paymybuddy.paymybuddysapp.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -30,8 +31,8 @@ public class TransferController {
 
         UserDto buddy = new UserDto();
 
-        model.addAttribute("buddies", buddies);
-        model.addAttribute("buddy", buddy);
+        model.addAttribute("buddies", buddies); // Pour afficher les buddies de l'utilisateur en cours
+        model.addAttribute("buddy", buddy); // Pour le champ nécessaire à l'ajout d'un nouveau buddy
 
         return "transfer";
     }
@@ -42,23 +43,28 @@ public class TransferController {
     public String addBuddy(@ModelAttribute("buddy") UserDto buddy,
                            @AuthenticationPrincipal UserDetails userDetails,
                            //@ModelAttribute permet à Spring de récupérer les données saisies dans un formulaire
-                           //correctement annoté (<form method="post" th:action="@{/saveUser}" th:object="${user}">).
+                           //correctement annoté (<form method="post" th:action="@{/transfer/addBuddy}" th:object="${buddy}">).
                            //Et donc construire un objet user avec.
 
                            BindingResult result,
-                           //Sert à collecter et gérer les résultats des @Valid
+                           //Sert à collecter les erreurs choisis plus bas et à les gérer.
 
                            Model model) {
 
         String emailOfNewBuddy = buddy.getEmail();
 
         User currentUser = userService.getUserByEmail(userDetails.getUsername());
-        // TODO: Ici je pourrai remplacer par UserDto, mais je ne vosi pas ce que ça apporte.
+        // TODO: Ici je pourrai remplacer par UserDto, mais je ne vois pas ce que ça apporte.
 
         User buddyToAdd = userService.getUserByEmail(buddy.getEmail());
 
+        if (emailOfNewBuddy == null || emailOfNewBuddy.isBlank()){
+            result.rejectValue("email", null,
+                    "Please fill in your buddy's email" );
+        }
 
-        if (buddyToAdd == null) {
+
+       else if (buddyToAdd == null ) {
 
             result.rejectValue("email", null,
                     "There is no account associated to " + emailOfNewBuddy);
@@ -102,7 +108,7 @@ public class TransferController {
 
 
     @GetMapping("/transfer/deleteBuddy")
-    public String deleteConnection(@RequestParam("email") final String buddysEmailToRemove, //TODO Remplacer par RequestParam email?
+    public String deleteConnection(@RequestParam("email") final String buddysEmailToRemove,
                                    @AuthenticationPrincipal UserDetails userDetails) {
 
         User currentUser = userService.getUserByEmail(userDetails.getUsername());
@@ -113,5 +119,4 @@ public class TransferController {
 
         return "redirect:/transfer";
     }
-
 }

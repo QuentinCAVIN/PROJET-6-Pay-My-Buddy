@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -34,7 +35,7 @@ public class UserDto
     @NotEmpty(message = "Password should not be empty")
     private String password;
 
-    private List<User> usersConnexions; //TODO: modifier les tests unitaires pour prendre en compte ce nouvel attribut
+    private List<User> usersConnexions =new ArrayList<>(); //TODO: modifier les tests unitaires pour prendre en compte ce nouvel attribut
 
 
     @Override

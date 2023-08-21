@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -41,7 +42,48 @@ public class User {
     @Column(nullable=false)
     private String password;
 
-   /* @Column(name = "date_of_birth")
+    @ManyToMany(
+            fetch = FetchType.LAZY, /*Quand on récupère un user, les users associés ne sont pas récupérés.
+             (gain de performance) */
+            //TODO: voir si "fetch = FetchType.EAGER" ne serait pas plus approprié.
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE } /*Les modifs sur user sont propagées
+                     sur les user associées, uniquement pour création et modif. Si on supprime un user
+                     ça ne supprime pas les autres (c'est le cas pour CascadeType.ALL)*/
+    )
+    @JoinTable(
+            name = "user_user",// la table de jointure des relations ManyToMany dans la BDD
+            joinColumns = @JoinColumn(name = "user1_id"), //clé étrangère dans la table de jointure
+            inverseJoinColumns = @JoinColumn(name = "user2_id"),//clé étrangère de la seconde entité concernée
+            uniqueConstraints = @UniqueConstraint(columnNames = {"user1_id", "user2_id"})
+            //Va empêcher la création d'un doublon dans la table.
+    )
+
+    private List<User> usersConnexions =new ArrayList<>();
+
+    @ManyToMany(
+            mappedBy = "usersConnexions",// pas besoin d'ajouter @JoinTable une seconde fois
+            fetch = FetchType.LAZY,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE }
+    )
+
+    private List<User> usersConnected = new ArrayList<>();
+
+
+    //Ci-dessous les méthodes utilitaire (helpers methods)
+    //aide à la synchronisation des objets
+    //elles sont placés soit du coté OneToMany (la où on gère la liste d'élément)
+    //soit du côté ou il y a le @JoinTable pour ManytoMany (un seul coté ici vu que user est lié à lui-même)
+    public void addConnexion (User user) {
+        usersConnexions.add(user);
+        user.getUsersConnected().add(this);
+    }
+
+    public void removeConnexion (User user){
+        usersConnexions.remove(user);
+        user.getUsersConnected().remove(this);
+    }
+
+       /* @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
     @Column(name = "number_and_street")
@@ -67,45 +109,5 @@ public class User {
     //  trop de ligne à écrire pour les tests unitaire et manuel.
     //  A voir si on peut retirer définitivement
 
-    @ManyToMany(
-            fetch = FetchType.LAZY, /*Quand on récupère un user, les users associés ne sont pas récupérés.
-             (gain de performance) */
-            //TODO: voir si "fetch = FetchType.EAGER" ne serait pas plus approprié.
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE } /*Les modifs sur user sont propagées
-                     sur les user associées, uniquement pour création et modif. Si on supprime un user
-                     ça ne supprime pas les autres (c'est le cas pour CascadeType.ALL)*/
-    )
-    @JoinTable(
-            name = "user_user",// la table de jointure des relations ManyToMany dans la BDD
-            joinColumns = @JoinColumn(name = "user1_id"), //clé étrangère dans la table de jointure
-            inverseJoinColumns = @JoinColumn(name = "user2_id"),//clé étrangère de la seconde entité concernée
-            uniqueConstraints = @UniqueConstraint(columnNames = {"user1_id", "user2_id"})
-            //Va empêcher la création d'un doublon dans la table.
-    )
-
-    private List<User> usersConnexions;
-
-    @ManyToMany(
-            mappedBy = "usersConnexions",// pas besoin d'ajouter @JoinTable une seconde fois
-            fetch = FetchType.LAZY,
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE }
-    )
-
-    private List<User> usersConnected;
-
-
-    //Ci-dessous les méthodes utilitaire (helpers methods)
-    //aide à la synchronisation des objets
-    //elles sont placés soit du coté OneToMany (la où on gère la liste d'élément)
-    //soit du côté ou il y a le @JoinTable pour ManytoMany (un seul coté ici vu que user est lié à lui-même)
-    public void addConnexion (User user) {
-        usersConnexions.add(user);
-        user.getUsersConnected().add(this);
-    }
-
-    public void removeConnexion (User user){
-        usersConnexions.remove(user);
-        user.getUsersConnected().remove(this);
-    }
 
 }
