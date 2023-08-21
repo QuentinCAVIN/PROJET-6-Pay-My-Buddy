@@ -1,6 +1,9 @@
 package com.paymybuddy.paymybuddysapp.service;
 
 import com.paymybuddy.paymybuddysapp.dto.UserDto;
+import org.hibernate.Hibernate;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
 import org.springframework.stereotype.Service;
 import com.paymybuddy.paymybuddysapp.model.User;
 import com.paymybuddy.paymybuddysapp.repository.UserRepository;
@@ -40,6 +43,7 @@ public class UserServiceImpl implements UserService {
         userDto.setFirstName(user.getFirstName());
         userDto.setLastName(user.getLastName());
         userDto.setPassword(user.getPassword());
+        userDto.setUsersConnexions(user.getUsersConnexions());
 
         return userDto;
     }
@@ -54,6 +58,7 @@ public class UserServiceImpl implements UserService {
             userDto.setFirstName(user.getFirstName());
             userDto.setLastName(user.getLastName());
             userDto.setPassword(user.getPassword());
+            userDto.setUsersConnexions(user.getUsersConnexions());
             usersDto.add(userDto);
         });
         return usersDto;
@@ -61,7 +66,7 @@ public class UserServiceImpl implements UserService {
 
 
     //Responsable du cryptage du mot de passe
-    public void saveUser(UserDto userDto) {
+    public void saveUserDto(UserDto userDto) {
         User user = new User();
         user.setId(userDto.getId());
         user.setEmail(userDto.getEmail());
@@ -71,7 +76,38 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+
     public void deleteUser(int id) {
+
         userRepository.deleteById(id);
+
+    }
+
+
+
+    // TODO: pas de test réalisé ci dessous. Réfléchir à créer une nouvelle classe UserServiceDto
+
+    public void saveUser(User user) {
+        userRepository.save(user);
+    }
+
+    // TODO: Les deux classes ci dessous sont peut être inutile, il suffit de faire un User.addConnexion(Use)
+    public void addConnexion(String currentUserEmail, /* remplacer par User CurrentUser avec @authenticationprincipal */
+                             String emailUserToAdd) {
+
+        User currentUser = getUserByEmail(currentUserEmail);
+
+        User userToAdd = getUserByEmail(emailUserToAdd);
+
+        currentUser.addConnexion(userToAdd);
+    }
+
+    public void removeConnexion(String currentUserEmail, String emailUserToRemove) {
+
+        User currentUser = getUserByEmail(currentUserEmail);
+
+        User userToRemove = getUserByEmail(emailUserToRemove);
+
+        currentUser.removeConnexion(userToRemove);
     }
 }

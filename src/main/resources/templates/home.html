@@ -11,20 +11,25 @@
 
 
 <body>
-	<header>
-
-		<nav class="bg-white">
-			<div class="container">
-				<div class="bg-secondary py-4"></div>
-			</div>
-		</nav>
-
-		<nav class="bg-light">
-			<div class="bg-success py-4">
-				<button>Pay My Buddy</button>
-			</div>
-		</nav>
-	</header>
+<header>
+	<nav class="navbar-expand bg-white p-3">
+		<div class="col d-flex justify-content-start">
+			<span class="bg-success bg-gradient p-1 rounded-3 text-light">Pay My Buddy</span>
+		</div>
+		<div class="col d-flex justify-content-end">
+			<a href="#" class="text-primary">Home</a>
+			<a th:href="@{/transfer}" class="text-dark">Transfer</a>
+			<a href="#" class="text-dark">Profile</a>
+			<a href="#" class="text-dark">Contact</a>
+			<a href="#" class="text-dark">Log Of</a>
+		</div>
+	</nav>
+	<nav class="navbar bg-light p-3 d-flex justify-content-start">
+		<a>Home</a>
+		<span> / </span>
+		<a>Transfer</a>
+	</nav>
+</header>
 
 	<main>
 

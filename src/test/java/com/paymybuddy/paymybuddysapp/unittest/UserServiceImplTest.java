@@ -5,18 +5,15 @@ import com.paymybuddy.paymybuddysapp.model.User;
 import com.paymybuddy.paymybuddysapp.repository.UserRepository;
 import com.paymybuddy.paymybuddysapp.service.UserServiceImpl;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -128,7 +125,7 @@ public class UserServiceImplTest {
 
         Mockito.when(passwordEncoder.encode(dummyDto.getPassword())).thenReturn("encodedPassword");
 
-        userService.saveUser(dummyDto);
+        userService.saveUserDto(dummyDto);
 
         Mockito.verify(passwordEncoder,Mockito.times(1)).encode(dummyDto.getPassword());
         Mockito.verify(userRepository,Mockito.times(1)).save(any(User.class));

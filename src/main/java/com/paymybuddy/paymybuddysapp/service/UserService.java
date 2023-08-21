@@ -13,7 +13,9 @@ public interface UserService {
 
     UserDto getUserDtoByEmail(String email);
 
-    void saveUser(UserDto userDto);
+    void saveUserDto(UserDto userDto);
+
+    void saveUser(User user);
 
     void deleteUser(int id);
 
