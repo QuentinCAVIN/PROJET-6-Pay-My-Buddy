@@ -58,31 +58,28 @@ public class TransferController {
 
         User buddyToAdd = userService.getUserByEmail(buddy.getEmail());
 
-        if (emailOfNewBuddy == null || emailOfNewBuddy.isBlank()){
+        if (emailOfNewBuddy == null || emailOfNewBuddy.isBlank()) {
             result.rejectValue("email", null,
-                    "Please fill in your buddy's email" );
-        }
+                    "Please fill in your buddy's email");
 
-
-       else if (buddyToAdd == null ) {
-
+        } else if (buddyToAdd == null) {
             result.rejectValue("email", null,
                     "There is no account associated to " + emailOfNewBuddy);
 
-            // On recharge la page en cas d'erreur
-            //Spring ajoute automatiquement l'objet BindingResult au model
-            //la nouvelle page prendra les erreurs en compte(th:errors).
+        } else if (emailOfNewBuddy.equals(currentUser.getEmail()) ) {
+            result.rejectValue("email", null,
+                    "Really? it's too sad... go get some friends");
 
         } else {
 
-        //Check that new buddy is not already added
-        currentUser.getUsersConnexions().forEach(user -> {
-            if (user.getEmail().equals(buddyToAdd.getEmail())) {
-                result.rejectValue("email", null,
-                        buddyToAdd.getFirstName() + " " + buddyToAdd.getLastName() +
-                                " is already add to your buddies!");
-            }
-        });
+            //Check that new buddy is not already added
+            currentUser.getUsersConnexions().forEach(user -> {
+                if (user.getEmail().equals(buddyToAdd.getEmail())) {
+                    result.rejectValue("email", null,
+                            buddyToAdd.getFirstName() + " " + buddyToAdd.getLastName() +
+                                    " is already add to your buddies!");
+                }
+            });
         }
 
         if (result.hasErrors()) {

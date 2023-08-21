@@ -103,7 +103,7 @@ public class TransferControllerIT {
 
     @Test
     @WithMockUser("test@tset")
-    @DisplayName("Validating the form with a wrong email should display error messages")
+    @DisplayName("Validating the buddy's form with a wrong email should display error messages")
     public void validateBuddysFormWithWrongEmailShouldDisplayErrorMessages() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/transfer/addBuddy")
@@ -115,9 +115,24 @@ public class TransferControllerIT {
                         .string(CoreMatchers.containsString("There is no account associated to wrong@email")));
     }
 
+
     @Test
     @WithMockUser("test@tset")
-    @DisplayName("Validate the form with an email already registered should display an error message")
+    @DisplayName("Validating the buddy's form with own email should display error messages")
+    public void validateBuddysFormWithOwnEmailShouldDisplayErrorMessages() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/transfer/addBuddy")
+                        .param("email", currentUser.getEmail()))
+
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("/transfer"))
+                .andExpect(MockMvcResultMatchers.content()
+                        .string(CoreMatchers.containsString("go get some friends")));
+    }
+
+    @Test
+    @WithMockUser("test@tset")
+    @DisplayName("Validate the buddy's form with an email already registered should display an error message")
     public void validateBuddysFormWithEmailAlreadyRegisteredShouldDisplayErrorMessage() throws Exception {
 
         //First buddy's registration
