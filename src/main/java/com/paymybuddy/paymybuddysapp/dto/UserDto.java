@@ -1,5 +1,6 @@
 package com.paymybuddy.paymybuddysapp.dto;
 
+import com.paymybuddy.paymybuddysapp.model.PayMyBuddyBankAccount;
 import com.paymybuddy.paymybuddysapp.model.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -35,7 +36,9 @@ public class UserDto
     @NotEmpty(message = "Password should not be empty")
     private String password;
 
-    private List<User> usersConnexions =new ArrayList<>(); //TODO: modifier les tests unitaires pour prendre en compte ce nouvel attribut
+    private List<User> usersConnexions = new ArrayList<>();
+
+    private PayMyBuddyBankAccount payMyBuddyBankAccount;
 
 
     @Override

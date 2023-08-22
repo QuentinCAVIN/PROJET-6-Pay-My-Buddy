@@ -45,7 +45,6 @@ public class User {
     @ManyToMany(
             fetch = FetchType.LAZY, /*Quand on récupère un user, les users associés ne sont pas récupérés.
              (gain de performance) */
-            //TODO: voir si "fetch = FetchType.EAGER" ne serait pas plus approprié.
             cascade = {CascadeType.PERSIST, CascadeType.MERGE } /*Les modifs sur user sont propagées
                      sur les user associées, uniquement pour création et modif. Si on supprime un user
                      ça ne supprime pas les autres (c'est le cas pour CascadeType.ALL)*/
@@ -65,8 +64,15 @@ public class User {
             fetch = FetchType.LAZY,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE }
     )
-
     private List<User> usersConnected = new ArrayList<>();
+
+    @OneToOne(
+            cascade = CascadeType.ALL, //Supprimer un utilisateur supprimera sont compte associé
+            orphanRemoval = true, //garantit la non existance de compte orphelin
+            fetch = FetchType.EAGER // Quand on récupére un User on récupére le compte associé
+    )
+    @JoinColumn(name ="paymybuddy_bank_account_id" )
+    private PayMyBuddyBankAccount payMyBuddyBankAccount;
 
 
     //Ci-dessous les méthodes utilitaire (helpers methods)
@@ -82,6 +88,12 @@ public class User {
         usersConnexions.remove(user);
         user.getUsersConnected().remove(this);
     }
+
+    public void addPayMyBuddyBankAccount(PayMyBuddyBankAccount payMyBuddyBankAccount){
+        this.payMyBuddyBankAccount = payMyBuddyBankAccount;
+    }
+
+
 
        /* @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;

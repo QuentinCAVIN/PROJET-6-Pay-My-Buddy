@@ -38,8 +38,8 @@ public class TransferControllerIT {
     UserService userService ;
 
 
-    UserDto currentUser = new UserDto(1, "test", "tset", "test@tset", "1234", null);
-    UserDto buddyToAdd = new UserDto(2, "tset", "test", "tset@test", "4321", null);
+    UserDto currentUser = new UserDto(1, "test", "tset", "test@tset", "1234", null,null);
+    UserDto buddyToAdd = new UserDto(2, "tset", "test", "tset@test", "4321", null,null);
 
 
 
@@ -48,8 +48,8 @@ public class TransferControllerIT {
     public void setup() throws Exception {
 
         userRepository.deleteAll();
-        userService.saveUserDto(currentUser);
-        userService.saveUserDto(buddyToAdd);
+        userService.createNewUser(currentUser);
+        userService.createNewUser(buddyToAdd);
     }
 
 
@@ -63,7 +63,8 @@ public class TransferControllerIT {
                 .andExpect(MockMvcResultMatchers.view().name("transfer"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.model().attributeExists("buddies"))
-                .andExpect(MockMvcResultMatchers.model().attributeExists("buddy"));
+                .andExpect(MockMvcResultMatchers.model().attributeExists("buddy"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("transfer"));
     }
 
 
@@ -97,7 +98,10 @@ public class TransferControllerIT {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.view().name("/transfer"))
                 .andExpect(MockMvcResultMatchers.content()
-                        .string(CoreMatchers.containsString("Please fill in your buddy")));
+                        .string(CoreMatchers.containsString("Please fill in your buddy")))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("buddies"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("buddy"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("transfer"));
     }
 
 
@@ -112,7 +116,10 @@ public class TransferControllerIT {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.view().name("/transfer"))
                 .andExpect(MockMvcResultMatchers.content()
-                        .string(CoreMatchers.containsString("There is no account associated to wrong@email")));
+                        .string(CoreMatchers.containsString("There is no account associated to wrong@email")))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("buddies"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("buddy"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("transfer"));
     }
 
 
@@ -127,7 +134,10 @@ public class TransferControllerIT {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.view().name("/transfer"))
                 .andExpect(MockMvcResultMatchers.content()
-                        .string(CoreMatchers.containsString("go get some friends")));
+                        .string(CoreMatchers.containsString("go get some friends")))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("buddies"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("buddy"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("transfer"));
     }
 
     @Test
@@ -152,7 +162,8 @@ public class TransferControllerIT {
 
                 // information retrieved in the model attribute
                 .andExpect(MockMvcResultMatchers.model().attributeExists("buddy"))
-                .andExpect(MockMvcResultMatchers.model().attributeExists("buddies"));
+                .andExpect(MockMvcResultMatchers.model().attributeExists("buddies"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("transfer"));
     }
 
     @Test

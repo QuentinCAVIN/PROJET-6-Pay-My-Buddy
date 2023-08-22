@@ -34,7 +34,7 @@ public class AuthentificationIT {
     @Autowired
     UserRepository userRepository;
 
-    UserDto dummy = new UserDto(1, "test", "tset", "test@tset", "1234", null);
+    UserDto dummy = new UserDto(1, "test", "tset", "test@tset", "1234", null,null);
 
     @Autowired
     UserService userService;

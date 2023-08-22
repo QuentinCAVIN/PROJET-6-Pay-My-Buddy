@@ -1,6 +1,8 @@
 package com.paymybuddy.paymybuddysapp.service;
 
 import com.paymybuddy.paymybuddysapp.dto.UserDto;
+import com.paymybuddy.paymybuddysapp.model.BankAccount;
+import com.paymybuddy.paymybuddysapp.model.PayMyBuddyBankAccount;
 import org.hibernate.Hibernate;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -44,9 +46,11 @@ public class UserServiceImpl implements UserService {
         userDto.setLastName(user.getLastName());
         userDto.setPassword(user.getPassword());
         userDto.setUsersConnexions(user.getUsersConnexions());
+        userDto.setPayMyBuddyBankAccount(user.getPayMyBuddyBankAccount());
 
         return userDto;
     }
+
 
     public List<UserDto> getUsersDto() {
         List<User> users = userRepository.findAll();
@@ -60,32 +64,32 @@ public class UserServiceImpl implements UserService {
             userDto.setPassword(user.getPassword());
             userDto.setUsersConnexions(user.getUsersConnexions());
             usersDto.add(userDto);
+            userDto.setUsersConnexions(user.getUsersConnexions());
+            userDto.setPayMyBuddyBankAccount(user.getPayMyBuddyBankAccount());
         });
         return usersDto;
     }
 
-
-    //Responsable du cryptage du mot de passe
-    public void saveUserDto(UserDto userDto) {
+    public void createNewUser(UserDto userDto) {
         User user = new User();
+
+        PayMyBuddyBankAccount payMyBuddyBankAccount= new PayMyBuddyBankAccount();
+        payMyBuddyBankAccount.setAccountBalance(0);
+
+        user.addPayMyBuddyBankAccount(payMyBuddyBankAccount);
         user.setId(userDto.getId());
         user.setEmail(userDto.getEmail());
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        userRepository.save(user);
+        saveUser(user);
     }
-
 
     public void deleteUser(int id) {
-
         userRepository.deleteById(id);
-
     }
 
 
-
-    // TODO: pas de test réalisé ci dessous. Réfléchir à créer une nouvelle classe UserServiceDto
 
     public void saveUser(User user) {
         userRepository.save(user);

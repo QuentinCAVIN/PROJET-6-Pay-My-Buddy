@@ -39,7 +39,6 @@ public class AuthentificationController {
         return "newAccount";
     }
 
-
     @PostMapping("/registration/saveUser")
     public String saveUser(@Valid @ModelAttribute("user") UserDto userDto,
                            //@ModelAttribute permet à Spring de récupérer les données saisies dans un formulaire
@@ -73,7 +72,7 @@ public class AuthentificationController {
             return "/newAccount";
 
         }
-        userService.saveUserDto(userDto);
+        userService.createNewUser(userDto);
         return "redirect:/login?success";
         //On recharge la page
     }
@@ -91,12 +90,12 @@ public class AuthentificationController {
         return "home";
     }
 
-
+    // TODO : Methode non testée pour l'instant, a Intégrer d'abord au bonne endroit
     @Transactional
     @GetMapping("/deleteUser/{id}")
     public ModelAndView deleteUser(@PathVariable("id") final int id) {
         userService.deleteUser(id);
         return new ModelAndView("redirect:/home");
     }
-    // TODO : Methode non testée pour l'instant, a Intégrer d'abord au bonne endroit
+
 }

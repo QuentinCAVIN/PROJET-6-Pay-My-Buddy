@@ -13,7 +13,7 @@ public interface UserService {
 
     UserDto getUserDtoByEmail(String email);
 
-    void saveUserDto(UserDto userDto);
+    void createNewUser(UserDto userDto);
 
     void saveUser(User user);
 
