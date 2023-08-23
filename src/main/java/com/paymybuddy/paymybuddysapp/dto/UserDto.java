@@ -36,20 +36,13 @@ public class UserDto
     @NotEmpty(message = "Password should not be empty")
     private String password;
 
-    private List<User> usersConnexions = new ArrayList<>();
+    private List<User> usersConnexions = new ArrayList<>(); //Todo convertir en liste de UserDto
 
     private PayMyBuddyBankAccount payMyBuddyBankAccount;
 
 
-    @Override
-    public String toString(){
-    return this.email;
-    }
-    @Override
-    public boolean equals(Object userDto){
-        return (userDto.toString() == this.toString());
-    }
-}
-// TODO : en fin de projet refléchir à l'utilité du champ id sur UserDto
 
-// TODO les methode toString et equals servent uniquement pour les tests. Les supprimer?
+
+    //TODO: Garder et adapter la methode Equals, virer le toString. a controller
+
+}

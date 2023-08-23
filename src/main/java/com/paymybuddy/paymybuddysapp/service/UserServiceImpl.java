@@ -49,6 +49,8 @@ public class UserServiceImpl implements UserService {
         userDto.setPayMyBuddyBankAccount(user.getPayMyBuddyBankAccount());
 
         return userDto;
+
+        //TODO : Rajouter un mapper (=convertisseur) de userDto dans un package exterieur UserMapper
     }
 
 

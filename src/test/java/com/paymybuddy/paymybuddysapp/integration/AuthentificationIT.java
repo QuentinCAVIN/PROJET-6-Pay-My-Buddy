@@ -69,7 +69,6 @@ public class AuthentificationIT {
                 .andDo(MockMvcResultHandlers.print())//Dispensable
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
                 .andExpect(MockMvcResultMatchers.redirectedUrl("http://localhost/login"));
-        //TODO: Voir si je remplace par un chemin relatif
     }
 
 
@@ -143,7 +142,7 @@ public class AuthentificationIT {
 
         //Check if user is present in DB
         UserDto userInDB = userService.getUserDtoByEmail(dummy.getEmail());
-        assertThat(userInDB).isEqualTo(dummy);
+        assertThat(userInDB.getEmail()).isEqualTo(dummy.getEmail());
     }
 
 
@@ -167,15 +166,13 @@ public class AuthentificationIT {
                 .andExpect(MockMvcResultMatchers.content()
                         .string(CoreMatchers.containsString("There is already an account associated with the "
                                 + dummy.getEmail() + " email.")))
-                //TODO : Voir si il est necessaire de retirer le test de la présence du message d'erreur sur la page,
-                // pour se limiter au test du backend
 
-                // information retrieved in the model attribute
-                .andExpect(MockMvcResultMatchers.model().attribute("user", dummy));
+                .andExpect(MockMvcResultMatchers.model().attributeExists("user"));
+
+                /*.andExpect(MockMvcResultMatchers.model().attribute("user", dummy.getEmail()));*/
                 //Nécessaire de redéfinir la methode equals pour utiliser cette ligne
+                //Permet d'être plus précis dans la vérification
     }
-
-
     @Test
     @WithAnonymousUser
     @DisplayName("Validating the form without filling in the fields should display error messages")

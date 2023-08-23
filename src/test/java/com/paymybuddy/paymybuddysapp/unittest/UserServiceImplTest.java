@@ -20,20 +20,18 @@ import java.util.Arrays;
 import java.util.List;
 
 
-
 import static org.mockito.ArgumentMatchers.any;
-
 
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceImplTest {
 
     @Mock
-    private  UserRepository userRepository;
+    private UserRepository userRepository;
     @Mock
-    private  PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
     @InjectMocks
-   private  UserServiceImpl userService;
+    private UserServiceImpl userService;
 
     private static User dummy;
     private static User ymmud;
@@ -47,9 +45,9 @@ public class UserServiceImplTest {
     private PayMyBuddyBankAccount payMyBuddyBankAccount;*/
 
     /*User
-    * private PayMyBuddyBankAccount payMyBuddyBankAccount;*/
+     * private PayMyBuddyBankAccount payMyBuddyBankAccount;*/
     @BeforeEach
-    public void setup(){
+    public void setup() {
         dummy = new User();
         dummy.setId(1);
         dummy.setEmail("dum@my");
@@ -77,7 +75,7 @@ public class UserServiceImplTest {
         ymmudAccount.setAccountBalance(4321);
         dummy.setPayMyBuddyBankAccount(ymmudAccount);
 
-        dummies = Arrays.asList(dummy,ymmud);
+        dummies = Arrays.asList(dummy, ymmud);
 
         dummyDto = new UserDto();
         dummyDto.setId(1);
@@ -96,7 +94,7 @@ public class UserServiceImplTest {
 
         User user = userService.getUserByEmail(dummy.getEmail());
 
-        Mockito.verify(userRepository,Mockito.times(1)).findByEmail(dummy.getEmail());
+        Mockito.verify(userRepository, Mockito.times(1)).findByEmail(dummy.getEmail());
         Assertions.assertThat(user.getId()).isEqualTo(dummy.getId());
         Assertions.assertThat(user.getEmail()).isEqualTo(dummy.getEmail());
         Assertions.assertThat(user.getPassword()).isEqualTo(dummy.getPassword());
@@ -114,7 +112,7 @@ public class UserServiceImplTest {
 
         UserDto userDto = userService.getUserDtoByEmail(dummy.getEmail());
 
-        Mockito.verify(userRepository,Mockito.times(1)).findByEmail(dummy.getEmail());
+        Mockito.verify(userRepository, Mockito.times(1)).findByEmail(dummy.getEmail());
         Assertions.assertThat(userDto.getId()).isEqualTo(dummy.getId());
         Assertions.assertThat(userDto.getEmail()).isEqualTo(dummy.getEmail());
         Assertions.assertThat(userDto.getPassword()).isEqualTo(dummy.getPassword());
@@ -135,7 +133,7 @@ public class UserServiceImplTest {
         UserDto userDto2 = usersDto.get(1);
 
 
-        Mockito.verify(userRepository,Mockito.times(1)).findAll();
+        Mockito.verify(userRepository, Mockito.times(1)).findAll();
         Assertions.assertThat(usersDto).hasSize(2);
 
         Assertions.assertThat(userDto1.getId()).isEqualTo(dummy.getId());
@@ -164,8 +162,8 @@ public class UserServiceImplTest {
         Mockito.when(passwordEncoder.encode(dummyDto.getPassword())).thenReturn("encodedPassword");
         userService.createNewUser(dummyDto);
 
-        Mockito.verify(passwordEncoder,Mockito.times(1)).encode(dummyDto.getPassword());
-        Mockito.verify(userRepository,Mockito.times(1)).save(any(User.class));
+        Mockito.verify(passwordEncoder, Mockito.times(1)).encode(dummyDto.getPassword());
+        Mockito.verify(userRepository, Mockito.times(1)).save(any(User.class));
     }
 
 
@@ -174,6 +172,6 @@ public class UserServiceImplTest {
 
         userService.deleteUser(1);
 
-        Mockito.verify(userRepository,Mockito.times(1)).deleteById(1);
+        Mockito.verify(userRepository, Mockito.times(1)).deleteById(1);
     }
 }

@@ -60,7 +60,7 @@ public class TransferController {
         String emailOfNewBuddy = buddy.getEmail();
 
         User currentUser = userService.getUserByEmail(userDetails.getUsername());
-        // TODO: Ici je pourrai remplacer par UserDto, mais je ne vois pas ce que ça apporte.
+        // TODO: Modifier le User en UserDto
 
         User buddyToAdd = userService.getUserByEmail(buddy.getEmail());
 
@@ -109,7 +109,8 @@ public class TransferController {
         userService.saveUser(currentUser);
 
 
-        return "redirect:/transfer?success"; // TODO : rajouter un message de confirmation
+        return "redirect:/transfer?success";
+        // TODO : rajouter un message de confirmation attention a ne pas générer d'autre message de succès inappropriées
         //On recharge la page
     }
 
@@ -133,22 +134,50 @@ public class TransferController {
     @PostMapping("/transfer/sendMoney")
     public String sendMoney(@ModelAttribute("transfer") TransferDto transferDto,
                             @AuthenticationPrincipal UserDetails userDetails,
-                            Model model, BindingResult result ){
+                            Model model, BindingResult result ) {
 
         UserDto currentUser = userService.getUserDtoByEmail(userDetails.getUsername());
         UserDto userSelected = userService.getUserDtoByEmail(transferDto.getUsernamePayMyBuddyRecipientAccount());
 
         BankAccount senderAccount = currentUser.getPayMyBuddyBankAccount();
         BankAccount recipientAccount = userSelected.getPayMyBuddyBankAccount();
+        double transferAmount = transferDto.getAmount();
 
-        Transfer transfer = new Transfer();
-        transfer.setAmount(transferDto.getAmount());
-        transfer.setSenderAccount(senderAccount);
-        transfer.setRecipientAccount(recipientAccount);
+        if (transferAmount <= 0){
+            result.rejectValue("amount", null,
+                    "Incorrect amount value");
+        }
 
-        bankAccountService.transfer(transfer);
-        return "redirect:/transfer";
+        else if (senderAccount.getAccountBalance() <= transferAmount){
+            result.rejectValue("amount", null,
+                    "you do not have enough money in your account");
+
+        }
+
+        if (result.hasErrors()) {
+
+            //TODO : vérifier si il n'y a pas un meilleur moyen que de recopier la methode /transfer
+            // Pour recharger la meme page avec un message d'erreur approprié
+
+            UserDto buddy = new UserDto();
+            model.addAttribute("buddy", buddy);
+
+            List<User> buddies = currentUser.getUsersConnexions();
+            model.addAttribute("buddies", buddies);
+
+            TransferDto transfer = new TransferDto();
+            model.addAttribute("transfer", transfer);//
+
+            return "/transfer";
+        }
+
+            Transfer transfer = new Transfer();
+            transfer.setAmount(transferDto.getAmount());
+            transfer.setSenderAccount(senderAccount);
+            transfer.setRecipientAccount(recipientAccount);
+
+            bankAccountService.transfer(transfer);
+            return "redirect:/transfer?success";
+            // TODO : rajouter un message de confirmation attention a ne pas générer d'autre message de succès inappropriées
     }
-
-
 }
