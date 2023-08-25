@@ -1,10 +1,11 @@
 package com.paymybuddy.paymybuddysapp.controller;
 
+import com.paymybuddy.paymybuddysapp.dto.InternalTransferDto;
 import com.paymybuddy.paymybuddysapp.dto.UserDto;
+import com.paymybuddy.paymybuddysapp.mapper.TransferMapper;
 import com.paymybuddy.paymybuddysapp.model.*;
 import com.paymybuddy.paymybuddysapp.service.BankAccountService;
 import com.paymybuddy.paymybuddysapp.service.UserService;
-import jakarta.transaction.Transactional;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -21,20 +22,23 @@ public class TransferController {
 
     BankAccountService bankAccountService;
 
-    public TransferController(UserService userService, BankAccountService bankAccountService) {
+    TransferMapper transferMapper;
+
+    public TransferController(UserService userService, BankAccountService bankAccountService, TransferMapper transferMapper) {
         this.userService = userService;
         this.bankAccountService = bankAccountService;
+        this.transferMapper = transferMapper;
     }
 
     @GetMapping("/transfer")
     public String showTransferPage(@AuthenticationPrincipal UserDetails userDetails, Model model) {
 
-        UserDto currentUser = userService.getUserDtoByEmail(userDetails.getUsername());
+        User currentUser = userService.getUserByEmail(userDetails.getUsername());
         List<User> buddies = currentUser.getUsersConnexions();
 
         UserDto buddy = new UserDto();
 
-        TransferDto transfer = new TransferDto();
+        InternalTransferDto transfer = new InternalTransferDto();
 
         model.addAttribute("buddies", buddies); // Pour afficher les buddies de l'utilisateur en cours
         model.addAttribute("buddy", buddy); // Pour le champ nécessaire à l'ajout d'un nouveau buddy
@@ -97,7 +101,7 @@ public class TransferController {
             List<User> buddies = currentUser.getUsersConnexions();
             model.addAttribute("buddies", buddies);
 
-            TransferDto transfer = new TransferDto();
+            InternalTransferDto transfer = new InternalTransferDto();
             model.addAttribute("transfer", transfer);//
 
             //
@@ -132,16 +136,16 @@ public class TransferController {
     // TODO: METHODE EN COURS DE DEVELOPPEMENT, Gerer les valeur negatives et autre exceptions + ajout de la possibilité
     //  de faire des virement sur son compte perso + reflechir si placer les virement perso au même endroit dans le html
     @PostMapping("/transfer/sendMoney")
-    public String sendMoney(@ModelAttribute("transfer") TransferDto transferDto,
+    public String sendMoney(@ModelAttribute("transfer") InternalTransferDto internalTransferDto,
                             @AuthenticationPrincipal UserDetails userDetails,
                             Model model, BindingResult result ) {
 
-        UserDto currentUser = userService.getUserDtoByEmail(userDetails.getUsername());
-        UserDto userSelected = userService.getUserDtoByEmail(transferDto.getUsernamePayMyBuddyRecipientAccount());
+        User currentUser = userService.getUserByEmail(userDetails.getUsername());
+        User userSelected = userService.getUserByEmail(internalTransferDto.getUsernameOfRecipientAccount());
 
         BankAccount senderAccount = currentUser.getPayMyBuddyBankAccount();
         BankAccount recipientAccount = userSelected.getPayMyBuddyBankAccount();
-        double transferAmount = transferDto.getAmount();
+        double transferAmount = internalTransferDto.getAmount();
 
         if (transferAmount <= 0){
             result.rejectValue("amount", null,
@@ -165,16 +169,13 @@ public class TransferController {
             List<User> buddies = currentUser.getUsersConnexions();
             model.addAttribute("buddies", buddies);
 
-            TransferDto transfer = new TransferDto();
+            InternalTransferDto transfer = new InternalTransferDto();
             model.addAttribute("transfer", transfer);//
 
             return "/transfer";
         }
 
-            Transfer transfer = new Transfer();
-            transfer.setAmount(transferDto.getAmount());
-            transfer.setSenderAccount(senderAccount);
-            transfer.setRecipientAccount(recipientAccount);
+            Transfer transfer = transferMapper.convertInternalTransferDtoToTransfer(internalTransferDto);
 
             bankAccountService.transfer(transfer);
             return "redirect:/transfer?success";

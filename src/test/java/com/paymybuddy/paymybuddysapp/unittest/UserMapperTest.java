@@ -1,0 +1,138 @@
+package com.paymybuddy.paymybuddysapp.unittest;
+
+import com.paymybuddy.paymybuddysapp.dto.UserDto;
+import com.paymybuddy.paymybuddysapp.mapper.UserMapper;
+import com.paymybuddy.paymybuddysapp.model.PayMyBuddyBankAccount;
+import com.paymybuddy.paymybuddysapp.model.User;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class UserMapperTest {
+
+    private final UserMapper userMapperUnderTest = new UserMapper();
+
+    private User dummy;
+    private User ymmud;
+    private List<User> dummies;
+    private UserDto dummyDto;
+    private UserDto ymmudDto;
+    private List<UserDto> dummiesDto;
+
+    @BeforeEach
+    public void setup() {
+        dummy = new User();
+        dummy.setId(1);
+        dummy.setEmail("dum@my");
+        dummy.setPassword("1234");
+        dummy.setFirstName("Dum");
+        dummy.setLastName("MY");
+        dummy.setUsersConnexions(Arrays.asList(ymmud));
+        dummy.setUsersConnected(null);
+        PayMyBuddyBankAccount dummyAccount = new PayMyBuddyBankAccount();
+        dummyAccount.setId(1);
+        dummyAccount.setAccountBalance(1234);
+        dummy.setPayMyBuddyBankAccount(dummyAccount);
+
+        ymmud = new User();
+        ymmud.setId(2);
+        ymmud.setEmail("ym@mud");
+        ymmud.setPassword("4321");
+        ymmud.setFirstName("muD");
+        ymmud.setLastName("YM");
+        ymmud.setUsersConnexions(null);
+        ymmud.setUsersConnected(Arrays.asList(dummy));
+        ymmud.setPayMyBuddyBankAccount(new PayMyBuddyBankAccount());
+        PayMyBuddyBankAccount ymmudAccount = new PayMyBuddyBankAccount();
+        ymmudAccount.setId(2);
+        ymmudAccount.setAccountBalance(4321);
+        ymmud.setPayMyBuddyBankAccount(ymmudAccount);
+
+        dummies = Arrays.asList(dummy, ymmud);
+
+        dummyDto = new UserDto();
+        dummyDto.setId(1);
+        dummyDto.setEmail("dum@my");
+        dummyDto.setPassword("1234");
+        dummyDto.setFirstName("Dum");
+        dummyDto.setLastName("MY");
+        dummyDto.setPayMyBuddyBankAccount(dummyAccount);
+        dummyDto.setUsersConnexions(new ArrayList<>());
+
+        ymmudDto = new UserDto();
+        ymmudDto.setId(2);
+        ymmudDto.setEmail("ym@mud");
+        ymmudDto.setPassword("4321");
+        ymmudDto.setFirstName("muD");
+        ymmudDto.setLastName("YM");
+        ymmudDto.setUsersConnexions(null);
+        ymmudDto.setPayMyBuddyBankAccount(new PayMyBuddyBankAccount());
+        ymmud.setPayMyBuddyBankAccount(ymmudAccount);
+
+        dummiesDto = Arrays.asList(dummyDto, ymmudDto);
+    }
+
+    @Test
+    public void convertUsertoUserDtoTest(){
+    UserDto userDto = userMapperUnderTest.convertUsertoUserDto(dummy);
+        Assertions.assertThat(userDto.getId()).isEqualTo(dummy.getId());
+        Assertions.assertThat(userDto.getEmail()).isEqualTo(dummy.getEmail());
+        Assertions.assertThat(userDto.getFirstName()).isEqualTo(dummy.getFirstName());
+        Assertions.assertThat(userDto.getLastName()).isEqualTo(dummy.getLastName());
+        Assertions.assertThat(userDto.getPassword()).isEqualTo(dummy.getPassword());
+        Assertions.assertThat(userDto.getUsersConnexions()).isEqualTo(dummy.getUsersConnexions());
+        Assertions.assertThat(userDto.getPayMyBuddyBankAccount()).isEqualTo(dummy.getPayMyBuddyBankAccount());
+    }
+
+    @Test
+    public void convertUserListToUserDtoListTest() {
+        List <UserDto> usersDto = userMapperUnderTest.convertUserListToUserDtoList(dummies);
+
+        for (int i =0; i<2; i++){
+            Assertions.assertThat(usersDto.get(i).getId()).isEqualTo(dummies.get(i).getId());
+            Assertions.assertThat(usersDto.get(i).getEmail()).isEqualTo(dummies.get(i).getEmail());
+            Assertions.assertThat(usersDto.get(i).getFirstName()).isEqualTo(dummies.get(i).getFirstName());
+            Assertions.assertThat(usersDto.get(i).getLastName()).isEqualTo(dummies.get(i).getLastName());
+            Assertions.assertThat(usersDto.get(i).getPassword()).isEqualTo(dummies.get(i).getPassword());
+            Assertions.assertThat(usersDto.get(i).getUsersConnexions()).isEqualTo(dummies.get(i).getUsersConnexions());
+            Assertions.assertThat(usersDto.get(i).getPayMyBuddyBankAccount())
+                    .isEqualTo(dummies.get(i).getPayMyBuddyBankAccount());
+        }
+
+
+    }
+
+    @Test
+    public void convertUserDtotoUserTest() {
+        User user = userMapperUnderTest.convertUserDtotoUser(dummyDto);
+        Assertions.assertThat(user.getId()).isEqualTo(dummyDto.getId());
+        Assertions.assertThat(user.getEmail()).isEqualTo(dummyDto.getEmail());
+        Assertions.assertThat(user.getFirstName()).isEqualTo(dummyDto.getFirstName());
+        Assertions.assertThat(user.getLastName()).isEqualTo(dummyDto.getLastName());
+        Assertions.assertThat(user.getPassword()).isEqualTo(dummyDto.getPassword());
+        Assertions.assertThat(user.getUsersConnexions()).isEqualTo(dummyDto.getUsersConnexions());
+        Assertions.assertThat(user.getPayMyBuddyBankAccount()).isEqualTo(dummyDto.getPayMyBuddyBankAccount());
+    }
+
+    @Test
+    public void convertUserDtoListToUserListTest() {
+        List <User> users = userMapperUnderTest.convertUserDtoListToUserList(dummiesDto);
+
+        for (int i =0; i<2; i++){
+            Assertions.assertThat(users.get(i).getId()).isEqualTo(dummiesDto.get(i).getId());
+            Assertions.assertThat(users.get(i).getEmail()).isEqualTo(dummiesDto.get(i).getEmail());
+            Assertions.assertThat(users.get(i).getFirstName()).isEqualTo(dummiesDto.get(i).getFirstName());
+            Assertions.assertThat(users.get(i).getLastName()).isEqualTo(dummiesDto.get(i).getLastName());
+            Assertions.assertThat(users.get(i).getPassword()).isEqualTo(dummiesDto.get(i).getPassword());
+            Assertions.assertThat(users.get(i).getUsersConnexions()).isEqualTo(dummiesDto.get(i).getUsersConnexions());
+            Assertions.assertThat(users.get(i).getPayMyBuddyBankAccount())
+                    .isEqualTo(dummiesDto.get(i).getPayMyBuddyBankAccount());
+        }
+    }
+}
+
+

@@ -1,13 +1,15 @@
 package com.paymybuddy.paymybuddysapp.integration;
 
 
-import com.paymybuddy.paymybuddysapp.dto.UserDto;
+import com.paymybuddy.paymybuddysapp.mapper.TransferMapper;
+import com.paymybuddy.paymybuddysapp.model.PayMyBuddyBankAccount;
 import com.paymybuddy.paymybuddysapp.model.User;
 import com.paymybuddy.paymybuddysapp.repository.UserRepository;
 
 import com.paymybuddy.paymybuddysapp.service.UserService;
 import jakarta.transaction.Transactional;
 import org.hamcrest.CoreMatchers;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,7 +27,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Transactional
 @SpringBootTest
 @AutoConfigureMockMvc
-
 public class TransferControllerIT {
 
     @Autowired
@@ -38,10 +39,35 @@ public class TransferControllerIT {
     UserService userService ;
 
 
-    UserDto currentUser = new UserDto(1, "test", "tset", "test@tset", "1234", null,null);
-    UserDto buddyToAdd = new UserDto(2, "tset", "test", "tset@test", "4321", null,null);
+    private static User currentUser;
+    private static User buddyToAdd;
 
+    @BeforeAll
+    public static void setupBeforAll() throws Exception {
+        currentUser = new User();
+        buddyToAdd = new User();
 
+        currentUser.setId(1);
+        currentUser.setEmail("test@tset");
+        currentUser.setFirstName("test");
+        currentUser.setLastName("tset");
+        currentUser.setPassword("1234");
+        /*currentUser.setUsersConnexions(Arrays.asList(buddyToAdd));
+        currentUser.setUsersConnected(Arrays.asList(buddyToAdd));*/
+        PayMyBuddyBankAccount currentUserPayMyBuddyBankAccount= new PayMyBuddyBankAccount();
+        currentUser.setPayMyBuddyBankAccount(currentUserPayMyBuddyBankAccount);
+
+        buddyToAdd.setId(2);
+        buddyToAdd.setEmail("tset@test");
+        buddyToAdd.setFirstName("tset");
+        buddyToAdd.setLastName("test");
+        buddyToAdd.setPassword("4321");
+       /* buddyToAdd.setUsersConnexions(Arrays.asList(currentUser));
+        buddyToAdd.setUsersConnected(Arrays.asList(currentUser));
+        buddyToAdd.setUsersConnected(Arrays.asList(buddyToAdd));*/
+        PayMyBuddyBankAccount buddyToAddUserPayMyBuddyBankAccount= new PayMyBuddyBankAccount();
+        buddyToAdd.setPayMyBuddyBankAccount(buddyToAddUserPayMyBuddyBankAccount);
+    }
 
 
     @BeforeEach
@@ -72,7 +98,7 @@ public class TransferControllerIT {
     @Test
     @WithMockUser("test@tset")
     @DisplayName("Validate the addBuddy form should create a new connexion")
-    public void validateAddBuddyFormShouldCreateNewUserInDB() throws Exception {
+    public void validateAddBuddyFormShouldCreateNewConnexionInDB() throws Exception {
 
         //User Add Buddy
         mockMvc.perform(MockMvcRequestBuilders.post("/transfer/addBuddy")
@@ -146,7 +172,7 @@ public class TransferControllerIT {
     public void validateBuddysFormWithEmailAlreadyRegisteredShouldDisplayErrorMessage() throws Exception {
 
         //First buddy's registration
-        validateAddBuddyFormShouldCreateNewUserInDB();
+        validateAddBuddyFormShouldCreateNewConnexionInDB();
 
         //Second registration with the same email
         mockMvc.perform(MockMvcRequestBuilders.post("/transfer/addBuddy")
@@ -156,9 +182,6 @@ public class TransferControllerIT {
                 .andExpect(MockMvcResultMatchers.content()
                         .string(CoreMatchers.containsString(buddyToAdd.getFirstName() + " "
                                 + buddyToAdd.getLastName() + " is already add to your buddies!")))
-
-                //TODO : Voir si il est necessaire de retirer le test de la présence du message d'erreur sur la page,
-                // pour se limiter au test du backend
 
                 // information retrieved in the model attribute
                 .andExpect(MockMvcResultMatchers.model().attributeExists("buddy"))

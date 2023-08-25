@@ -1,18 +1,15 @@
 package com.paymybuddy.paymybuddysapp.unittest;
 
-import com.paymybuddy.paymybuddysapp.config.SpringSecurityConfig;
 import com.paymybuddy.paymybuddysapp.controller.AuthentificationController;
 import com.paymybuddy.paymybuddysapp.dto.UserDto;
 import com.paymybuddy.paymybuddysapp.model.User;
 import com.paymybuddy.paymybuddysapp.service.UserService;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -37,12 +34,18 @@ public class AuthentificationControllerTest {
     UserService userService;
     AuthentificationController authentificationController;
 
-    private static UserDto dummy =new UserDto();
+    private static UserDto dummy;
 
     @BeforeAll
     public static void setup() {
-        dummy = new UserDto(1, "test", "tset", "test@tset",
-                "1234", null,null);
+        dummy = new UserDto();
+        dummy.setId(1);
+        dummy.setFirstName("test");
+        dummy.setLastName("tset");
+        dummy.setEmail("test@tset");
+        dummy.setPassword("1234");
+        dummy.setUsersConnexions(null);
+        dummy.setPayMyBuddyBankAccount(null);
     }
 
     @Test
@@ -77,7 +80,7 @@ public class AuthentificationControllerTest {
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
                 .andExpect(MockMvcResultMatchers.redirectedUrl("/login?success"));
 
-        Mockito.verify(userService,Mockito.times(1)).createNewUser(any(UserDto.class));
+        Mockito.verify(userService,Mockito.times(1)).createNewUser(any(User.class));
     }
 
     @Test
@@ -99,7 +102,7 @@ public class AuthentificationControllerTest {
 
                 .andExpect(MockMvcResultMatchers.model().attributeExists("user"));
 
-        Mockito.verify(userService,Mockito.times(0)).createNewUser(any(UserDto.class));
+        Mockito.verify(userService,Mockito.times(0)).createNewUser(any(User.class));
     }
 
     @Test
@@ -121,7 +124,7 @@ public class AuthentificationControllerTest {
                         .string(CoreMatchers.containsString("Password should not be empty")))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("user"));
 
-        Mockito.verify(userService,Mockito.times(0)).createNewUser(any(UserDto.class));
+        Mockito.verify(userService,Mockito.times(0)).createNewUser(any(User.class));
     }
 
     @Test
@@ -133,4 +136,3 @@ public class AuthentificationControllerTest {
                 .andExpect(MockMvcResultMatchers.model().attributeExists("users"));
     }
 }
-

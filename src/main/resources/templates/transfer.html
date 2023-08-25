@@ -65,7 +65,7 @@
         <form class="row" method="post" th:action="@{/transfer/sendMoney}" th:object="${transfer}"> <!--Placer un objet Transfer ici-->
             <div class="form-group col-md-4">
 
-                <select id="inputState" class="form-control" th:field="*{usernamePayMyBuddyRecipientAccount}">
+                <select id="inputState" class="form-control" th:field="*{usernameOfRecipientAccount}">
                     <option value="" selected>Select a connection</option>
                     <option th:each="user : ${buddies}" th:value="${user.email}" th:text="${user.firstName}"></option>
                     <!-- Va permettre d'utiliser la liste de buddy de l'utilisateurdans le menu déroulant-->

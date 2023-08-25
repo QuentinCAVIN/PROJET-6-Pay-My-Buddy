@@ -2,16 +2,20 @@ package com.paymybuddy.paymybuddysapp.integration;
 
 
 import com.paymybuddy.paymybuddysapp.dto.UserDto;
+import com.paymybuddy.paymybuddysapp.model.User;
 import com.paymybuddy.paymybuddysapp.repository.UserRepository;
 
 import com.paymybuddy.paymybuddysapp.service.UserService;
+import jakarta.transaction.Transactional;
 import org.hamcrest.CoreMatchers;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-
+@Transactional
 public class AuthentificationIT {
 
     @Autowired
@@ -34,16 +38,28 @@ public class AuthentificationIT {
     @Autowired
     UserRepository userRepository;
 
-    UserDto dummy = new UserDto(1, "test", "tset", "test@tset", "1234", null,null);
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
+    private static UserDto dummy;
     @Autowired
     UserService userService;
 
+    @BeforeAll
+    public static void setupBeforeAll() {
+        dummy = new UserDto();
+        dummy.setId(1);
+        dummy.setFirstName("test");
+        dummy.setLastName("tset");
+        dummy.setEmail("test@tset");
+        dummy.setPassword("1234");
+        dummy.setUsersConnexions(null);
+        dummy.setPayMyBuddyBankAccount(null);
+    }
+
     @BeforeEach
     public void setup() {
-
         userRepository.deleteAll();
-
     }
 
 
@@ -140,9 +156,15 @@ public class AuthentificationIT {
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
                 .andExpect(MockMvcResultMatchers.redirectedUrl("/login?success"));
 
+
         //Check if user is present in DB
-        UserDto userInDB = userService.getUserDtoByEmail(dummy.getEmail());
+        User userInDB = userService.getUserByEmail(dummy.getEmail());
         assertThat(userInDB.getEmail()).isEqualTo(dummy.getEmail());
+        assertThat(userInDB.getFirstName()).isEqualTo(dummy.getFirstName());
+        assertThat(userInDB.getLastName()).isEqualTo(dummy.getLastName());
+        assertThat(passwordEncoder.matches(dummy.getPassword(),userInDB.getPassword()));
+        assertThat(userInDB.getUsersConnexions()).isEmpty();
+        assertThat(userInDB.getPayMyBuddyBankAccount()).isNotNull();
     }
 
 
@@ -168,8 +190,7 @@ public class AuthentificationIT {
                                 + dummy.getEmail() + " email.")))
 
                 .andExpect(MockMvcResultMatchers.model().attributeExists("user"));
-
-                /*.andExpect(MockMvcResultMatchers.model().attribute("user", dummy.getEmail()));*/
+                /*andExpect(MockMvcResultMatchers.model().attribute("user", dummy.getEmail()));*/
                 //Nécessaire de redéfinir la methode equals pour utiliser cette ligne
                 //Permet d'être plus précis dans la vérification
     }
