@@ -1,5 +1,6 @@
 package com.paymybuddy.paymybuddysapp.unittest;
 
+import com.paymybuddy.paymybuddysapp.dto.ReducedUserDto;
 import com.paymybuddy.paymybuddysapp.dto.UserDto;
 import com.paymybuddy.paymybuddysapp.mapper.UserMapper;
 import com.paymybuddy.paymybuddysapp.model.PayMyBuddyBankAccount;
@@ -26,6 +27,8 @@ public class UserMapperTest {
     @BeforeEach
     public void setup() {
         dummy = new User();
+        ymmud = new User();
+
         dummy.setId(1);
         dummy.setEmail("dum@my");
         dummy.setPassword("1234");
@@ -38,7 +41,6 @@ public class UserMapperTest {
         dummyAccount.setAccountBalance(1234);
         dummy.setPayMyBuddyBankAccount(dummyAccount);
 
-        ymmud = new User();
         ymmud.setId(2);
         ymmud.setEmail("ym@mud");
         ymmud.setPassword("4321");
@@ -77,33 +79,39 @@ public class UserMapperTest {
     }
 
     @Test
-    public void convertUsertoUserDtoTest(){
-    UserDto userDto = userMapperUnderTest.convertUsertoUserDto(dummy);
+    public void convertUsertoUserDtoTest() {
+        UserDto userDto = userMapperUnderTest.convertUsertoUserDto(dummy);
         Assertions.assertThat(userDto.getId()).isEqualTo(dummy.getId());
         Assertions.assertThat(userDto.getEmail()).isEqualTo(dummy.getEmail());
         Assertions.assertThat(userDto.getFirstName()).isEqualTo(dummy.getFirstName());
         Assertions.assertThat(userDto.getLastName()).isEqualTo(dummy.getLastName());
         Assertions.assertThat(userDto.getPassword()).isEqualTo(dummy.getPassword());
-        Assertions.assertThat(userDto.getUsersConnexions()).isEqualTo(dummy.getUsersConnexions());
         Assertions.assertThat(userDto.getPayMyBuddyBankAccount()).isEqualTo(dummy.getPayMyBuddyBankAccount());
+        Assertions.assertThat(userDto.getUsersConnexions() instanceof ReducedUserDto);
+
+        String buddysUsernameReducedUserDto = userDto.getUsersConnexions().get(0).getEmail();
+        String dummysBuddysUsername = dummy.getUsersConnexions().get(0).getEmail();
+        Assertions.assertThat(buddysUsernameReducedUserDto).isEqualTo(dummysBuddysUsername);
     }
 
     @Test
     public void convertUserListToUserDtoListTest() {
-        List <UserDto> usersDto = userMapperUnderTest.convertUserListToUserDtoList(dummies);
+        List<UserDto> usersDto = userMapperUnderTest.convertUserListToUserDtoList(dummies);
 
-        for (int i =0; i<2; i++){
+       for (int i = 0; i < 2; i++) {
             Assertions.assertThat(usersDto.get(i).getId()).isEqualTo(dummies.get(i).getId());
             Assertions.assertThat(usersDto.get(i).getEmail()).isEqualTo(dummies.get(i).getEmail());
             Assertions.assertThat(usersDto.get(i).getFirstName()).isEqualTo(dummies.get(i).getFirstName());
             Assertions.assertThat(usersDto.get(i).getLastName()).isEqualTo(dummies.get(i).getLastName());
             Assertions.assertThat(usersDto.get(i).getPassword()).isEqualTo(dummies.get(i).getPassword());
-            Assertions.assertThat(usersDto.get(i).getUsersConnexions()).isEqualTo(dummies.get(i).getUsersConnexions());
             Assertions.assertThat(usersDto.get(i).getPayMyBuddyBankAccount())
                     .isEqualTo(dummies.get(i).getPayMyBuddyBankAccount());
+           Assertions.assertThat(usersDto.get(i).getUsersConnexions() instanceof ReducedUserDto);
+
+           String buddysUsernameReducedUserDto = usersDto.get(0).getUsersConnexions().get(0).getEmail();
+           String dummysBuddysUsername = dummy.getUsersConnexions().get(0).getEmail();
+           Assertions.assertThat(buddysUsernameReducedUserDto).isEqualTo(dummysBuddysUsername);
         }
-
-
     }
 
     @Test
@@ -114,11 +122,11 @@ public class UserMapperTest {
         Assertions.assertThat(user.getFirstName()).isEqualTo(dummyDto.getFirstName());
         Assertions.assertThat(user.getLastName()).isEqualTo(dummyDto.getLastName());
         Assertions.assertThat(user.getPassword()).isEqualTo(dummyDto.getPassword());
-        Assertions.assertThat(user.getUsersConnexions()).isEqualTo(dummyDto.getUsersConnexions());
         Assertions.assertThat(user.getPayMyBuddyBankAccount()).isEqualTo(dummyDto.getPayMyBuddyBankAccount());
     }
 
-    @Test
+    //TODO: methode inutilisée pour le moment. L'effacer?
+    /*@Test
     public void convertUserDtoListToUserListTest() {
         List <User> users = userMapperUnderTest.convertUserDtoListToUserList(dummiesDto);
 
@@ -132,7 +140,7 @@ public class UserMapperTest {
             Assertions.assertThat(users.get(i).getPayMyBuddyBankAccount())
                     .isEqualTo(dummiesDto.get(i).getPayMyBuddyBankAccount());
         }
-    }
+    }*/
 }
 
 

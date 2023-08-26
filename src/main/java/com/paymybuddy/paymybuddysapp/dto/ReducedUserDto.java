@@ -21,18 +21,12 @@ public class ReducedUserDto{
 
     private int id;
 
-    @NotEmpty(message = "First name should not be empty")
     private String firstName;
 
-    @NotEmpty(message = "Last name should not be empty")
     private String lastName;
 
-    @NotEmpty(message = "Email should not be empty")
-    // Les messages s'affichent dans le champ <th:errors = "*{email}"> de la page html
-    @Email
     private String email;
 
-    @NotEmpty(message = "Password should not be empty")
     private String password;
 
     private PayMyBuddyBankAccount payMyBuddyBankAccount;

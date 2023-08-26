@@ -1,5 +1,6 @@
 package com.paymybuddy.paymybuddysapp.mapper;
 
+import com.paymybuddy.paymybuddysapp.dto.ReducedUserDto;
 import com.paymybuddy.paymybuddysapp.dto.UserDto;
 import com.paymybuddy.paymybuddysapp.model.User;
 
@@ -16,8 +17,16 @@ public class UserMapper {
         userDto.setFirstName(user.getFirstName());
         userDto.setLastName(user.getLastName());
         userDto.setPassword(user.getPassword());
-        userDto.setUsersConnexions(user.getUsersConnexions());
         userDto.setPayMyBuddyBankAccount(user.getPayMyBuddyBankAccount());
+
+        //convert List<User> getUsersConnexion to List<ReducedUserDto> getUsersConnexions
+        List<ReducedUserDto> reducedUsersDto = new ArrayList<>();
+
+        List<User> userConnexions = user.getUsersConnexions();
+        if (userConnexions != null && !userConnexions.isEmpty()){
+        user.getUsersConnexions().forEach(buddy ->reducedUsersDto.add(convertUserToReducedUserDto(buddy)));
+        userDto.setUsersConnexions(reducedUsersDto);
+        }
 
         return userDto;
     }
@@ -43,13 +52,16 @@ public class UserMapper {
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
         user.setPassword(userDto.getPassword());
-        user.setUsersConnexions(userDto.getUsersConnexions());
         user.setPayMyBuddyBankAccount(userDto.getPayMyBuddyBankAccount());
+        // TODO : la methode ne transforme pas List<ReducedUser> UsersConnexions trop compliqué pour moi,
+        //  et inutile pour le moment. Modifier si besoin.
 
         return user;
     }
 
-    public static List<User> convertUserDtoListToUserList(List<UserDto> usersDto) {
+
+    // TODO: methode inutilisée pour le moment. L'effacer?
+  /*  public static List<User> convertUserDtoListToUserList(List<UserDto> usersDto) {
 
         List<User> users = new ArrayList<>();
 
@@ -59,5 +71,36 @@ public class UserMapper {
         });
 
         return users;
+    }*/
+
+
+
+    //TODO: Pas de test ci dessous
+    public static ReducedUserDto convertUserToReducedUserDto(User user){
+
+        ReducedUserDto reducedUserDto = new ReducedUserDto();
+        reducedUserDto.setId(user.getId());
+        reducedUserDto.setEmail(user.getEmail());
+        reducedUserDto.setFirstName(user.getFirstName());
+        reducedUserDto.setLastName(user.getLastName());
+        reducedUserDto.setPassword(user.getPassword());
+        reducedUserDto.setPayMyBuddyBankAccount(user.getPayMyBuddyBankAccount());
+
+        return reducedUserDto;
     }
+
+ /*   public static  User convertReducedUserDtoToUser(ReducedUserDto reducedUserDto){
+        User user = new User();
+        user.setId(reducedUserDto.getId());
+        user.setEmail(reducedUserDto.getEmail());
+        user.setFirstName(reducedUserDto.getFirstName());
+        user.setLastName(reducedUserDto.getLastName());
+        user.setPassword(reducedUserDto.getPassword());
+        user.setPayMyBuddyBankAccount(reducedUserDto.getPayMyBuddyBankAccount());
+
+        // Je n'ai pas réglé l'attribut connexions et connected
+        return user;
+        //TODO : la classe convertUserDtotoUser n'a pas besoin pour le moment de fournir de
+        // l'attribut  List<User>Connexions de User. Et donc pas besoin de onvertReducedUserDtoToUser
+    }*/
 }

@@ -36,7 +36,7 @@ public class UserDto
     @NotEmpty(message = "Password should not be empty")
     private String password;
 
-    private List<User> usersConnexions = new ArrayList<>(); //Todo convertir en liste de UserDto
+    private List<ReducedUserDto> usersConnexions = new ArrayList<>(); //Todo convertir en liste de UserDto
 
     private PayMyBuddyBankAccount payMyBuddyBankAccount;
 }
