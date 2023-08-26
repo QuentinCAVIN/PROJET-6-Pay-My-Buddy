@@ -36,4 +36,5 @@ public class TransferMapper {
 
        return transfer;
    }
+   //TODO: ajouter un traitement au cas où les champs de transferDto sont Null
 }

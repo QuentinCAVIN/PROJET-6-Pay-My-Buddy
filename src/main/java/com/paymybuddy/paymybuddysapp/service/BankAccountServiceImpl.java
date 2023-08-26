@@ -42,18 +42,4 @@ public class BankAccountServiceImpl implements BankAccountService {
         saveBankAccount(senderAccount);
         saveBankAccount(recipientAccount);
     }
-
-
-    /*public void transfer(BankAccount senderAccount,
-                         BankAccount recipientAccount, double amount) {
-        double senderAccountBalance = senderAccount.getAccountBalance();
-        double recipientAccountBalance = recipientAccount.getAccountBalance();
-
-        senderAccount.setAccountBalance(senderAccountBalance - amount);
-        recipientAccount.setAccountBalance(recipientAccountBalance + amount);
-
-        saveBankAccount(senderAccount);
-        saveBankAccount(recipientAccount);
-    }*/ // TODO: Fin de projet Faire le test si besoin de la methode ou l'effacer
-
 }

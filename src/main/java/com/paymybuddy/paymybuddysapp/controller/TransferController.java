@@ -3,6 +3,7 @@ package com.paymybuddy.paymybuddysapp.controller;
 import com.paymybuddy.paymybuddysapp.dto.InternalTransferDto;
 import com.paymybuddy.paymybuddysapp.dto.UserDto;
 import com.paymybuddy.paymybuddysapp.mapper.TransferMapper;
+import com.paymybuddy.paymybuddysapp.mapper.UserMapper;
 import com.paymybuddy.paymybuddysapp.model.*;
 import com.paymybuddy.paymybuddysapp.service.BankAccountService;
 import com.paymybuddy.paymybuddysapp.service.UserService;
@@ -35,18 +36,18 @@ public class TransferController {
 
         User currentUser = userService.getUserByEmail(userDetails.getUsername());
         List<User> buddies = currentUser.getUsersConnexions();
+        List<UserDto> buddiesDto = UserMapper.convertUserListToUserDtoList(buddies);
 
         UserDto buddy = new UserDto();
 
-        InternalTransferDto transfer = new InternalTransferDto();
+        InternalTransferDto transferDto = new InternalTransferDto();
 
-        model.addAttribute("buddies", buddies); // Pour afficher les buddies de l'utilisateur en cours
+        model.addAttribute("buddies", buddiesDto); // Pour afficher les buddies de l'utilisateur en cours
         model.addAttribute("buddy", buddy); // Pour le champ nécessaire à l'ajout d'un nouveau buddy
-        model.addAttribute("transfer", transfer);//
+        model.addAttribute("transfer", transferDto);//
 
         return "transfer";
     }
-
 
 
     @PostMapping("/transfer/addBuddy")
@@ -76,7 +77,7 @@ public class TransferController {
             result.rejectValue("email", null,
                     "There is no account associated to " + emailOfNewBuddy);
 
-        } else if (emailOfNewBuddy.equals(currentUser.getEmail()) ) {
+        } else if (emailOfNewBuddy.equals(currentUser.getEmail())) {
             result.rejectValue("email", null,
                     "Really? it's too sad... go get some friends");
 
@@ -99,7 +100,8 @@ public class TransferController {
             //TODO : vérifier si il n'y a pas un meilleur moyen que de recopier la methode /transfer
             // Pour recharger la meme page avec un message d'erreur approprié
             List<User> buddies = currentUser.getUsersConnexions();
-            model.addAttribute("buddies", buddies);
+            List<UserDto> buddiesDto = UserMapper.convertUserListToUserDtoList(buddies);
+            model.addAttribute("buddies", buddiesDto);
 
             InternalTransferDto transfer = new InternalTransferDto();
             model.addAttribute("transfer", transfer);//
@@ -136,23 +138,23 @@ public class TransferController {
     // TODO: METHODE EN COURS DE DEVELOPPEMENT, Gerer les valeur negatives et autre exceptions + ajout de la possibilité
     //  de faire des virement sur son compte perso + reflechir si placer les virement perso au même endroit dans le html
     @PostMapping("/transfer/sendMoney")
-    public String sendMoney(@ModelAttribute("transfer") InternalTransferDto internalTransferDto,
+    public String sendMoney(@ModelAttribute("transfer") InternalTransferDto transferDto,
                             @AuthenticationPrincipal UserDetails userDetails,
-                            Model model, BindingResult result ) {
+                            Model model, BindingResult result) {
 
         User currentUser = userService.getUserByEmail(userDetails.getUsername());
-        User userSelected = userService.getUserByEmail(internalTransferDto.getUsernameOfRecipientAccount());
+        User userSelected = userService.getUserByEmail(transferDto.getUsernameOfRecipientAccount());
 
-        BankAccount senderAccount = currentUser.getPayMyBuddyBankAccount();
-        BankAccount recipientAccount = userSelected.getPayMyBuddyBankAccount();
-        double transferAmount = internalTransferDto.getAmount();
+        transferDto.setUsernameOfSenderAccount(userDetails.getUsername());
 
-        if (transferAmount <= 0){
+        BankAccount senderAccount = currentUser.getPayMyBuddyBankAccount();//TODO :REPRENDRE ICI, TIRER AU CLAIR CET HISTOIRE D'UTILISATION DE TRANSFER MAPPER AVEC UN InternalTransferDTO null
+        BankAccount recipientAccount = userSelected.getPayMyBuddyBankAccount();// TODO ATTENTION on dirais que ça n'est plus utilisé
+        double transferAmount = transferDto.getAmount();
+
+        if (transferAmount <= 0) {
             result.rejectValue("amount", null,
                     "Incorrect amount value");
-        }
-
-        else if (senderAccount.getAccountBalance() <= transferAmount){
+        } else if (senderAccount.getAccountBalance() <= transferAmount) {
             result.rejectValue("amount", null,
                     "you do not have enough money in your account");
 
@@ -167,7 +169,8 @@ public class TransferController {
             model.addAttribute("buddy", buddy);
 
             List<User> buddies = currentUser.getUsersConnexions();
-            model.addAttribute("buddies", buddies);
+            List<UserDto> buddiesDto = UserMapper.convertUserListToUserDtoList(buddies);
+            model.addAttribute("buddies", buddiesDto);
 
             InternalTransferDto transfer = new InternalTransferDto();
             model.addAttribute("transfer", transfer);//
@@ -175,10 +178,11 @@ public class TransferController {
             return "/transfer";
         }
 
-            Transfer transfer = transferMapper.convertInternalTransferDtoToTransfer(internalTransferDto);
+       /* internalTransferDto.setUsernameOfSenderAccount(userDetails.getUsername());*/// TODO PROBLEME ICI REPRENDRE PLSU TARD COMMENT CREER UN TRANSFERDTO AVEC LE SENDER ACCUNT AUTOMATIQUEMENT DEFINIS
+        Transfer transfer = transferMapper.convertInternalTransferDtoToTransfer(transferDto);
 
-            bankAccountService.transfer(transfer);
-            return "redirect:/transfer?success";
-            // TODO : rajouter un message de confirmation attention a ne pas générer d'autre message de succès inappropriées
+        bankAccountService.transfer(transfer);
+        return "redirect:/transfer?success";
+        // TODO : rajouter un message de confirmation attention a ne pas générer d'autre message de succès inappropriées
     }
 }

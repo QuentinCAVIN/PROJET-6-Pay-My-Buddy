@@ -1,7 +1,6 @@
 package com.paymybuddy.paymybuddysapp.dto;
 
 import com.paymybuddy.paymybuddysapp.model.PayMyBuddyBankAccount;
-import com.paymybuddy.paymybuddysapp.model.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
@@ -12,14 +11,14 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDto
-        // La classe UserDto sert a faire le transfert entre la la couche controller et la vue
-{
+public class ReducedUserDto{
+        // La classe ReducedUserDto sert a remplacer l'attribut List<User>connexions de la classe User
+        //par List<ReducedUserDto>connexions de la classe UserDto
+
     private int id;
 
     @NotEmpty(message = "First name should not be empty")
@@ -35,8 +34,6 @@ public class UserDto
 
     @NotEmpty(message = "Password should not be empty")
     private String password;
-
-    private List<User> usersConnexions = new ArrayList<>(); //Todo convertir en liste de UserDto
 
     private PayMyBuddyBankAccount payMyBuddyBankAccount;
 }
