@@ -13,5 +13,9 @@ import lombok.Setter;
         String usernameOfRecipientAccount; // pour récupérer le compte d'un Buddy
         String description;
         String date;
+
+        //TODO: On peut remplacer String usernameOfSenderAccount par l'ID du BankAccount
+        // Cela permetrait de supprimmer InternalTransferDto et ExternalTransferDto par une seul classe TransferDto
+        // vérifier que les id sont bien différentes entre PayMyBuddyBankAccount et PersonalBankAccount
     }
 

@@ -1,15 +1,34 @@
 package com.paymybuddy.paymybuddysapp.service;
 
-public class TransferServiceImpl implements TransferService{
+import com.paymybuddy.paymybuddysapp.model.Transfer;
+import com.paymybuddy.paymybuddysapp.repository.TransferRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-    /*public class DateFormatExample {
-        public static void main(String[] args) {
-            Date date = Calendar.getInstance().getTime();
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+@Service
+public class TransferServiceImpl implements TransferService {
 
-            // Display a date in day, month, year format
-            DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-            String today = formatter.format(date);*/
 
-    //TODO Implémenter de quoi attribuer une date pour le virement dans cette classe en utilisant l'exemple ci dessus.
-    // Quand on sauvegarde un virement, on fixe une date
+    private TransferRepository transferRepository;
+
+
+    private DateProvider dateProvider;
+
+    public TransferServiceImpl(TransferRepository transferRepository, DateProvider dateProvider) {
+        this.transferRepository = transferRepository;
+        this.dateProvider = dateProvider;
+    }
+ // TODO : Quand l'attibut dateProvider n'est pas injecté, le test ne fait pas apelle au mock mais a l'instance réel de
+ //     DateProvider
+    public void createNewTransfer(Transfer transfer) {
+
+        String transferDate = dateProvider.todaysDate();
+
+        transfer.setDate(transferDate);
+        transferRepository.save(transfer);
+    }
 }

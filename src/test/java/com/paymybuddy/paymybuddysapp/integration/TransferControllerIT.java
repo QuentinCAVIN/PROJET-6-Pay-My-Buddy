@@ -40,7 +40,7 @@ public class TransferControllerIT {
 
     private static User currentUser;
     private static User buddyToAdd;
-    private static InternalTransferDto transferDto;
+    /*private static InternalTransferDto transferDto;*/ //TODO: a effacer aprés le test pour créer un transfer
 
     @BeforeAll
     public static void setupBeforAll() throws Exception {
@@ -69,12 +69,7 @@ public class TransferControllerIT {
         buddyToAddUserPayMyBuddyBankAccount.setAccountBalance(500.00);
         buddyToAdd.setPayMyBuddyBankAccount(buddyToAddUserPayMyBuddyBankAccount);
 
-        transferDto = new InternalTransferDto();
-        transferDto.setAmount(50.00);
-        transferDto.setUsernameOfSenderAccount("currentUser@test");
-        transferDto.setUsernameOfRecipientAccount("receivingUser@test");
-        transferDto.setDescription("Test");
-        transferDto.setDate("23/01/2024");
+
     }
 
 
@@ -224,6 +219,13 @@ public class TransferControllerIT {
     @DisplayName("/sendMoney should transfer money to selected user")
     @WithMockUser("currentUser@test")
     public void sendMoneyShouldTransferMoneyToSelectedUser() throws Exception {
+
+        InternalTransferDto transferDto = new InternalTransferDto();
+        transferDto.setAmount(50.00);
+        /*transferDto.setUsernameOfSenderAccount("currentUser@test");*/ // TODO: finir le test et effacer : inutile
+        transferDto.setUsernameOfRecipientAccount("receivingUser@test");
+        transferDto.setDescription("Test");
+        transferDto.setDate("23/01/2024"); // TODO: finir le test et effacer : inutile
 
         //Add Buddy for transfer
         validateAddBuddyFormShouldCreateNewConnexionInDB();

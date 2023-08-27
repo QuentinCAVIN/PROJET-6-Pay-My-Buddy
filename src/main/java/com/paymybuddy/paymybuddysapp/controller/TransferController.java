@@ -178,8 +178,14 @@ public class TransferController {
             return "/transfer";
         }
 
-       /* internalTransferDto.setUsernameOfSenderAccount(userDetails.getUsername());*/// TODO PROBLEME ICI REPRENDRE PLSU TARD COMMENT CREER UN TRANSFERDTO AVEC LE SENDER ACCUNT AUTOMATIQUEMENT DEFINIS
+        transferDto.setUsernameOfSenderAccount(userDetails.getUsername());/// TODO PROBLEME ICI REPRENDRE PLSU TARD COMMENT CREER UN TRANSFERDTO AVEC LE SENDER ACCUNT AUTOMATIQUEMENT DEFINIS
         Transfer transfer = transferMapper.convertInternalTransferDtoToTransfer(transferDto);
+        // TODO : utiliser transfersSERVICE . SAVE DU TRANSFER/ UserNameOfSenderAccount
+        //  définis dans /transfer/sendMoney (set juste au dessus)
+        //  +UsernameOfSenderAccount definis dans le @ModelAttribute selectionné par l'utilisateur via menu déroulan
+        //      +Amount définis ModelAttribute.
+
+
         // TODO : STOP HERE!!!! /REPRENDRE LA SAUVEGARDE D'UN TRANSFER EN BDD. IMPLEMENTER TRANSFER SERVICE POUR ça
 
         bankAccountService.transfer(transfer);
