@@ -20,5 +20,6 @@ public class PayMyBuddyBankAccount extends BankAccount{
     )
     @JoinColumn(name ="personal_bank_account_id" )
     private PersonalBankAccount personalBankAccount;
+    //TODO Reflexion faite , il serait plus logique d'associer PersonalBankAccount a User
 }
 

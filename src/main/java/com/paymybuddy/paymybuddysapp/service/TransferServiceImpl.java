@@ -1,6 +1,6 @@
 package com.paymybuddy.paymybuddysapp.service;
 
-public class TransferServiceImpl {
+public class TransferServiceImpl implements TransferService{
 
     /*public class DateFormatExample {
         public static void main(String[] args) {

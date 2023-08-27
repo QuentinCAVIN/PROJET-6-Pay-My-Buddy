@@ -75,9 +75,11 @@ public class User {
     private PayMyBuddyBankAccount payMyBuddyBankAccount;
 
 
+
+
     //Ci-dessous les méthodes utilitaire (helpers methods)
     //aide à la synchronisation des objets
-    //elles sont placés soit du coté OneToMany (la où on gère la liste d'élément)
+    //elles sont placées soit du coté OneToMany (la où on gère la liste d'élément)
     //soit du côté ou il y a le @JoinTable pour ManytoMany (un seul coté ici vu que user est lié à lui-même)
     public void addConnexion (User user) {
         usersConnexions.add(user);

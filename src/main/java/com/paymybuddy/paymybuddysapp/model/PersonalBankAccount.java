@@ -13,10 +13,6 @@ import lombok.Setter;
 @Entity
 @Table(name ="personal_bank_account" )
 public class PersonalBankAccount extends BankAccount {
-
-
     @Column(nullable=false)
     private String iban;
-
-
 }

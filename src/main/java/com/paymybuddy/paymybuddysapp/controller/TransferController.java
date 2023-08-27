@@ -180,6 +180,7 @@ public class TransferController {
 
        /* internalTransferDto.setUsernameOfSenderAccount(userDetails.getUsername());*/// TODO PROBLEME ICI REPRENDRE PLSU TARD COMMENT CREER UN TRANSFERDTO AVEC LE SENDER ACCUNT AUTOMATIQUEMENT DEFINIS
         Transfer transfer = transferMapper.convertInternalTransferDtoToTransfer(transferDto);
+        // TODO : STOP HERE!!!! /REPRENDRE LA SAUVEGARDE D'UN TRANSFER EN BDD. IMPLEMENTER TRANSFER SERVICE POUR ça
 
         bankAccountService.transfer(transfer);
         return "redirect:/transfer?success";
