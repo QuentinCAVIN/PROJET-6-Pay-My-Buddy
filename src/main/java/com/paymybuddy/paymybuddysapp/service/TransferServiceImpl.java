@@ -26,21 +26,22 @@ public class TransferServiceImpl implements TransferService {
         this.transferRepository = transferRepository;
         this.dateProvider = dateProvider;
     }
- // TODO : Quand l'attibut dateProvider n'est pas injecté, le test ne fait pas apelle au mock mais a l'instance réel de
+ // Quand l'attibut dateProvider n'est pas injecté, le test ne fait pas appelle au mock mais a l'instance réel de
  //     DateProvider
     public void createNewTransfer(Transfer transfer) {
 
-        //TODO: Comme ça : DateProvider dateProvider= new DateProvider
+        //Comme ça : DateProvider dateProvider= new DateProvider
         String transferDate = dateProvider.todaysDate();
 
         transfer.setDate(transferDate);
         transferRepository.save(transfer);
     }
     //TODO: CI DESSOUS EN CHANTIER + A TESTER. Essayer de modifier la structure du tansferDto pour afficher les transfers
+    // Peut-être tout supprimer et passer uniquement par payMyBuddyBankAccount.getSentTransfer + une classe dans le transferMapper
+    // Prevoir Deux methodes, une pour les virement émis, l'autre pour les virement reçu, et régler l'attribut booléen en fonction
+    /*public List<Transfer> getAllTransfersFromPayMyBuddyBankAccountByUser (User user){
 
-   /* public List<Transfer> getAllTransfersToPayMyBuddyBankAccountByUser (User user){
-
-        List<Transfer> allTransfersToPayMyBuddyBankAccountByUser = new ArrayList<>();
+        List<Transfer> transfersFromPayMyBuddyBankAccountByUser = new ArrayList<>();
 
         PayMyBuddyBankAccount payMyBuddyBankAccount = user.getPayMyBuddyBankAccount();
         List<Transfer> payMyBuddyBankAccountTransferSent = payMyBuddyBankAccount.getSentTransfers();

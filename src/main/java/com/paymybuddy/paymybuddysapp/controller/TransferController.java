@@ -1,13 +1,12 @@
 package com.paymybuddy.paymybuddysapp.controller;
 
-import com.paymybuddy.paymybuddysapp.dto.InternalTransferDto;
+import com.paymybuddy.paymybuddysapp.dto.TransferDto;
 import com.paymybuddy.paymybuddysapp.dto.UserDto;
 import com.paymybuddy.paymybuddysapp.mapper.TransferMapper;
 import com.paymybuddy.paymybuddysapp.mapper.UserMapper;
 import com.paymybuddy.paymybuddysapp.model.*;
 import com.paymybuddy.paymybuddysapp.service.BankAccountService;
 import com.paymybuddy.paymybuddysapp.service.TransferService;
-import com.paymybuddy.paymybuddysapp.service.TransferServiceImpl;
 import com.paymybuddy.paymybuddysapp.service.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -48,7 +47,7 @@ public class TransferController {
 
         UserDto buddy = new UserDto();
 
-        InternalTransferDto transferDto = new InternalTransferDto();
+        TransferDto transferDto = new TransferDto();
 
         model.addAttribute("buddies", buddiesDto); // Pour afficher les buddies de l'utilisateur en cours
         model.addAttribute("buddy", buddy); // Pour le champ nécessaire à l'ajout d'un nouveau buddy
@@ -111,7 +110,7 @@ public class TransferController {
             List<UserDto> buddiesDto = UserMapper.convertUserListToUserDtoList(buddies);
             model.addAttribute("buddies", buddiesDto);
 
-            InternalTransferDto transfer = new InternalTransferDto();
+            TransferDto transfer = new TransferDto();
             model.addAttribute("transfer", transfer);//
 
             //
@@ -147,17 +146,14 @@ public class TransferController {
     //  de faire des virement sur son compte perso + reflechir si placer les virement perso au même endroit dans le html
     @Transactional
     @PostMapping("/transfer/sendMoney")
-    public String sendMoney(@ModelAttribute("transfer") InternalTransferDto transferDto,
+    public String sendMoney(@ModelAttribute("transfer") TransferDto transferDto,
                             @AuthenticationPrincipal UserDetails userDetails,
                             Model model, BindingResult result) {
 
         User currentUser = userService.getUserByEmail(userDetails.getUsername());
-        User userSelected = userService.getUserByEmail(transferDto.getUsernameOfRecipientAccount());
+        User userSelected = userService.getUserByEmail(transferDto.getBuddyUsername());
 
-        transferDto.setUsernameOfSenderAccount(userDetails.getUsername());
-
-        BankAccount senderAccount = currentUser.getPayMyBuddyBankAccount();//TODO :REPRENDRE ICI, TIRER AU CLAIR CET HISTOIRE D'UTILISATION DE TRANSFER MAPPER AVEC UN InternalTransferDTO null
-        BankAccount recipientAccount = userSelected.getPayMyBuddyBankAccount();// TODO ATTENTION on dirais que ça n'est plus utilisé
+        BankAccount senderAccount = currentUser.getPayMyBuddyBankAccount();
         double transferAmount = transferDto.getAmount();
 
         if (transferAmount <= 0) {
@@ -166,7 +162,6 @@ public class TransferController {
         } else if (senderAccount.getAccountBalance() <= transferAmount) {
             result.rejectValue("amount", null,
                     "you do not have enough money in your account");
-
         }
 
         if (result.hasErrors()) {
@@ -181,14 +176,12 @@ public class TransferController {
             List<UserDto> buddiesDto = UserMapper.convertUserListToUserDtoList(buddies);
             model.addAttribute("buddies", buddiesDto);
 
-            InternalTransferDto transfer = new InternalTransferDto();
+            TransferDto transfer = new TransferDto();
             model.addAttribute("transfer", transfer);//
 
             return "/transfer";
         }
-
-        transferDto.setUsernameOfSenderAccount(userDetails.getUsername());/// TODO PROBLEME ICI REPRENDRE PLSU TARD COMMENT CREER UN TRANSFERDTO AVEC LE SENDER ACCUNT AUTOMATIQUEMENT DEFINIS
-        Transfer transfer = transferMapper.convertInternalTransferDtoToTransfer(transferDto);
+        Transfer transfer = transferMapper.convertInternalTransferDtoToTransfer(transferDto,currentUser.getEmail());
         transferService.createNewTransfer(transfer);
         // TODO : utiliser transfersSERVICE . SAVE DU TRANSFER/ UserNameOfSenderAccount
         //  définis dans /transfer/sendMoney (set juste au dessus)

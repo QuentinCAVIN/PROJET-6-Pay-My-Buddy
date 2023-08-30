@@ -1,8 +1,7 @@
 package com.paymybuddy.paymybuddysapp.integration;
 
 
-import com.paymybuddy.paymybuddysapp.dto.InternalTransferDto;
-import com.paymybuddy.paymybuddysapp.mapper.TransferMapper;
+import com.paymybuddy.paymybuddysapp.dto.TransferDto;
 import com.paymybuddy.paymybuddysapp.model.PayMyBuddyBankAccount;
 import com.paymybuddy.paymybuddysapp.model.User;
 import com.paymybuddy.paymybuddysapp.repository.UserRepository;
@@ -16,7 +15,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
@@ -40,7 +38,7 @@ public class TransferControllerIT {
 
     private static User currentUser;
     private static User buddyToAdd;
-    /*private static InternalTransferDto transferDto;*/ //TODO: a effacer aprés le test pour créer un transfer
+    /*private static TransferDto transferDto;*/ //TODO: a effacer aprés le test pour créer un transfer
 
     @BeforeAll
     public static void setupBeforAll() throws Exception {
@@ -59,7 +57,7 @@ public class TransferControllerIT {
         currentUser.setPayMyBuddyBankAccount(currentUserPayMyBuddyBankAccount);
 
         buddyToAdd.setId(2);
-        buddyToAdd.setEmail("receivingUser@test");
+        buddyToAdd.setEmail("buddy@test");
         buddyToAdd.setFirstName("tset");
         buddyToAdd.setLastName("test");
         buddyToAdd.setPassword("4321");
@@ -220,10 +218,9 @@ public class TransferControllerIT {
     @WithMockUser("currentUser@test")
     public void sendMoneyShouldTransferMoneyToSelectedUser() throws Exception {
 
-        InternalTransferDto transferDto = new InternalTransferDto();
+        TransferDto transferDto = new TransferDto();
         transferDto.setAmount(50.00);
-        /*transferDto.setUsernameOfSenderAccount("currentUser@test");*/ // TODO: finir le test et effacer : inutile
-        transferDto.setUsernameOfRecipientAccount("receivingUser@test");
+        transferDto.setBuddyUsername ("buddy@test");
         transferDto.setDescription("Test");
         transferDto.setDate("23/01/2024"); // TODO: finir le test et effacer : inutile
 
@@ -232,7 +229,7 @@ public class TransferControllerIT {
 
         //currentUser send 50€ to his buddy
         mockMvc.perform(MockMvcRequestBuilders.post("/transfer/sendMoney")
-                        .param("usernameOfRecipientAccount", transferDto.getUsernameOfRecipientAccount())
+                        .param("buddyUsername", transferDto.getBuddyUsername())
                         .param("amount", String.valueOf(transferDto.getAmount()))
                         .param("description", transferDto.getDescription()))
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
@@ -252,7 +249,7 @@ public class TransferControllerIT {
 /* CI DESSOUS METHODE A TESTER
 
   @PostMapping("/transfer/sendMoney")
-    public String sendMoney(@ModelAttribute("transfer") InternalTransferDto internalTransferDto,
+    public String sendMoney(@ModelAttribute("transfer") TransferDto internalTransferDto,
                             @AuthenticationPrincipal UserDetails userDetails,
                             Model model, BindingResult result ) {
 
@@ -285,7 +282,7 @@ public class TransferControllerIT {
             List<User> buddies = currentUser.getUsersConnexions();
             model.addAttribute("buddies", buddies);
 
-            InternalTransferDto transfer = new InternalTransferDto();
+            TransferDto transfer = new TransferDto();
             model.addAttribute("transfer", transfer);//
 
             return "/transfer";
