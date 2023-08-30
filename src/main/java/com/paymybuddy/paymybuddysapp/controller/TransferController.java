@@ -6,7 +6,10 @@ import com.paymybuddy.paymybuddysapp.mapper.TransferMapper;
 import com.paymybuddy.paymybuddysapp.mapper.UserMapper;
 import com.paymybuddy.paymybuddysapp.model.*;
 import com.paymybuddy.paymybuddysapp.service.BankAccountService;
+import com.paymybuddy.paymybuddysapp.service.TransferService;
+import com.paymybuddy.paymybuddysapp.service.TransferServiceImpl;
 import com.paymybuddy.paymybuddysapp.service.UserService;
+import jakarta.transaction.Transactional;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -23,12 +26,17 @@ public class TransferController {
 
     BankAccountService bankAccountService;
 
+    TransferService transferService;
+
     TransferMapper transferMapper;
 
-    public TransferController(UserService userService, BankAccountService bankAccountService, TransferMapper transferMapper) {
+
+    public TransferController(UserService userService, BankAccountService bankAccountService,
+                              TransferMapper transferMapper, TransferService transferService) {
         this.userService = userService;
         this.bankAccountService = bankAccountService;
         this.transferMapper = transferMapper;
+        this.transferService = transferService;
     }
 
     @GetMapping("/transfer")
@@ -137,6 +145,7 @@ public class TransferController {
     // TODO: Ci-dessous pas de test effectué.
     // TODO: METHODE EN COURS DE DEVELOPPEMENT, Gerer les valeur negatives et autre exceptions + ajout de la possibilité
     //  de faire des virement sur son compte perso + reflechir si placer les virement perso au même endroit dans le html
+    @Transactional
     @PostMapping("/transfer/sendMoney")
     public String sendMoney(@ModelAttribute("transfer") InternalTransferDto transferDto,
                             @AuthenticationPrincipal UserDetails userDetails,
@@ -180,6 +189,7 @@ public class TransferController {
 
         transferDto.setUsernameOfSenderAccount(userDetails.getUsername());/// TODO PROBLEME ICI REPRENDRE PLSU TARD COMMENT CREER UN TRANSFERDTO AVEC LE SENDER ACCUNT AUTOMATIQUEMENT DEFINIS
         Transfer transfer = transferMapper.convertInternalTransferDtoToTransfer(transferDto);
+        transferService.createNewTransfer(transfer);
         // TODO : utiliser transfersSERVICE . SAVE DU TRANSFER/ UserNameOfSenderAccount
         //  définis dans /transfer/sendMoney (set juste au dessus)
         //  +UsernameOfSenderAccount definis dans le @ModelAttribute selectionné par l'utilisateur via menu déroulan

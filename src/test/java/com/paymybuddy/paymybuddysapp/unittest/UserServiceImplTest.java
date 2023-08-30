@@ -2,8 +2,11 @@ package com.paymybuddy.paymybuddysapp.unittest;
 
 import com.paymybuddy.paymybuddysapp.dto.UserDto;
 import com.paymybuddy.paymybuddysapp.model.PayMyBuddyBankAccount;
+import com.paymybuddy.paymybuddysapp.model.PersonalBankAccount;
+import com.paymybuddy.paymybuddysapp.model.Transfer;
 import com.paymybuddy.paymybuddysapp.model.User;
 import com.paymybuddy.paymybuddysapp.repository.UserRepository;
+import com.paymybuddy.paymybuddysapp.service.TransferService;
 import com.paymybuddy.paymybuddysapp.service.UserServiceImpl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,9 +37,12 @@ public class UserServiceImplTest {
     private UserServiceImpl userService;
 
     private static User dummy;
+    private static PayMyBuddyBankAccount dummyAccount;
+    private static PayMyBuddyBankAccount ymmudAccount;
     private static User ymmud;
     private static List<User> dummies;
     private static UserDto dummyDto;
+
 
     @BeforeEach
     public void setup() {
@@ -48,7 +54,7 @@ public class UserServiceImplTest {
         dummy.setLastName("MY");
         dummy.setUsersConnexions(Arrays.asList(ymmud));
         dummy.setUsersConnected(null);
-        PayMyBuddyBankAccount dummyAccount = new PayMyBuddyBankAccount();
+        dummyAccount = new PayMyBuddyBankAccount();
         dummyAccount.setId(1);
         dummyAccount.setAccountBalance(1234);
         dummy.setPayMyBuddyBankAccount(dummyAccount);
@@ -62,7 +68,7 @@ public class UserServiceImplTest {
         ymmud.setUsersConnexions(null);
         ymmud.setUsersConnected(Arrays.asList(dummy));
         ymmud.setPayMyBuddyBankAccount(new PayMyBuddyBankAccount());
-        PayMyBuddyBankAccount ymmudAccount = new PayMyBuddyBankAccount();
+        ymmudAccount = new PayMyBuddyBankAccount();
         ymmudAccount.setId(2);
         ymmudAccount.setAccountBalance(4321);
         ymmud.setPayMyBuddyBankAccount(ymmudAccount);
@@ -137,4 +143,55 @@ public class UserServiceImplTest {
         Assertions.assertThat(users).isEqualTo(dummies);
         Mockito.verify(userRepository, Mockito.times(1)).findAll();
     }
+
+    @Test
+    public void getUserByPayMyBuddyBankAccountTest(){
+
+        Mockito.when(userRepository.findByPayMyBuddyBankAccount(dummyAccount)).thenReturn(dummy);
+
+        User user = userService.getUserByPayMyBuddyBankAccount(dummyAccount);
+
+        Mockito.verify(userRepository, Mockito.times(1))
+                .findByPayMyBuddyBankAccount(dummyAccount);
+        Assertions.assertThat(user.getId()).isEqualTo(dummy.getId());
+        Assertions.assertThat(user.getEmail()).isEqualTo(dummy.getEmail());
+        Assertions.assertThat(user.getPassword()).isEqualTo(dummy.getPassword());
+        Assertions.assertThat(user.getFirstName()).isEqualTo(dummy.getFirstName());
+        Assertions.assertThat(user.getLastName()).isEqualTo(dummy.getLastName());
+        Assertions.assertThat(user.getPayMyBuddyBankAccount().getAccountBalance())
+                .isEqualTo(dummy.getPayMyBuddyBankAccount().getAccountBalance());
+        Assertions.assertThat(user.getUsersConnexions()).isEqualTo(dummy.getUsersConnexions());
+        Assertions.assertThat((user.getUsersConnected())).isEqualTo(dummy.getUsersConnected());
+    }
+
+    //TODO: ATTENTION le test ci-dessous a été déplacé, le set up est a revoir, récupérer des éléments de
+    // UserServiceTest pour gagner du temps.
+    /*@Test
+    public void getAllTransferSentByUserTest () {
+        Transfer transferSend1 = new Transfer();
+        transferSend1.setId(1);
+        transferSend1.setAmount(69);
+        transferSend1.setSenderAccount(dummyAccount);
+        transferSend1.setRecipientAccount(ymmudAccount);
+        transferSend1.setDescription("for my ymmud");
+        transferSend1.setDate("30/08/2023");
+
+        PersonalBankAccount personalBankAccountOfdummy = new PersonalBankAccount();
+        personalBankAccountOfdummy.setId(5);
+        personalBankAccountOfdummy.setAccountBalance(1000);
+        personalBankAccountOfdummy.setIban("11111111");
+
+        Transfer transferSend2 = new Transfer();
+        transferSend1.setId(1);
+        transferSend1.setAmount(96);
+        transferSend1.setSenderAccount(personalBankAccountOfdummy);
+        transferSend1.setRecipientAccount(ymmudAccount);
+        transferSend1.setDescription("for my ymmud");
+        transferSend1.setDate("30/08/2023");
+
+        dummyAccount.addSentTransfer(transferSend1);
+
+
+        userService.getAllTransfersSentByUser(dummy);
+    }*/
 }

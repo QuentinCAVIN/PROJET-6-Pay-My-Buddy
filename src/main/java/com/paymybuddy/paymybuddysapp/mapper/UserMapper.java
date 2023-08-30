@@ -60,7 +60,7 @@ public class UserMapper {
     }
 
 
-    // TODO: methode inutilisée pour le moment. L'effacer?
+    // TODO: methode inutilisée pour le moment. L'effacer en fin de projet si pas utilisé
   /*  public static List<User> convertUserDtoListToUserList(List<UserDto> usersDto) {
 
         List<User> users = new ArrayList<>();

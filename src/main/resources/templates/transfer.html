@@ -62,7 +62,7 @@
             </div>
         </div>
 
-        <form class="row" method="post" th:action="@{/transfer/sendMoney}" th:object="${transfer}"> <!--Placer un objet Transfer ici-->
+        <form class="row" method="post" th:action="@{/transfer/sendMoney}" th:object="${transfer}">
             <div class="form-group col-md-4">
 
                 <select id="inputState" class="form-control" th:field="*{usernameOfRecipientAccount}">
@@ -77,7 +77,7 @@
             </div>
 
             <div class="col form-group">
-                <input type="texte" class="form-control" id="description" th:field="*{description}" placeholder="Fill in Decription">
+                <input type="text" class="form-control" id="description" th:field="*{description}" placeholder="Fill in Decription">
             </div>
 
             <div class="col-auto my-1">
@@ -92,11 +92,20 @@
             <thead class=" bg-success">
             <tr>
                 <th scope="col">Connection</th>
+                <th scope="col">Date</th>
                 <th scope="col">Description</th>
                 <th scope="col">Amount</th>
             </tr>
             </thead>
             <tbody>
+                <!-- TODO: POUR AFFICHER LES TRANSFER, AJOUTER AU MODEL AVANT"
+            <tr th:each = "user : ${transfer}"> "
+                <td th:text = "${user.firstName}"></td>
+                <td th:text = "${user.lastName}"></td>
+                <td th:text = "${user.email}"></td>
+                <td th:text="${user.password}">
+            </tr>
+            -->
             <tr>
                 <th scope="row">User 1</th> <!-- Pourquoi th ou td? a quoi sert le "scope ="row"?-->
                 <td>Description 1</td>

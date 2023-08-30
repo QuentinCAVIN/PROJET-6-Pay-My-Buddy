@@ -233,7 +233,8 @@ public class TransferControllerIT {
         //currentUser send 50€ to his buddy
         mockMvc.perform(MockMvcRequestBuilders.post("/transfer/sendMoney")
                         .param("usernameOfRecipientAccount", transferDto.getUsernameOfRecipientAccount())
-                        .param("amount", String.valueOf(transferDto.getAmount())))
+                        .param("amount", String.valueOf(transferDto.getAmount()))
+                        .param("description", transferDto.getDescription()))
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
                 .andExpect(MockMvcResultMatchers.redirectedUrl("/transfer?success"));
 

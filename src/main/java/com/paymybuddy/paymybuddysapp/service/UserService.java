@@ -1,5 +1,6 @@
 package com.paymybuddy.paymybuddysapp.service;
 
+import com.paymybuddy.paymybuddysapp.model.PayMyBuddyBankAccount;
 import com.paymybuddy.paymybuddysapp.model.User;
 
 import java.util.List;
@@ -15,5 +16,7 @@ public interface UserService {
     void saveUser(User user);
 
     void deleteUser(int id);
+
+    User getUserByPayMyBuddyBankAccount(PayMyBuddyBankAccount payMyBuddyBankAccount);
 }
 
