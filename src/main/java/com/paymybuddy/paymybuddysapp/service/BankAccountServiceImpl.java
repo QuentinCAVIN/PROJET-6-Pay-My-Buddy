@@ -24,7 +24,6 @@ public class BankAccountServiceImpl implements BankAccountService {
         } else if (bankAccount instanceof PersonalBankAccount) {
             personalBankAccountRepository.save((PersonalBankAccount) bankAccount);
         }
-
     }
 
     public void transfer(Transfer transfer) {

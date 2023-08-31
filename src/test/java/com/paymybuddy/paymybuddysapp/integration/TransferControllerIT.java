@@ -38,7 +38,7 @@ public class TransferControllerIT {
 
     private static User currentUser;
     private static User buddyToAdd;
-    /*private static TransferDto transferDto;*/ //TODO: a effacer aprés le test pour créer un transfer
+    /*private static TransferDto transferDto;*/ //TODO: a effacer après le test pour créer un transfer
 
     @BeforeAll
     public static void setupBeforAll() throws Exception {
@@ -91,7 +91,8 @@ public class TransferControllerIT {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.model().attributeExists("buddies"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("buddy"))
-                .andExpect(MockMvcResultMatchers.model().attributeExists("transfer"));
+                .andExpect(MockMvcResultMatchers.model().attributeExists("transfer"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("transfers"));
     }
 
 
@@ -128,7 +129,8 @@ public class TransferControllerIT {
                         .string(CoreMatchers.containsString("Please fill in your buddy")))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("buddies"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("buddy"))
-                .andExpect(MockMvcResultMatchers.model().attributeExists("transfer"));
+                .andExpect(MockMvcResultMatchers.model().attributeExists("transfer"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("transfers"));
     }
 
 
@@ -146,7 +148,8 @@ public class TransferControllerIT {
                         .string(CoreMatchers.containsString("There is no account associated to wrong@email")))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("buddies"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("buddy"))
-                .andExpect(MockMvcResultMatchers.model().attributeExists("transfer"));
+                .andExpect(MockMvcResultMatchers.model().attributeExists("transfer"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("transfers"));
     }
 
 
@@ -164,7 +167,8 @@ public class TransferControllerIT {
                         .string(CoreMatchers.containsString("go get some friends")))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("buddies"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("buddy"))
-                .andExpect(MockMvcResultMatchers.model().attributeExists("transfer"));
+                .andExpect(MockMvcResultMatchers.model().attributeExists("transfer"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("transfers"));
     }
 
     @Test
@@ -187,7 +191,8 @@ public class TransferControllerIT {
                 // information retrieved in the model attribute
                 .andExpect(MockMvcResultMatchers.model().attributeExists("buddy"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("buddies"))
-                .andExpect(MockMvcResultMatchers.model().attributeExists("transfer"));
+                .andExpect(MockMvcResultMatchers.model().attributeExists("transfer"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("transfers"));
     }
 
     @Test
@@ -222,7 +227,6 @@ public class TransferControllerIT {
         transferDto.setAmount(50.00);
         transferDto.setBuddyUsername ("buddy@test");
         transferDto.setDescription("Test");
-        transferDto.setDate("23/01/2024"); // TODO: finir le test et effacer : inutile
 
         //Add Buddy for transfer
         validateAddBuddyFormShouldCreateNewConnexionInDB();

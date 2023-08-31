@@ -13,6 +13,5 @@ import lombok.Setter;
         String description;
         String date;
         String displayAmount;
-        boolean isSent;
     }
 

@@ -54,7 +54,7 @@ public class TransferMapperTest {
         Mockito.when(userService.getUserByEmail(currentUsername)).thenReturn(senderUser);
         Mockito.when(userService.getUserByEmail(transferDto.getBuddyUsername())).thenReturn(receivingUser);
 
-        Transfer transfer = transferMapper.convertInternalTransferDtoToTransfer(transferDto,currentUsername);
+        Transfer transfer = transferMapper.convertTransferDtoToTransfer(transferDto,currentUsername);
 
         Assertions.assertThat(transfer.getAmount()).isEqualTo(transferDto.getAmount());
         Assertions.assertThat(transfer.getSenderAccount()).isEqualTo(senderAccount);

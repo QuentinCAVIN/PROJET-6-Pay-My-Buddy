@@ -1,5 +1,6 @@
 package com.paymybuddy.paymybuddysapp.service;
 
+import com.paymybuddy.paymybuddysapp.model.BankAccount;
 import com.paymybuddy.paymybuddysapp.model.PayMyBuddyBankAccount;
 import com.paymybuddy.paymybuddysapp.model.User;
 
@@ -17,6 +18,6 @@ public interface UserService {
 
     void deleteUser(int id);
 
-    User getUserByPayMyBuddyBankAccount(PayMyBuddyBankAccount payMyBuddyBankAccount);
+    User getUserByBankAccount(BankAccount bankAccount);
 }
 

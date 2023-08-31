@@ -98,14 +98,14 @@
             </tr>
             </thead>
             <tbody>
-                <!-- TODO: POUR AFFICHER LES TRANSFER, AJOUTER AU MODEL AVANT"
-            <tr th:each = "user : ${transfer}"> "
-                <td th:text = "${user.firstName}"></td>
-                <td th:text = "${user.lastName}"></td>
-                <td th:text = "${user.email}"></td>
-                <td th:text="${user.password}">
+                <!-- TODO: POUR AFFICHER LES TRANSFER, AJOUTER AU MODEL AVANT" -->
+            <tr th:each = "transfer : ${transfers}">
+                <td th:text = "${transfer.buddyUsername}"></td>
+                <td th:text = "${transfer.date}"></td>
+                <td th:text = "${transfer.description}"></td>
+                <td th:text="${transfer.displayAmount}">
             </tr>
-            -->
+
             <tr>
                 <th scope="row">User 1</th> <!-- Pourquoi th ou td? a quoi sert le "scope ="row"?-->
                 <td>Description 1</td>

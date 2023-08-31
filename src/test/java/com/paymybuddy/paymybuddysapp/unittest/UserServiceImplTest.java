@@ -149,7 +149,7 @@ public class UserServiceImplTest {
 
         Mockito.when(userRepository.findByPayMyBuddyBankAccount(dummyAccount)).thenReturn(dummy);
 
-        User user = userService.getUserByPayMyBuddyBankAccount(dummyAccount);
+        User user = userService.getUserByBankAccount(dummyAccount);
 
         Mockito.verify(userRepository, Mockito.times(1))
                 .findByPayMyBuddyBankAccount(dummyAccount);
