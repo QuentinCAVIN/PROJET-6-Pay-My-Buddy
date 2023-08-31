@@ -1,7 +1,6 @@
 package com.paymybuddy.paymybuddysapp.mapper;
 
 import com.paymybuddy.paymybuddysapp.dto.TransferDto;
-import com.paymybuddy.paymybuddysapp.model.PayMyBuddyBankAccount;
 import com.paymybuddy.paymybuddysapp.model.Transfer;
 import com.paymybuddy.paymybuddysapp.model.User;
 import com.paymybuddy.paymybuddysapp.service.UserService;
@@ -34,10 +33,9 @@ public class TransferMapper {
 
         return transfer;
     }
-    //TODO: ajouter un traitement au cas où les champs de transferDto sont Null
+    //TODO: ajouter un traitement au cas où les champs de transferDto sont Null???
 
-    //TODO / Ci dessous a tester
-    public TransferDto convertTransferToTransferDto(Transfer transfer, boolean isSent) {
+    public TransferDto convertTransferToTransferDto(Transfer transfer, boolean isSentByCurrentUser) {
 
         TransferDto transferDto = new TransferDto();
 
@@ -45,15 +43,14 @@ public class TransferMapper {
         transferDto.setDescription(transfer.getDescription());
         transferDto.setDate(transfer.getDate());
 
-        if (isSent == true) {
+        if (isSentByCurrentUser == true) { //For a sent transfer, the buddy is the receiving account
             User buddy = userService.getUserByBankAccount(transfer.getRecipientAccount());
             transferDto.setBuddyUsername(buddy.getEmail());
             transferDto.setDisplayAmount("-" + transfer.getAmount() + "€");
-        } else {
-            User buddy = userService.getUserByBankAccount(
-                    transfer.getSenderAccount());
+        } else {//For a transfer received, the buddy is the sender account
+            User buddy = userService.getUserByBankAccount(transfer.getSenderAccount());
             transferDto.setBuddyUsername(buddy.getEmail());
-            transferDto.setDisplayAmount("+" + transferDto.getAmount() + "€");
+            transferDto.setDisplayAmount("+" + transfer.getAmount() + "€");
         }
         return transferDto;
     }

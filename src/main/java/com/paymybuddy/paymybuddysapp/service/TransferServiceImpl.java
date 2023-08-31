@@ -33,13 +33,10 @@ public class TransferServiceImpl implements TransferService {
 
         transfer.setDate(transferDate);
         transferRepository.save(transfer);
+        //TODO : Ne faut il pas faire un BankAccount addSentTransfer et addReceivedTransfer?
+        // A priori non, pas besoin, JPA fait le café. En fin de projet supprimer toutes les méthodes utilitaire et
+        // voir si le café coule toujours
     }
-
-
-
-    //TODO: CI DESSOUS EN CHANTIER + A TESTER. Essayer de modifier la structure du tansferDto pour afficher les transfers
-    // Peut-être tout supprimer et passer uniquement par payMyBuddyBankAccount.getSentTransfer + une classe dans le transferMapper
-    // Prevoir Deux methodes, une pour les virement émis, l'autre pour les virement reçu, et régler l'attribut booléen en fonction
 
     public List<TransferDto> getTransfersDtoByBankAccount(BankAccount bankAccount) {
 
@@ -56,7 +53,6 @@ public class TransferServiceImpl implements TransferService {
             TransferDto transferDto = transferMapper.convertTransferToTransferDto(transfer,false);
             transfersDtoByBankAccount.add(transferDto);
         });
-
         return transfersDtoByBankAccount;
     }
 }

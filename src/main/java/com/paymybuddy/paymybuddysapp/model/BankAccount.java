@@ -44,11 +44,12 @@ public abstract class BankAccount {
     //aide à la synchronisation des objets
     //elles sont placées soit du coté OneToMany (la où on gère la liste d'élément)
     //soit du côté ou il y a le @JoinTable pour ManytoMany
-    public void addSentTransfer (Transfer transfer) {
+    public void addSentTransfer (Transfer transfer) {//TODO: les methodes utilitaires font elle doublon avec JPA?
+        //Si oui, les supprimer
         sentTransfers.add(transfer);
         transfer.setSenderAccount(this);
     }
-    public void removeConnexion (Transfer transfer){
+    public void removeConnexion (Transfer transfer){ // TODO: ne seras probablement jamais utilisé. effacer en fin de projet
         sentTransfers.remove(transfer);
         transfer.setSenderAccount(null);
     }
@@ -58,7 +59,7 @@ public abstract class BankAccount {
         transfer.setRecipientAccount(this);
     }
 
-    public void removeReceivedTransfer(Transfer transfer){
+    public void removeReceivedTransfer(Transfer transfer){// TODO: ne seras probablement jamais utilisé. effacer en fin de projet
         receivedTransfers.remove(transfer);
         transfer.setRecipientAccount(null);
     }

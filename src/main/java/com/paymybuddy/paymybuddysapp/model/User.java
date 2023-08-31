@@ -59,12 +59,14 @@ public class User {
 
     private List<User> usersConnexions =new ArrayList<>();
 
+
     @ManyToMany(
             mappedBy = "usersConnexions",// pas besoin d'ajouter @JoinTable une seconde fois
             fetch = FetchType.LAZY,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE }
     )
     private List<User> usersConnected = new ArrayList<>();
+
 
     @OneToOne(
             cascade = CascadeType.ALL, //Supprimer un utilisateur supprimera sont compte associé
@@ -74,6 +76,14 @@ public class User {
     @JoinColumn(name ="paymybuddy_bank_account_id" )
     private PayMyBuddyBankAccount payMyBuddyBankAccount;
 
+
+    @OneToOne(
+            cascade = CascadeType.ALL, //Supprimer un utilisateur supprimera son compte associé
+            orphanRemoval = true, //garantit la non existance de compte orphelin
+            fetch = FetchType.EAGER // Quand on récupére un User on récupére le compte associé
+    )
+    @JoinColumn(name ="personal_bank_account_id" )
+    private PersonalBankAccount personalBankAccount; // TODO: ON TEST DE DEPLACER VERS USER
 
 
 
@@ -93,6 +103,10 @@ public class User {
 
     public void addPayMyBuddyBankAccount(PayMyBuddyBankAccount payMyBuddyBankAccount){
         this.payMyBuddyBankAccount = payMyBuddyBankAccount;
+    }
+
+    public void addPersonalBankAccount(PersonalBankAccount personalBankAccount){
+        this.personalBankAccount = personalBankAccount;
     }
 
 

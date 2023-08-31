@@ -3,10 +3,8 @@ package com.paymybuddy.paymybuddysapp.unittest;
 import com.paymybuddy.paymybuddysapp.dto.UserDto;
 import com.paymybuddy.paymybuddysapp.model.PayMyBuddyBankAccount;
 import com.paymybuddy.paymybuddysapp.model.PersonalBankAccount;
-import com.paymybuddy.paymybuddysapp.model.Transfer;
 import com.paymybuddy.paymybuddysapp.model.User;
 import com.paymybuddy.paymybuddysapp.repository.UserRepository;
-import com.paymybuddy.paymybuddysapp.service.TransferService;
 import com.paymybuddy.paymybuddysapp.service.UserServiceImpl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,9 +21,6 @@ import java.util.Arrays;
 import java.util.List;
 
 
-import static org.mockito.ArgumentMatchers.any;
-
-
 @ExtendWith(MockitoExtension.class)
 public class UserServiceImplTest {
 
@@ -39,6 +34,7 @@ public class UserServiceImplTest {
     private static User dummy;
     private static PayMyBuddyBankAccount dummyAccount;
     private static PayMyBuddyBankAccount ymmudAccount;
+    private static PersonalBankAccount dummyPersonnalAccount;
     private static User ymmud;
     private static List<User> dummies;
     private static UserDto dummyDto;
@@ -58,6 +54,11 @@ public class UserServiceImplTest {
         dummyAccount.setId(1);
         dummyAccount.setAccountBalance(1234);
         dummy.setPayMyBuddyBankAccount(dummyAccount);
+        dummyPersonnalAccount = new PersonalBankAccount();
+        dummyPersonnalAccount.setId(5);
+        dummyPersonnalAccount.setIban("123456789");
+        dummyPersonnalAccount.setAccountBalance(12345);
+        dummy.setPersonalBankAccount(dummyPersonnalAccount);
 
         ymmud = new User();
         ymmud.setId(2);
@@ -102,6 +103,7 @@ public class UserServiceImplTest {
                 .isEqualTo(dummy.getPayMyBuddyBankAccount().getAccountBalance());
         Assertions.assertThat(user.getUsersConnexions()).isEqualTo(dummy.getUsersConnexions());
         Assertions.assertThat((user.getUsersConnected())).isEqualTo(dummy.getUsersConnected());
+        Assertions.assertThat(dummy.getPersonalBankAccount()).isEqualTo(dummyPersonnalAccount);
     }
 
     @Test
@@ -162,6 +164,27 @@ public class UserServiceImplTest {
                 .isEqualTo(dummy.getPayMyBuddyBankAccount().getAccountBalance());
         Assertions.assertThat(user.getUsersConnexions()).isEqualTo(dummy.getUsersConnexions());
         Assertions.assertThat((user.getUsersConnected())).isEqualTo(dummy.getUsersConnected());
+    }
+
+    @Test
+    public void getUserByBankAccountTestWithPayMyBuddyBankAccount() {
+        Mockito.when(userRepository.findByPayMyBuddyBankAccount(dummyAccount)).thenReturn(dummy);
+
+        User user = userService.getUserByBankAccount(dummyAccount);
+
+        Mockito.verify(userRepository,Mockito.times(1))
+                .findByPayMyBuddyBankAccount(dummyAccount);
+        Assertions.assertThat(user).isEqualTo(dummy);
+    }
+
+    @Test
+    public void getUserByBankAccountTestWithPersonalBankAccount() {
+        Mockito.when(userRepository.findByPersonalBankAccount(dummyPersonnalAccount)).thenReturn(dummy);
+
+        User user = userService.getUserByBankAccount(dummyPersonnalAccount);
+        Mockito.verify(userRepository,Mockito.times(1))
+                .findByPersonalBankAccount(dummyPersonnalAccount);
+        Assertions.assertThat(user).isEqualTo(dummy);
     }
 
     //TODO: ATTENTION le test ci-dessous a été déplacé, le set up est a revoir, récupérer des éléments de

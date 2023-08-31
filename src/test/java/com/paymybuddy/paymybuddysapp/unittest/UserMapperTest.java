@@ -4,6 +4,7 @@ import com.paymybuddy.paymybuddysapp.dto.ReducedUserDto;
 import com.paymybuddy.paymybuddysapp.dto.UserDto;
 import com.paymybuddy.paymybuddysapp.mapper.UserMapper;
 import com.paymybuddy.paymybuddysapp.model.PayMyBuddyBankAccount;
+import com.paymybuddy.paymybuddysapp.model.PersonalBankAccount;
 import com.paymybuddy.paymybuddysapp.model.User;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,6 +41,10 @@ public class UserMapperTest {
         dummyAccount.setId(1);
         dummyAccount.setAccountBalance(1234);
         dummy.setPayMyBuddyBankAccount(dummyAccount);
+        PersonalBankAccount dummyPersonalAccount = new PersonalBankAccount();
+        dummyPersonalAccount.setId(5);
+        dummyPersonalAccount.setId(1000);
+        dummy.setPersonalBankAccount(dummyPersonalAccount);
 
         ymmud.setId(2);
         ymmud.setEmail("ym@mud");
@@ -87,6 +92,7 @@ public class UserMapperTest {
         Assertions.assertThat(userDto.getLastName()).isEqualTo(dummy.getLastName());
         Assertions.assertThat(userDto.getPassword()).isEqualTo(dummy.getPassword());
         Assertions.assertThat(userDto.getPayMyBuddyBankAccount()).isEqualTo(dummy.getPayMyBuddyBankAccount());
+        Assertions.assertThat(userDto.getPersonalBankAccount()).isEqualTo(dummy.getPersonalBankAccount());
         Assertions.assertThat(userDto.getUsersConnexions() instanceof ReducedUserDto);
 
         String buddysUsernameReducedUserDto = userDto.getUsersConnexions().get(0).getEmail();
@@ -106,6 +112,8 @@ public class UserMapperTest {
             Assertions.assertThat(usersDto.get(i).getPassword()).isEqualTo(dummies.get(i).getPassword());
             Assertions.assertThat(usersDto.get(i).getPayMyBuddyBankAccount())
                     .isEqualTo(dummies.get(i).getPayMyBuddyBankAccount());
+           Assertions.assertThat(usersDto.get(i).getPersonalBankAccount())
+                   .isEqualTo(dummies.get(i).getPersonalBankAccount());
            Assertions.assertThat(usersDto.get(i).getUsersConnexions() instanceof ReducedUserDto);
 
            String buddysUsernameReducedUserDto = usersDto.get(0).getUsersConnexions().get(0).getEmail();
@@ -123,9 +131,10 @@ public class UserMapperTest {
         Assertions.assertThat(user.getLastName()).isEqualTo(dummyDto.getLastName());
         Assertions.assertThat(user.getPassword()).isEqualTo(dummyDto.getPassword());
         Assertions.assertThat(user.getPayMyBuddyBankAccount()).isEqualTo(dummyDto.getPayMyBuddyBankAccount());
+        Assertions.assertThat(user.getPersonalBankAccount()).isEqualTo(dummyDto.getPersonalBankAccount());
     }
 
-    //TODO: methode inutilisée pour le moment. L'effacer?
+    //TODO: methode inutilisée pour le moment. L'effacer? On verra a la fin du projet
     /*@Test
     public void convertUserDtoListToUserListTest() {
         List <User> users = userMapperUnderTest.convertUserDtoListToUserList(dummiesDto);

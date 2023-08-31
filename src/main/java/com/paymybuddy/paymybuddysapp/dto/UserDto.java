@@ -1,6 +1,7 @@
 package com.paymybuddy.paymybuddysapp.dto;
 
 import com.paymybuddy.paymybuddysapp.model.PayMyBuddyBankAccount;
+import com.paymybuddy.paymybuddysapp.model.PersonalBankAccount;
 import com.paymybuddy.paymybuddysapp.model.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -39,4 +40,6 @@ public class UserDto
     private List<ReducedUserDto> usersConnexions = new ArrayList<>(); //Todo convertir en liste de UserDto
 
     private PayMyBuddyBankAccount payMyBuddyBankAccount;
+
+    private PersonalBankAccount personalBankAccount;
 }

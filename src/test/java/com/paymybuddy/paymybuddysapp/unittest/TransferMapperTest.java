@@ -26,6 +26,7 @@ public class TransferMapperTest {
     private static TransferDto transferDto;
     private static PayMyBuddyBankAccount senderAccount;
     private static PayMyBuddyBankAccount recipientAccount;
+    private static Transfer transfer;
 
     @BeforeAll
     public static void setup(){
@@ -36,9 +37,19 @@ public class TransferMapperTest {
         recipientAccount.setAccountBalance(500);
 
         senderUser  = new User();
+        senderUser.setEmail("roger@roger");
         receivingUser = new User();
+        receivingUser.setEmail("roberta@tourbillon");
         senderUser.setPayMyBuddyBankAccount(senderAccount);
         receivingUser.setPayMyBuddyBankAccount(recipientAccount);
+
+        transfer = new Transfer();
+        transfer.setId(1);
+        transfer.setAmount(69);
+        transfer.setSenderAccount(senderAccount);
+        transfer.setRecipientAccount(recipientAccount);
+        transfer.setDescription("for my ymmud");
+        transfer.setDate("30/08/2023");
 
         transferDto = new TransferDto();
         transferDto.setAmount(50.00);
@@ -61,5 +72,33 @@ public class TransferMapperTest {
         Assertions.assertThat(transfer.getRecipientAccount()).isEqualTo(recipientAccount);
         Assertions.assertThat(transfer.getDescription()).isEqualTo(transferDto.getDescription());
         Assertions.assertThat(transfer.getDate()).isEqualTo(transferDto.getDate());
+    }
+
+    @Test
+    public void convertTransferToTransferDtoIsSentByCurrentUserTest(){
+
+        Mockito.when(userService.getUserByBankAccount(transfer.getRecipientAccount())).thenReturn(receivingUser);
+
+        TransferDto transferDto = transferMapper.convertTransferToTransferDto(transfer,true);
+
+        Assertions.assertThat(transferDto.getAmount()).isEqualTo(transfer.getAmount());
+        Assertions.assertThat(transferDto.getDisplayAmount()).isEqualTo("-" + transfer.getAmount()+ "€");
+        Assertions.assertThat(transferDto.getDescription()).isEqualTo(transfer.getDescription());
+        Assertions.assertThat(transferDto.getBuddyUsername()).isEqualTo(receivingUser.getEmail());
+        Assertions.assertThat(transferDto.getDate()).isEqualTo(transfer.getDate());
+    }
+
+    @Test
+    public void convertTransferToTransferDtoIsNotSentByCurrentUserTest(){
+
+        Mockito.when(userService.getUserByBankAccount(transfer.getSenderAccount())).thenReturn(senderUser);
+
+        TransferDto transferDto = transferMapper.convertTransferToTransferDto(transfer,false);
+
+        Assertions.assertThat(transferDto.getAmount()).isEqualTo(transfer.getAmount());
+        Assertions.assertThat(transferDto.getDisplayAmount()).isEqualTo("+" + transfer.getAmount() + "€");
+        Assertions.assertThat(transferDto.getDescription()).isEqualTo(transfer.getDescription());
+        Assertions.assertThat(transferDto.getBuddyUsername()).isEqualTo(senderUser.getEmail());
+        Assertions.assertThat(transferDto.getDate()).isEqualTo(transfer.getDate());
     }
 }

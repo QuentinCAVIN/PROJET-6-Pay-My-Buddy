@@ -18,6 +18,7 @@ public class UserMapper {
         userDto.setLastName(user.getLastName());
         userDto.setPassword(user.getPassword());
         userDto.setPayMyBuddyBankAccount(user.getPayMyBuddyBankAccount());
+        userDto.setPersonalBankAccount(user.getPersonalBankAccount());
 
         //convert List<User> getUsersConnexion to List<ReducedUserDto> getUsersConnexions
         List<ReducedUserDto> reducedUsersDto = new ArrayList<>();
@@ -53,6 +54,7 @@ public class UserMapper {
         user.setLastName(userDto.getLastName());
         user.setPassword(userDto.getPassword());
         user.setPayMyBuddyBankAccount(userDto.getPayMyBuddyBankAccount());
+        user.setPersonalBankAccount(userDto.getPersonalBankAccount());
         // TODO : la methode ne transforme pas List<ReducedUser> UsersConnexions trop compliqué pour moi,
         //  et inutile pour le moment. Modifier si besoin.
 
@@ -101,6 +103,6 @@ public class UserMapper {
         // Je n'ai pas réglé l'attribut connexions et connected
         return user;
         //TODO : la classe convertUserDtotoUser n'a pas besoin pour le moment de fournir de
-        // l'attribut  List<User>Connexions de User. Et donc pas besoin de onvertReducedUserDtoToUser
+        // l'attribut  List<User>Connexions de User. Et donc pas besoin de convertReducedUserDtoToUser
     }*/
 }
