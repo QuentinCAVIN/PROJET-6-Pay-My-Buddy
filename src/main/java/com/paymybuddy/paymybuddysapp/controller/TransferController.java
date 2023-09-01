@@ -9,6 +9,8 @@ import com.paymybuddy.paymybuddysapp.service.BankAccountService;
 import com.paymybuddy.paymybuddysapp.service.TransferService;
 import com.paymybuddy.paymybuddysapp.service.UserService;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -17,6 +19,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Controller
 public class TransferController {
@@ -39,37 +44,84 @@ public class TransferController {
     }
 
     @GetMapping("/transfer")
-    public String showTransferPage(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+    public String showTransferPage(@AuthenticationPrincipal UserDetails userDetails, Model model,
+                                   @RequestParam("page") Optional<Integer> page,
+                                   @RequestParam("size") Optional<Integer> size) {
+        // Le parametre "size" est inutile ici : @{/transfer(size=${transfers.size}, il sera utile en cas
+        // d'implémentation d'une fonctionnalité pour permettre à l'utilisateur de changer le nombre d'objets par page
 
         User currentUser = userService.getUserByEmail(userDetails.getUsername());
 
-        //For display user's buddies
-        List<User> buddies = currentUser.getUsersConnexions();
-        List<UserDto> buddiesDto = UserMapper.convertUserListToUserDtoList(buddies);
-        model.addAttribute("buddies", buddiesDto);
+        //////For display user's buddies and transfers
+        loadTransferPageElements(currentUser, model, page, size);
+        //////
 
-        //For display user's transfers from his PayMyBuddyAccount
-        List<TransferDto> transfersDto = transferService
-                .getTransfersDtoByBankAccount(currentUser.getPayMyBuddyBankAccount());
-        model.addAttribute( "transfers",transfersDto);
-
-        //For add a new buddy
+        //////For add a new buddy
         UserDto buddy = new UserDto();
         model.addAttribute("buddy", buddy);
+        //////
 
-        //For add a new transfer
+        //////For add a new transfer
         TransferDto transferDto = new TransferDto();
         model.addAttribute("transfer", transferDto);
+        //////
 
         return "transfer";
     }
+
+    private void loadTransferPageElements(User currentUser, Model model,
+                                          Optional<Integer> page, Optional<Integer> size) {
+
+        //////For display user's buddies
+        List<User> buddies = currentUser.getUsersConnexions();
+        List<UserDto> buddiesDto = UserMapper.convertUserListToUserDtoList(buddies);
+        model.addAttribute("buddies", buddiesDto);
+        //////
+
+        //////For Pagination
+        int currentPage = page.orElse(1);// Définis le numéro de page, =1 si pas spécifié
+        int pageSize = size.orElse(5);// Définis le nombre d'éléments par page, toujours 5 ici car jamais spécifié
+
+        //Get transfers associated with the user's BankAccount and converts them into a pagination of transfers
+        PayMyBuddyBankAccount accountOfCurrentUser = currentUser.getPayMyBuddyBankAccount();
+        List<TransferDto> transfersDtoOfCurrentUser = transferService.getTransfersDtoByBankAccount(accountOfCurrentUser);
+        Page<TransferDto> transfersDtoPage = transferMapper.convertListTransferDtoToPageOfTransferDto(PageRequest.of(
+                currentPage - 1, pageSize), transfersDtoOfCurrentUser);
+
+        model.addAttribute("transfers", transfersDtoPage);
+
+        //Generation of page numbers for the paging UI
+        int totalPages = transfersDtoPage.getTotalPages();// On récupère le nombre total de pages
+        if (totalPages > 0) {//On vérifie que ce nombre est supérieur à 0
+            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)//crée un flux de "int" de 1 à "totalPages" inclus
+                    .boxed() // convertit les entiers du flux en objet Integer
+                    .collect(Collectors.toList()); // collecte les Integers du flux et les places dans une liste
+            model.addAttribute("pageNumbers", pageNumbers);
+        }
+        //////
+    }
+
+    private void loadTransferPageElements(User currentUser, Model model, TransferDto transferDto) {
+        model.addAttribute("transfer",transferDto);
+        UserDto buddy = new UserDto();
+        model.addAttribute("buddy",buddy);
+        loadTransferPageElements(currentUser, model, Optional.empty(), Optional.empty());
+    }
+
+    private void loadTransferPageElements(User currentUser, Model model, UserDto buddy) {
+        model.addAttribute("buddy",buddy);
+        TransferDto transferDto = new TransferDto();
+        model.addAttribute("transfer",transferDto);
+        loadTransferPageElements(currentUser, model, Optional.empty(), Optional.empty());
+    }
+
 
     @PostMapping("/transfer/addBuddy")
     public String addBuddy(@ModelAttribute("buddy") UserDto buddy,
                            @AuthenticationPrincipal UserDetails userDetails,
                            //@ModelAttribute permet à Spring de récupérer les données saisies dans un formulaire
                            //correctement annoté (<form method="post" th:action="@{/transfer/addBuddy}" th:object="${buddy}">).
-                           //Et donc construire un objet user avec.
+                           //Et donc construire un objet userDto avec.
 
                            BindingResult result,
                            //Sert à collecter les erreurs choisis plus bas et à les gérer.
@@ -77,26 +129,19 @@ public class TransferController {
                            Model model) {
 
         String emailOfNewBuddy = buddy.getEmail();
-
         User currentUser = userService.getUserByEmail(userDetails.getUsername());
-        // TODO: Modifier le User en UserDto
-
         User buddyToAdd = userService.getUserByEmail(buddy.getEmail());
 
         if (emailOfNewBuddy == null || emailOfNewBuddy.isBlank()) {
             result.rejectValue("email", null,
                     "Please fill in your buddy's email");
-
         } else if (buddyToAdd == null) {
             result.rejectValue("email", null,
                     "There is no account associated to " + emailOfNewBuddy);
-
         } else if (emailOfNewBuddy.equals(currentUser.getEmail())) {
             result.rejectValue("email", null,
                     "Really? it's too sad... go get some friends");
-
         } else {
-
             //Check that new buddy is not already added
             currentUser.getUsersConnexions().forEach(user -> {
                 if (user.getEmail().equals(buddyToAdd.getEmail())) {
@@ -108,28 +153,12 @@ public class TransferController {
         }
 
         if (result.hasErrors()) {
-
-            model.addAttribute("buddy", buddy);
-
-            //TODO : vérifier si il n'y a pas un meilleur moyen que de recopier la methode /transfer
-            // Pour recharger la meme page avec un message d'erreur approprié
-            List<User> buddies = currentUser.getUsersConnexions();
-            List<UserDto> buddiesDto = UserMapper.convertUserListToUserDtoList(buddies);
-            model.addAttribute("buddies", buddiesDto);
-
-            TransferDto transfer = new TransferDto();
-            model.addAttribute("transfer", transfer);//
-
-            List<TransferDto> transfersDto = transferService
-                    .getTransfersDtoByBankAccount(currentUser.getPayMyBuddyBankAccount());
-            model.addAttribute( "transfers",transfersDto);
-
+            loadTransferPageElements(currentUser, model,buddy);
             return "/transfer";
         }
 
-        currentUser.addConnexion(buddyToAdd); //TODO passer par une classe Service pour faire ça?
+        currentUser.addConnexion(buddyToAdd); //TODO passer par une classe Service pour faire ça? Voir pour simplement supprimer cette ligne
         userService.saveUser(currentUser);
-
 
         return "redirect:/transfer?success";
         // TODO : rajouter un message de confirmation attention a ne pas générer d'autre message de succès inappropriées
@@ -165,7 +194,9 @@ public class TransferController {
         BankAccount senderAccount = currentUser.getPayMyBuddyBankAccount();
         double transferAmount = transferDto.getAmount();
 
+
         if (transferAmount <= 0) {
+
             result.rejectValue("amount", null,
                     "Incorrect amount value");
         } else if (senderAccount.getAccountBalance() <= transferAmount) {
@@ -174,27 +205,10 @@ public class TransferController {
         }
 
         if (result.hasErrors()) {
-
-            //TODO : vérifier si il n'y a pas un meilleur moyen que de recopier la methode /transfer
-            // Pour recharger la meme page avec un message d'erreur approprié
-
-            UserDto buddy = new UserDto();
-            model.addAttribute("buddy", buddy);
-
-            List<User> buddies = currentUser.getUsersConnexions();
-            List<UserDto> buddiesDto = UserMapper.convertUserListToUserDtoList(buddies);
-            model.addAttribute("buddies", buddiesDto);
-
-            TransferDto transfer = new TransferDto();
-            model.addAttribute("transfer", transfer);
-
-            List<TransferDto> transfersDto = transferService
-                    .getTransfersDtoByBankAccount(currentUser.getPayMyBuddyBankAccount());
-            model.addAttribute( "transfers",transfersDto);
-
+            loadTransferPageElements(currentUser,model,transferDto);
             return "/transfer";
         }
-        Transfer transfer = transferMapper.convertTransferDtoToTransfer(transferDto,currentUser.getEmail());
+        Transfer transfer = transferMapper.convertTransferDtoToTransfer(transferDto, currentUser.getEmail());
         transferService.createNewTransfer(transfer);
         // TODO : utiliser transfersSERVICE . SAVE DU TRANSFER/ UserNameOfSenderAccount
         //  définis dans /transfer/sendMoney (set juste au dessus)
@@ -208,30 +222,4 @@ public class TransferController {
         return "redirect:/transfer?success";
         // TODO : rajouter un message de confirmation attention a ne pas générer d'autre message de succès inappropriées
     }
-
-
-
-
-
-    /*private void loadTransferPageElements(User currentUser, Model model) {
-        List<User> buddies = currentUser.getUsersConnexions();
-        List<UserDto> buddiesDto = UserMapper.convertUserListToUserDtoList(buddies);
-        model.addAttribute("buddies", buddiesDto);
-
-        List<TransferDto> transfersDto = transferService
-                .getTransfersDtoByBankAccount(currentUser.getPayMyBuddyBankAccount());
-        model.addAttribute("transfers", transfersDto);
-
-        UserDto buddy = new UserDto();
-        model.addAttribute("buddy", buddy);
-
-        TransferDto transferDto = new TransferDto();
-        model.addAttribute("transfer", transferDto);
-    }*/
-    //TODO: pour essayer d'éviter de duplique du code mais ne récupére pas les erreurs. A retravailler ou laisser tomber
-    // Regarde pour ajouter le resultat du bindigResul au modele
-    /*    if (result.hasErrors()) {
-        for (FieldError error : result.getFieldErrors()) {
-            model.addAttribute(error.getField() + "Error", error.getDefaultMessage());
-        }*/
 }

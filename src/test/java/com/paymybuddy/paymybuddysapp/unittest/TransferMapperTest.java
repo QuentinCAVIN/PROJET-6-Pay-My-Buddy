@@ -7,6 +7,7 @@ import com.paymybuddy.paymybuddysapp.model.Transfer;
 import com.paymybuddy.paymybuddysapp.model.User;
 import com.paymybuddy.paymybuddysapp.service.UserService;
 import org.assertj.core.api.Assertions;
+import org.glassfish.jaxb.core.v2.TODO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -100,5 +101,12 @@ public class TransferMapperTest {
         Assertions.assertThat(transferDto.getDescription()).isEqualTo(transfer.getDescription());
         Assertions.assertThat(transferDto.getBuddyUsername()).isEqualTo(senderUser.getEmail());
         Assertions.assertThat(transferDto.getDate()).isEqualTo(transfer.getDate());
+    }
+
+    @Test
+    public void convertListTransferDtoToPageOfTransferDtoTest(){
+        Assertions.fail("implémenter le test");
+        //TODO rediger le test en s'aidant du lien ci dessous
+        //https://www.baeldung.com/spring-data-jpa-convert-list-page
     }
 }
