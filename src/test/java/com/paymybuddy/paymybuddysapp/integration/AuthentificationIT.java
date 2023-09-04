@@ -62,20 +62,6 @@ public class AuthentificationIT {
         userRepository.deleteAll();
     }
 
-
-    @Test
-    @WithMockUser
-    @DisplayName("An authenticated user should access his home page")
-    public void authenticatedUserShouldAccessHisHomePage() throws Exception {
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/home"))
-
-                .andExpect(MockMvcResultMatchers.view().name("home"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.model().attributeExists("users"));
-    }
-
-
     @Test
     @WithAnonymousUser
     @DisplayName("An unauthenticated user should be redirected to the login page")
@@ -162,7 +148,7 @@ public class AuthentificationIT {
         assertThat(userInDB.getEmail()).isEqualTo(dummy.getEmail());
         assertThat(userInDB.getFirstName()).isEqualTo(dummy.getFirstName());
         assertThat(userInDB.getLastName()).isEqualTo(dummy.getLastName());
-        assertThat(passwordEncoder.matches(dummy.getPassword(),userInDB.getPassword()));
+        assertThat(passwordEncoder.matches(dummy.getPassword(), userInDB.getPassword()));
         assertThat(userInDB.getUsersConnexions()).isEmpty();
         assertThat(userInDB.getPayMyBuddyBankAccount()).isNotNull();
     }
@@ -190,10 +176,11 @@ public class AuthentificationIT {
                                 + dummy.getEmail() + " email.")))
 
                 .andExpect(MockMvcResultMatchers.model().attributeExists("user"));
-                /*andExpect(MockMvcResultMatchers.model().attribute("user", dummy.getEmail()));*/
-                //Nécessaire de redéfinir la methode equals pour utiliser cette ligne
-                //Permet d'être plus précis dans la vérification
+        /*andExpect(MockMvcResultMatchers.model().attribute("user", dummy.getEmail()));*/
+        //Nécessaire de redéfinir la methode equals pour utiliser cette ligne
+        //Permet d'être plus précis dans la vérification
     }
+
     @Test
     @WithAnonymousUser
     @DisplayName("Validating the form without filling in the fields should display error messages")

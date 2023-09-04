@@ -17,5 +17,8 @@ public interface BankAccountService {
     void transfer(Transfer transfer);
 
     void saveBankAccount(BankAccount bankAccount);
+
+    //TODO TEST ci dessous
+    PersonalBankAccount getMasterBankAccount();
 }
 

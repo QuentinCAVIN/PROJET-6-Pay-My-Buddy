@@ -202,18 +202,23 @@ public class TransferController {
         User currentUser = userService.getUserByEmail(userDetails.getUsername());
         User userSelected = userService.getUserByEmail(transferDto.getBuddyUsername());
 
-        BankAccount senderAccount = currentUser.getPayMyBuddyBankAccount();
+        PayMyBuddyBankAccount senderAccount = currentUser.getPayMyBuddyBankAccount();
         double transferAmount = transferDto.getAmount();
 
         if (userSelected == null){
             result.rejectValue("buddyUsername", null,
                     "Please select a buddy");
         }
+        //TODO A TESTER
+        transferService.takeTransferPercentage(transferAmount,senderAccount);
+        //TODO : A confirmer, le Transactional empéche le compte d'être débité si la transaction ne se fait pas
+        // a cause de "plus assez d'argent sur le compte apres le prélévement des 5%"
+        // Dans ce cas est-il necessaire d'ajouter des condition supplémentaire?
 
         if (transferAmount <= 0) {
-
             result.rejectValue("amount", null,
                     "Incorrect amount value");
+
         } else if (senderAccount.getAccountBalance() <= transferAmount) {
             result.rejectValue("amount", null,
                     "you do not have enough money in your account");
@@ -225,17 +230,12 @@ public class TransferController {
         }
         Transfer transfer = transferMapper.convertTransferDtoToTransfer(transferDto, currentUser.getEmail());
         transferService.createNewTransfer(transfer);
-        // TODO : utiliser transfersSERVICE . SAVE DU TRANSFER/ UserNameOfSenderAccount
-        //  définis dans /transfer/sendMoney (set juste au dessus)
-        //  +UsernameOfSenderAccount definis dans le @ModelAttribute selectionné par l'utilisateur via menu déroulan
-        //      +Amount définis ModelAttribute.
 
         bankAccountService.transfer(transfer);
         model.addAttribute("successMessageSendMoney", "Your transfer is sent to " +
                 transferDto.getBuddyUsername() + "!");
         loadTransferPageElements(currentUser , model);
-        //return "redirect:/transfer?success";
+
         return "/transfer";
-        // TODO : rajouter un message de confirmation attention a ne pas générer d'autre message de succès inappropriées
     }
 }

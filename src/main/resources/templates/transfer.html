@@ -154,35 +154,6 @@
 
         <!-- résultat obtenu en combinant cet exemple : https://www.baeldung.com/spring-thymeleaf-pagination et
          la doc Bootstrap : https://getbootstrap.com/docs/5.3/components/pagination/ -->
-
-
-
-        <!-- A DECALER SUR UNE AUTRE PAGE HTML-->
-
-
-        <table class="table table-bordered table-hover">
-            <thead class="table-dark">
-            <tr>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Email</th>
-            </tr>
-            </thead>
-            <tbody>
-            <!--      FOURNIR DES DONNES A LA VUE          -->
-            <tr th:each="user : ${buddies}">
-                <td th:text="${user.firstName}"></td>
-                <td th:text="${user.lastName}"></td>
-                <td th:text="${user.email}"></td>
-                <td><a th:href="@{/transfer/deleteBuddy(email=${user.email})}">Delete</a></td>
-                <!--Ici on passe un paramètre email à l'endpoint qui correspond à l'email du buddy-->
-
-            </tr>
-            </tbody>
-        </table>
-        <div th:each="user : ${buddies}"> <!-- J'essaye d'afficher ici les buddy de l'utilisateur connecté-->
-            <p th:text="${user.firstName}"></p>
-        </div>
     </section>
 
 

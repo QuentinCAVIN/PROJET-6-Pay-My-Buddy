@@ -3,6 +3,7 @@ package com.paymybuddy.paymybuddysapp.unittest;
 import com.paymybuddy.paymybuddysapp.model.PayMyBuddyBankAccount;
 import com.paymybuddy.paymybuddysapp.model.PersonalBankAccount;
 import com.paymybuddy.paymybuddysapp.model.Transfer;
+import com.paymybuddy.paymybuddysapp.repository.BankAccountRepository;
 import com.paymybuddy.paymybuddysapp.repository.PayMyBuddyBankAccountRepository;
 import com.paymybuddy.paymybuddysapp.repository.PersonalBankAccountRepository;
 import com.paymybuddy.paymybuddysapp.service.BankAccountServiceImpl;
@@ -20,6 +21,9 @@ public class BankAccountServiceTest {
     PayMyBuddyBankAccountRepository payMyBuddyBankAccountRepository;
     @Mock
     PersonalBankAccountRepository personalBankAccountRepository;
+    @Mock
+    BankAccountRepository bankAccountRepository;
+
     @InjectMocks
     BankAccountServiceImpl bankAccountService;
 
@@ -113,5 +117,18 @@ public class BankAccountServiceTest {
                 .save(payMyBuddySenderBankAccount);
         Mockito.verify(personalBankAccountRepository, Mockito.times(1))
                 .save(personalBankAccount);
+    }
+
+    @Test
+    public void getMasterBankAccountTest(){
+        PersonalBankAccount masterBankAccount = new PersonalBankAccount();
+        masterBankAccount.setAccountBalance(10000);
+        masterBankAccount.setIban("666");
+        Mockito.when(bankAccountRepository.findByIban("666")).thenReturn(masterBankAccount);
+
+        PersonalBankAccount personalBankAccount = bankAccountService.getMasterBankAccount();
+
+        Mockito.verify(bankAccountRepository, Mockito.times(1)).findByIban("666");
+        Assertions.assertThat(personalBankAccount).isEqualTo(masterBankAccount);
     }
 }

@@ -6,10 +6,7 @@ import com.paymybuddy.paymybuddysapp.mapper.TransferMapper;
 import com.paymybuddy.paymybuddysapp.model.*;
 import com.paymybuddy.paymybuddysapp.repository.TransferRepository;
 import com.paymybuddy.paymybuddysapp.repository.UserRepository;
-import com.paymybuddy.paymybuddysapp.service.DateProvider;
-import com.paymybuddy.paymybuddysapp.service.TransferService;
-import com.paymybuddy.paymybuddysapp.service.TransferServiceImpl;
-import com.paymybuddy.paymybuddysapp.service.UserServiceImpl;
+import com.paymybuddy.paymybuddysapp.service.*;
 import net.bytebuddy.matcher.ElementMatcher;
 import org.assertj.core.api.Assertions;
 import org.glassfish.jaxb.core.v2.TODO;
@@ -35,6 +32,9 @@ public class TransferServiceImplTest {
     private DateProvider dateProvider;
     @Mock
     private TransferMapper transferMapper;
+
+    @Mock
+    BankAccountService bankAccountService;
     @InjectMocks
     private TransferServiceImpl transferService;
 
@@ -186,5 +186,24 @@ public class TransferServiceImplTest {
                 .convertTransferToTransferDto(ArgumentMatchers.any(Transfer.class),ArgumentMatchers.eq(true));
         Mockito.verify(transferMapper,Mockito.times(1))
                 .convertTransferToTransferDto(ArgumentMatchers.any(Transfer.class),ArgumentMatchers.eq(false));
+    }
+
+    @Test
+    public void takeTransferPercentage(){
+
+        PersonalBankAccount masterBankAccount = new PersonalBankAccount();
+        masterBankAccount.setAccountBalance(10000);
+        masterBankAccount.setIban("666");
+
+        Double senderAccountBeforeLevy = dummyAccount.getAccountBalance();
+
+        Mockito.when(bankAccountService.getMasterBankAccount()).thenReturn(masterBankAccount);
+        transferService.takeTransferPercentage(100 , dummyAccount);
+
+        Assertions.assertThat(dummyAccount.getAccountBalance()).isEqualTo(
+                senderAccountBeforeLevy -(100 * 0.05));
+
+        Mockito.verify(bankAccountService, Mockito.times(1)).saveBankAccount(dummyAccount);
+        Mockito.verify(bankAccountService, Mockito.times(1)).saveBankAccount(masterBankAccount);
     }
 }
