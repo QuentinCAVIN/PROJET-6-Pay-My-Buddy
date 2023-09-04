@@ -62,7 +62,6 @@ public class TransferMapper {
         return transferDto;
     }
 
-    //TODO: A TESTER CI DESSOUS
     public Page<TransferDto> convertListTransferDtoToPageOfTransferDto(Pageable pageable,
                                                                        List<TransferDto> listToConvert) {
     // L'objet Pageable passé en paramètre est construit dans le controller: PageRequest.of(currentPage - 1, pageSize)

@@ -105,8 +105,14 @@ public class TransferControllerIT {
         //User Add Buddy
         mockMvc.perform(MockMvcRequestBuilders.post("/transfer/addBuddy")
                         .param("email", buddyToAdd.getEmail()))
-                .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-                .andExpect(MockMvcResultMatchers.redirectedUrl("/transfer?success"));
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("/transfer"))
+                .andExpect(MockMvcResultMatchers.content()
+                        .string(CoreMatchers.containsString("Your new buddy is added!")))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("buddies"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("buddy"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("transfer"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("transfers"));
 
         //checks that user and his buddy are connected
         User currentUser = userService.getUserByEmail(this.currentUser.getEmail());
@@ -236,8 +242,15 @@ public class TransferControllerIT {
                         .param("buddyUsername", transferDto.getBuddyUsername())
                         .param("amount", String.valueOf(transferDto.getAmount()))
                         .param("description", transferDto.getDescription()))
-                .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-                .andExpect(MockMvcResultMatchers.redirectedUrl("/transfer?success"));
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("/transfer"))
+                .andExpect(MockMvcResultMatchers.content()
+                        .string(CoreMatchers.containsString("Your transfer is sent to " +
+                                transferDto.getBuddyUsername() + "!")))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("buddies"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("buddy"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("transfer"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("transfers"));
 
         //checks that the bank accounts of currentUser and his buddy correspond to the transfer made
         PayMyBuddyBankAccount currentUserPayMyBuddyBankAccount = (userService.getUserByEmail(currentUser.getEmail())
@@ -247,7 +260,7 @@ public class TransferControllerIT {
 
         assertThat(currentUserPayMyBuddyBankAccount.getAccountBalance()).isEqualTo(500.00 - 50.00);
         assertThat(receivingUserPayMyBuddyBankAccount.getAccountBalance()).isEqualTo(500.00 + 50.00);
-        //TODO: ARRET DU TEST, Il Faudra vérifier que le transfer est bien stocké en base de donée + la vue success est bien gérée
+        //TODO: ARRET DU TEST, Il Faudra vérifier que le transfer est bien stocké en base de donnée
     }
 
 /* CI DESSOUS METHODE A TESTER

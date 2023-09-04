@@ -115,6 +115,14 @@ public class TransferController {
         loadTransferPageElements(currentUser, model, Optional.empty(), Optional.empty());
     }
 
+    private void loadTransferPageElements(User currentUser, Model model) {
+        UserDto buddy = new UserDto();
+        model.addAttribute("buddy",buddy);
+        TransferDto transferDto = new TransferDto();
+        model.addAttribute("transfer",transferDto);
+        loadTransferPageElements(currentUser, model, Optional.empty(), Optional.empty());
+    }
+
 
     @PostMapping("/transfer/addBuddy")
     public String addBuddy(@ModelAttribute("buddy") UserDto buddy,
@@ -160,7 +168,10 @@ public class TransferController {
         currentUser.addConnexion(buddyToAdd); //TODO passer par une classe Service pour faire ça? Voir pour simplement supprimer cette ligne
         userService.saveUser(currentUser);
 
-        return "redirect:/transfer?success";
+        model.addAttribute("successMessageSendMoney", "Your new buddy is added!");
+        loadTransferPageElements(currentUser , model);
+        //return "redirect:/transfer?success";
+        return "/transfer";
         // TODO : rajouter un message de confirmation attention a ne pas générer d'autre message de succès inappropriées
         //On recharge la page
     }
@@ -194,6 +205,10 @@ public class TransferController {
         BankAccount senderAccount = currentUser.getPayMyBuddyBankAccount();
         double transferAmount = transferDto.getAmount();
 
+        if (userSelected == null){
+            result.rejectValue("buddyUsername", null,
+                    "Please select a buddy");
+        }
 
         if (transferAmount <= 0) {
 
@@ -215,11 +230,12 @@ public class TransferController {
         //  +UsernameOfSenderAccount definis dans le @ModelAttribute selectionné par l'utilisateur via menu déroulan
         //      +Amount définis ModelAttribute.
 
-
-        // TODO : STOP HERE!!!! /REPRENDRE LA SAUVEGARDE D'UN TRANSFER EN BDD. IMPLEMENTER TRANSFER SERVICE POUR ça
-
         bankAccountService.transfer(transfer);
-        return "redirect:/transfer?success";
+        model.addAttribute("successMessageSendMoney", "Your transfer is sent to " +
+                transferDto.getBuddyUsername() + "!");
+        loadTransferPageElements(currentUser , model);
+        //return "redirect:/transfer?success";
+        return "/transfer";
         // TODO : rajouter un message de confirmation attention a ne pas générer d'autre message de succès inappropriées
     }
 }

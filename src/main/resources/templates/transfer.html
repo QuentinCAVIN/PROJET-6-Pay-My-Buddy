@@ -40,6 +40,12 @@
                 <!-- Donnée transmise par un formulaire -->
                 <form method="post" th:action="@{/transfer/addBuddy}" th:object="${buddy}">
                     <!-- th: object=${user} fait le lien avec le ModelAttribute (voir package controller). -->
+
+
+                    <p th:text="${successMessage}" class="text-success"
+                       th:if="${not #strings.isEmpty(successMessageAddBuddy)}"></p>
+                    <!--pour ajouter le message : model.addAttribute("successMessageAddBuddy", "mon message"); -->
+
                     <p>Please fill the email of your new buddy</p>
 
 
@@ -62,6 +68,8 @@
             </div>
         </div>
 
+        <p th:text="${successMessageSendMoney}" class="text-success"
+           th:if="${not #strings.isEmpty(successMessageSendMoney)}"></p>
         <form class="row" method="post" th:action="@{/transfer/sendMoney}" th:object="${transfer}">
             <div class="form-group col-md-4">
 
@@ -70,13 +78,17 @@
                     <option th:each="user : ${buddies}" th:value="${user.email}" th:text="${user.firstName}"></option>
                     <!-- Va permettre d'utiliser la liste de buddy de l'utilisateurdans le menu déroulant-->
                 </select>
+                <p th:errors=*{buddyUsername} class="text-danger"
+                   th:if="${#fields.hasErrors('buddyUsername')}"></p>
+
             </div>
 
             <div class="col form-group">
                 <input type="number" class="form-control" id="amount" th:field="*{amount}" step="0.01" placeholder="0€">
+                <p th:errors=*{amount} class="text-danger"
+                   th:if="${#fields.hasErrors('amount')}"></p>
             </div>
-            <p th:errors=*{amount} class="text-danger"
-               th:if="${#fields.hasErrors('amount')}"></p>
+
 
             <div class="col form-group">
                 <input type="text" class="form-control" id="description" th:field="*{description}"

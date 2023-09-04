@@ -126,13 +126,4 @@ public class AuthentificationControllerTest {
 
         Mockito.verify(userService,Mockito.times(0)).createNewUser(any(User.class));
     }
-
-    @Test
-    public void home_returnHomeView() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/home"))
-
-                .andExpect(MockMvcResultMatchers.view().name("home"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.model().attributeExists("users"));
-    }
 }

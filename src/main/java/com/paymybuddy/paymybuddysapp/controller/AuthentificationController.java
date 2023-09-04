@@ -81,20 +81,6 @@ public class AuthentificationController {
         //On recharge la page
     }
 
-
-    @GetMapping("/home")
-    public String home(Model model) { // Spring va fournir une instance de cet objet Model (keske C?)
-        List<User> users = userService.getUsers();
-        List<UserDto> usersDto = userMapper.convertUserListToUserDtoList(users);
-        model.addAttribute("users", usersDto); //addAttibute va permettre d'ajouter
-        // au model, un objet. Le premier paramètre c'est le nom de l'objet sur la page html
-        // ,le second c'est l'objet.
-        //c'est grace à ça, et avec Thymeleaf, qu'on va pouvoir utiliser les objets dans le html
-        //en utilisant les noms de l'objet ${users}
-
-        return "home";
-    }
-
     // TODO : Methode non testée pour l'instant, a Intégrer d'abord au bonne endroit
     @Transactional
     @GetMapping("/deleteUser/{id}")
