@@ -1,16 +1,24 @@
 package com.paymybuddy.paymybuddysapp.service;
 
 import com.paymybuddy.paymybuddysapp.model.BankAccount;
-import com.paymybuddy.paymybuddysapp.repository.BankAccountRepository;
+import com.paymybuddy.paymybuddysapp.model.PayMyBuddyBankAccount;
+import com.paymybuddy.paymybuddysapp.model.PersonalBankAccount;
+import com.paymybuddy.paymybuddysapp.model.Transfer;
+import com.paymybuddy.paymybuddysapp.repository.PayMyBuddyBankAccountRepository;
+import com.paymybuddy.paymybuddysapp.repository.PersonalBankAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Service
-public class BankAccountService {
-    @Autowired
-    private BankAccountRepository bankAccountRepository;
+import java.util.List;
 
-    public Iterable<BankAccount> getBankAccounts(){
-        return bankAccountRepository.findAll();
-    }
+@Service
+public interface BankAccountService {
+
+    void transfer(Transfer transfer);
+
+    void saveBankAccount(BankAccount bankAccount);
+
+    //TODO TEST ci dessous
+    PersonalBankAccount getMasterBankAccount();
 }
+

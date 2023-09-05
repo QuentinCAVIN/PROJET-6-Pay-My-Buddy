@@ -1,6 +1,7 @@
 package com.paymybuddy.paymybuddysapp.controller;
 
 import com.paymybuddy.paymybuddysapp.dto.UserDto;
+import com.paymybuddy.paymybuddysapp.mapper.UserMapper;
 import com.paymybuddy.paymybuddysapp.model.User;
 import com.paymybuddy.paymybuddysapp.service.UserService;
 
@@ -20,6 +21,7 @@ import java.util.List;
 public class AuthentificationController {
 
     private UserService userService;
+    UserMapper userMapper = new UserMapper();
 
     public AuthentificationController(UserService userService) { //ça ne peut pas être remplacé par lombock?(@Data)
         this.userService = userService;
@@ -38,7 +40,6 @@ public class AuthentificationController {
         model.addAttribute("user", userDto);
         return "newAccount";
     }
-
 
     @PostMapping("/registration/saveUser")
     public String saveUser(@Valid @ModelAttribute("user") UserDto userDto,
@@ -73,30 +74,19 @@ public class AuthentificationController {
             return "/newAccount";
 
         }
-        userService.saveUserDto(userDto);
+
+        User newUser = userMapper.convertUserDtotoUser(userDto);
+        userService.createNewUser(newUser);
         return "redirect:/login?success";
         //On recharge la page
     }
 
-
-    @GetMapping("/home")
-    public String home(Model model) { // Spring va fournir une instance de cet objet Model (keske C?)
-        List<UserDto> users = userService.getUsersDto();
-        model.addAttribute("users", users); //addAttibute va permettre d'ajouter
-        // au model, un objet. Le premier paramètre c'est le nom de l'objet sur la page html
-        // ,le second c'est l'objet.
-        //c'est grace à ça, et avec Thymeleaf, qu'on va pouvoir utiliser les objets dans le html
-        //en utilisant les noms de l'objet ${users}
-
-        return "home";
-    }
-
-
+    // TODO : Methode non testée pour l'instant, a Intégrer d'abord au bonne endroit
     @Transactional
     @GetMapping("/deleteUser/{id}")
     public ModelAndView deleteUser(@PathVariable("id") final int id) {
         userService.deleteUser(id);
         return new ModelAndView("redirect:/home");
     }
-    // TODO : Methode non testée pour l'instant, a Intégrer d'abord au bonne endroit
+
 }

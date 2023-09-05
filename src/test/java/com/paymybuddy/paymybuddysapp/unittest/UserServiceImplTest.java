@@ -1,6 +1,8 @@
 package com.paymybuddy.paymybuddysapp.unittest;
 
 import com.paymybuddy.paymybuddysapp.dto.UserDto;
+import com.paymybuddy.paymybuddysapp.model.PayMyBuddyBankAccount;
+import com.paymybuddy.paymybuddysapp.model.PersonalBankAccount;
 import com.paymybuddy.paymybuddysapp.model.User;
 import com.paymybuddy.paymybuddysapp.repository.UserRepository;
 import com.paymybuddy.paymybuddysapp.service.UserServiceImpl;
@@ -14,39 +16,49 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-
-
-import static org.mockito.ArgumentMatchers.any;
-
 
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceImplTest {
 
     @Mock
-    private  UserRepository userRepository;
+    private UserRepository userRepository;
     @Mock
-    private  PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
     @InjectMocks
-   private  UserServiceImpl userService;
+    private UserServiceImpl userService;
 
     private static User dummy;
+    private static PayMyBuddyBankAccount dummyAccount;
+    private static PayMyBuddyBankAccount ymmudAccount;
+    private static PersonalBankAccount dummyPersonnalAccount;
     private static User ymmud;
     private static List<User> dummies;
     private static UserDto dummyDto;
 
 
     @BeforeEach
-    public void setup(){
+    public void setup() {
         dummy = new User();
         dummy.setId(1);
         dummy.setEmail("dum@my");
         dummy.setPassword("1234");
         dummy.setFirstName("Dum");
         dummy.setLastName("MY");
+        dummy.setUsersConnexions(Arrays.asList(ymmud));
+        dummy.setUsersConnected(null);
+        dummyAccount = new PayMyBuddyBankAccount();
+        dummyAccount.setId(1);
+        dummyAccount.setAccountBalance(1234);
+        dummy.setPayMyBuddyBankAccount(dummyAccount);
+        dummyPersonnalAccount = new PersonalBankAccount();
+        dummyPersonnalAccount.setId(5);
+        dummyPersonnalAccount.setIban("123456789");
+        dummyPersonnalAccount.setAccountBalance(12345);
+        dummy.setPersonalBankAccount(dummyPersonnalAccount);
 
         ymmud = new User();
         ymmud.setId(2);
@@ -54,8 +66,15 @@ public class UserServiceImplTest {
         ymmud.setPassword("4321");
         ymmud.setFirstName("muD");
         ymmud.setLastName("YM");
+        ymmud.setUsersConnexions(null);
+        ymmud.setUsersConnected(Arrays.asList(dummy));
+        ymmud.setPayMyBuddyBankAccount(new PayMyBuddyBankAccount());
+        ymmudAccount = new PayMyBuddyBankAccount();
+        ymmudAccount.setId(2);
+        ymmudAccount.setAccountBalance(4321);
+        ymmud.setPayMyBuddyBankAccount(ymmudAccount);
 
-        dummies = Arrays.asList(dummy,ymmud);
+        dummies = Arrays.asList(dummy, ymmud);
 
         dummyDto = new UserDto();
         dummyDto.setId(1);
@@ -63,6 +82,8 @@ public class UserServiceImplTest {
         dummyDto.setPassword("1234");
         dummyDto.setFirstName("Dum");
         dummyDto.setLastName("MY");
+        dummyDto.setPayMyBuddyBankAccount(dummyAccount);
+        dummyDto.setUsersConnexions(new ArrayList<>());
     }
 
 
@@ -72,71 +93,97 @@ public class UserServiceImplTest {
 
         User user = userService.getUserByEmail(dummy.getEmail());
 
-        Mockito.verify(userRepository,Mockito.times(1)).findByEmail(dummy.getEmail());
+        Mockito.verify(userRepository, Mockito.times(1)).findByEmail(dummy.getEmail());
         Assertions.assertThat(user.getId()).isEqualTo(dummy.getId());
         Assertions.assertThat(user.getEmail()).isEqualTo(dummy.getEmail());
         Assertions.assertThat(user.getPassword()).isEqualTo(dummy.getPassword());
         Assertions.assertThat(user.getFirstName()).isEqualTo(dummy.getFirstName());
         Assertions.assertThat(user.getLastName()).isEqualTo(dummy.getLastName());
-    }
-
-    @Test
-    public void getUserDtoByEmailTest() {
-        Mockito.when(userRepository.findByEmail(dummy.getEmail())).thenReturn(dummy);
-
-        UserDto userDto = userService.getUserDtoByEmail(dummy.getEmail());
-
-        Mockito.verify(userRepository,Mockito.times(1)).findByEmail(dummy.getEmail());
-        Assertions.assertThat(userDto.getId()).isEqualTo(dummy.getId());
-        Assertions.assertThat(userDto.getEmail()).isEqualTo(dummy.getEmail());
-        Assertions.assertThat(userDto.getPassword()).isEqualTo(dummy.getPassword());
-        Assertions.assertThat(userDto.getFirstName()).isEqualTo(dummy.getFirstName());
-        Assertions.assertThat(userDto.getLastName()).isEqualTo(dummy.getLastName());
-    }
-
-    @Test
-    public void getUsersDtoTest() {
-        Mockito.when(userRepository.findAll()).thenReturn(dummies);
-
-
-        List<UserDto> usersDto = userService.getUsersDto();
-        UserDto userDto1 = usersDto.get(0);
-        UserDto userDto2 = usersDto.get(1);
-
-
-        Mockito.verify(userRepository,Mockito.times(1)).findAll();
-        Assertions.assertThat(usersDto).hasSize(2);
-
-        Assertions.assertThat(userDto1.getId()).isEqualTo(dummy.getId());
-        Assertions.assertThat(userDto1.getEmail()).isEqualTo(dummy.getEmail());
-        Assertions.assertThat(userDto1.getPassword()).isEqualTo(dummy.getPassword());
-        Assertions.assertThat(userDto1.getFirstName()).isEqualTo(dummy.getFirstName());
-        Assertions.assertThat(userDto1.getLastName()).isEqualTo(dummy.getLastName());
-
-        Assertions.assertThat(userDto2.getId()).isEqualTo(ymmud.getId());
-        Assertions.assertThat(userDto2.getEmail()).isEqualTo(ymmud.getEmail());
-        Assertions.assertThat(userDto2.getPassword()).isEqualTo(ymmud.getPassword());
-        Assertions.assertThat(userDto2.getFirstName()).isEqualTo(ymmud.getFirstName());
-        Assertions.assertThat(userDto2.getLastName()).isEqualTo(ymmud.getLastName());
+        Assertions.assertThat(user.getPayMyBuddyBankAccount().getAccountBalance())
+                .isEqualTo(dummy.getPayMyBuddyBankAccount().getAccountBalance());
+        Assertions.assertThat(user.getUsersConnexions()).isEqualTo(dummy.getUsersConnexions());
+        Assertions.assertThat((user.getUsersConnected())).isEqualTo(dummy.getUsersConnected());
+        Assertions.assertThat(dummy.getPersonalBankAccount()).isEqualTo(dummyPersonnalAccount);
     }
 
     @Test
     public void saveUserTest() {
 
-        Mockito.when(passwordEncoder.encode(dummyDto.getPassword())).thenReturn("encodedPassword");
+        userService.saveUser(dummy);
 
-        userService.saveUserDto(dummyDto);
-
-        Mockito.verify(passwordEncoder,Mockito.times(1)).encode(dummyDto.getPassword());
-        Mockito.verify(userRepository,Mockito.times(1)).save(any(User.class));
+        Mockito.verify(userRepository, Mockito.times(1)).save(dummy);
     }
-
 
     @Test
     public void deleteUserTest() {
 
         userService.deleteUser(1);
 
-        Mockito.verify(userRepository,Mockito.times(1)).deleteById(1);
+        Mockito.verify(userRepository, Mockito.times(1)).deleteById(1);
+    }
+
+    @Test
+    public void createNewUserTest() {
+        String passwordNotEncoded = dummy.getPassword();
+        String passwordEncoded = "encodedPassword";
+
+        Mockito.when(passwordEncoder.encode(dummy.getPassword())).thenReturn(passwordEncoded);
+
+        userService.createNewUser(dummy);
+
+        Mockito.verify(passwordEncoder, Mockito.times(1)).encode(passwordNotEncoded);
+        Mockito.verify(userRepository, Mockito.times(1)).save(dummy);
+        Assertions.assertThat(dummy.getPassword()).isEqualTo(passwordEncoded);
+    }
+
+    @Test
+    public void getUsersTest() {
+        Mockito.when(userRepository.findAll()).thenReturn(dummies);
+
+        List<User> users = userService.getUsers();
+
+        Assertions.assertThat(users).isEqualTo(dummies);
+        Mockito.verify(userRepository, Mockito.times(1)).findAll();
+    }
+
+    @Test
+    public void getUserByPayMyBuddyBankAccountTest(){
+
+        Mockito.when(userRepository.findByPayMyBuddyBankAccount(dummyAccount)).thenReturn(dummy);
+
+        User user = userService.getUserByBankAccount(dummyAccount);
+
+        Mockito.verify(userRepository, Mockito.times(1))
+                .findByPayMyBuddyBankAccount(dummyAccount);
+        Assertions.assertThat(user.getId()).isEqualTo(dummy.getId());
+        Assertions.assertThat(user.getEmail()).isEqualTo(dummy.getEmail());
+        Assertions.assertThat(user.getPassword()).isEqualTo(dummy.getPassword());
+        Assertions.assertThat(user.getFirstName()).isEqualTo(dummy.getFirstName());
+        Assertions.assertThat(user.getLastName()).isEqualTo(dummy.getLastName());
+        Assertions.assertThat(user.getPayMyBuddyBankAccount().getAccountBalance())
+                .isEqualTo(dummy.getPayMyBuddyBankAccount().getAccountBalance());
+        Assertions.assertThat(user.getUsersConnexions()).isEqualTo(dummy.getUsersConnexions());
+        Assertions.assertThat((user.getUsersConnected())).isEqualTo(dummy.getUsersConnected());
+    }
+
+    @Test
+    public void getUserByBankAccountTestWithPayMyBuddyBankAccount() {
+        Mockito.when(userRepository.findByPayMyBuddyBankAccount(dummyAccount)).thenReturn(dummy);
+
+        User user = userService.getUserByBankAccount(dummyAccount);
+
+        Mockito.verify(userRepository,Mockito.times(1))
+                .findByPayMyBuddyBankAccount(dummyAccount);
+        Assertions.assertThat(user).isEqualTo(dummy);
+    }
+
+    @Test
+    public void getUserByBankAccountTestWithPersonalBankAccount() {
+        Mockito.when(userRepository.findByPersonalBankAccount(dummyPersonnalAccount)).thenReturn(dummy);
+
+        User user = userService.getUserByBankAccount(dummyPersonnalAccount);
+        Mockito.verify(userRepository,Mockito.times(1))
+                .findByPersonalBankAccount(dummyPersonnalAccount);
+        Assertions.assertThat(user).isEqualTo(dummy);
     }
 }

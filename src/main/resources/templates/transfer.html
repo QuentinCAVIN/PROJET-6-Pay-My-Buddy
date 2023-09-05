@@ -37,44 +37,62 @@
                 <p>Send Money</p>
 
 
-                    <!-- Donnée transmise par un formulaire -->
-                    <form method="post" th:action="@{/transfer/addBuddy}" th:object="${buddy}">
-                        <!-- th: object=${user} fait le lien avec le ModelAttribute (voir package controller). -->
-                        <p>Please fill the email of your new buddy</p>
+                <!-- Donnée transmise par un formulaire -->
+                <form method="post" th:action="@{/transfer/addBuddy}" th:object="${buddy}">
+                    <!-- th: object=${user} fait le lien avec le ModelAttribute (voir package controller). -->
 
 
-                        <div class="w-100 my-1">
-                            <div class="input-group mb-3">
-                                <span class="input-group-text"></span>
+                    <p th:text="${successMessageAddBuddy}" class="text-success"
+                       th:if="${not #strings.isEmpty(successMessageAddBuddy)}"></p>
+                    <!--pour ajouter le message : model.addAttribute("successMessageAddBuddy", "mon message"); -->
 
-                                <input type="email" class="form-control form-control-sm" th:field="*{email}" id="email"
-                                       placeholder="Your buddy's email">  <!-- th:field donne la correspondance avec les attributs de l’objet associé
+                    <p>Please fill the email of your new buddy</p>
+
+
+                    <div class="w-100 my-1">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text"></span>
+
+                            <input type="email" class="form-control form-control-sm" th:field="*{email}" id="email"
+                                   placeholder="Your buddy's email">  <!-- th:field donne la correspondance avec les attributs de l’objet associé
             attention à la synthaxe particulière *{attribut1}-->
-                            </div>
-                            <p th:errors = *{email} class="text-danger"
-                               th:if="${#fields.hasErrors('email')}"></p>
                         </div>
+                        <p th:errors=*{email} class="text-danger"
+                           th:if="${#fields.hasErrors('email')}"></p>
+                    </div>
 
-                        <button type="submit" class="btn btn-primary ">Add connection</button>
+                    <button type="submit" class="btn btn-primary ">Add connection</button>
 
-
-
-                    </form>
+                </form>
 
             </div>
         </div>
 
-        <form class="row">
+        <p th:text="${successMessageSendMoney}" class="text-success"
+           th:if="${not #strings.isEmpty(successMessageSendMoney)}"></p>
+        <form class="row" method="post" th:action="@{/transfer/sendMoney}" th:object="${transfer}">
             <div class="form-group col-md-4">
-                <select id="inputState" class="form-control">
-                    <option  selected>Select a connection</option>
-                    <option  th:each = "user : ${buddies}" th:text = "${user.firstName}"></option>
+
+                <select id="inputState" class="form-control" th:field="*{buddyUsername}">
+                    <option value="" selected>Select a connection</option>
+                    <option th:each="user : ${buddies}" th:value="${user.email}" th:text="${user.firstName}"></option>
                     <!-- Va permettre d'utiliser la liste de buddy de l'utilisateurdans le menu déroulant-->
                 </select>
+                <p th:errors=*{buddyUsername} class="text-danger"
+                   th:if="${#fields.hasErrors('buddyUsername')}"></p>
+
             </div>
 
             <div class="col form-group">
-                <input type="number" class="form-control" id="amount" placeholder="0€">
+                <input type="number" class="form-control" id="amount" th:field="*{amount}" step="0.01" placeholder="0€">
+                <p th:errors=*{amount} class="text-danger"
+                   th:if="${#fields.hasErrors('amount')}"></p>
+            </div>
+
+
+            <div class="col form-group">
+                <input type="text" class="form-control" id="description" th:field="*{description}"
+                       placeholder="Fill in Decription">
             </div>
 
             <div class="col-auto my-1">
@@ -89,61 +107,58 @@
             <thead class=" bg-success">
             <tr>
                 <th scope="col">Connection</th>
+                <th scope="col">Date</th>
                 <th scope="col">Description</th>
                 <th scope="col">Amount</th>
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <th scope="row">User 1</th> <!-- Pourquoi th ou td? a quoi sert le "scope ="row"?-->
-                <td>Description 1</td>
-                <td>10</td>
 
-            </tr>
-            <tr>
-                <th scope="row">User 2</th>
-                <td>Description 2</td>
-                <td>25</td>
 
-            </tr>
-            <tr>
-                <th scope="row">User 3</th>
-                <td>Description 3</td>
-                <td>8</td>
+
+                            <!-- PAGINATION -->
+
+            <tr th:each="transfer : ${transfers.content}">
+                <!--Identique à l'affichage d'une liste, ajouter simplement myPageObject.content-->
+                <td th:text="${transfer.buddyUsername}"/>
+                <td th:text="${transfer.date}"/>
+                <td th:text="${transfer.description}"/>
+                <td th:text="${transfer.displayAmount}"/>
             </tr>
             </tbody>
         </table>
+        <nav>
+            <ul class="pagination">
+                <li class="page-item" th:if="${transfers.totalPages > 0}"><!--s'affiche quand le nombre de pages est supérieur à 0-->
+                    <a class="page-link" th:href="@{/transfer(size=${transfers.size}, page=1)}" aria-label="Previous">
+                        <!--rapelle du endpoint avec m'attribut 1 comme numéro de page = retour a la 1ere page-->
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item" th:each="pageNumber : ${pageNumbers}">
+                    <a class="page-link" th:href="@{/transfer(size=${transfers.size}, page=${pageNumber})}"
+                       th:text="${pageNumber}" ></a>
+                    <!--pour chaque page de mon pageObject, affiche un numéro de page qui sera un lien vers cette page
+                    -->
+                    <!-- je n'utilise pas th:class="${pageNumber==transfers.number + 1} ? active"
+                    car ça ne fonctionne pas, c'est censé surligner le numéro de la page courante-->
+                </li>
+                <li class="page-item" th:if="${transfers.totalPages > 0}">
+                    <a class="page-link" th:href="@{/transfer(size=${transfers.size}, page=${transfers.totalPages})}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span><!--meme system que le premier boutton, renvoie à la
+                        dernière page-->
+                    </a>
+                </li>
+            </ul>
+        </nav>
 
-
-
-        <!-- A DECALER SUR UNE AUTRE PAGE HTML-->
-
-
-        <table class="table table-bordered table-hover">
-            <thead class="table-dark">
-            <tr>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Email</th>
-            </tr>
-            </thead>
-            <tbody>
-            <!--      FOURNIR DES DONNES A LA VUE          -->
-            <tr th:each = "user : ${buddies}">
-                <td th:text = "${user.firstName}"></td>
-                <td th:text = "${user.lastName}"></td>
-                <td th:text = "${user.email}"></td>
-                <td ><a th:href="@{/transfer/deleteBuddy(email=${user.email})}">Delete</a></td>
-                <!--Ici on passe un paramètre email à l'endpoint qui correspond à l'email du buddy-->
-
-            </tr>
-            </tbody>
-        </table>
-        <div th:each = "user : ${buddies}" > <!-- J'essaye d'afficher ici les buddy de l'utilisateur connecté-->
-            <p th:text = "${user.firstName}"></p>
-        </div>
-
+        <!-- résultat obtenu en combinant cet exemple : https://www.baeldung.com/spring-thymeleaf-pagination et
+         la doc Bootstrap : https://getbootstrap.com/docs/5.3/components/pagination/ -->
     </section>
+
+
+
+
 
 
     <!--      FOURNIR DES DONNES A LA VUE          -->

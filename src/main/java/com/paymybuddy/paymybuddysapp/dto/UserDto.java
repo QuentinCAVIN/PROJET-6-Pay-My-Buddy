@@ -1,5 +1,7 @@
 package com.paymybuddy.paymybuddysapp.dto;
 
+import com.paymybuddy.paymybuddysapp.model.PayMyBuddyBankAccount;
+import com.paymybuddy.paymybuddysapp.model.PersonalBankAccount;
 import com.paymybuddy.paymybuddysapp.model.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -35,18 +37,9 @@ public class UserDto
     @NotEmpty(message = "Password should not be empty")
     private String password;
 
-    private List<User> usersConnexions =new ArrayList<>(); //TODO: modifier les tests unitaires pour prendre en compte ce nouvel attribut
+    private List<ReducedUserDto> usersConnexions = new ArrayList<>(); //Todo convertir en liste de UserDto
 
+    private PayMyBuddyBankAccount payMyBuddyBankAccount;
 
-    @Override
-    public String toString(){
-    return this.email;
-    }
-    @Override
-    public boolean equals(Object userDto){
-        return (userDto.toString() == this.toString());
-    }
+    private PersonalBankAccount personalBankAccount;
 }
-// TODO : en fin de projet refléchir à l'utilité du champ id sur UserDto
-
-// TODO les methode toString et equals servent uniquement pour les tests. Les supprimer?

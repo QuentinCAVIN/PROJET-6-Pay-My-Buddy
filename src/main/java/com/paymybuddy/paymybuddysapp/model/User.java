@@ -45,7 +45,6 @@ public class User {
     @ManyToMany(
             fetch = FetchType.LAZY, /*Quand on récupère un user, les users associés ne sont pas récupérés.
              (gain de performance) */
-            //TODO: voir si "fetch = FetchType.EAGER" ne serait pas plus approprié.
             cascade = {CascadeType.PERSIST, CascadeType.MERGE } /*Les modifs sur user sont propagées
                      sur les user associées, uniquement pour création et modif. Si on supprime un user
                      ça ne supprime pas les autres (c'est le cas pour CascadeType.ALL)*/
@@ -60,18 +59,37 @@ public class User {
 
     private List<User> usersConnexions =new ArrayList<>();
 
+
     @ManyToMany(
             mappedBy = "usersConnexions",// pas besoin d'ajouter @JoinTable une seconde fois
             fetch = FetchType.LAZY,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE }
     )
-
     private List<User> usersConnected = new ArrayList<>();
+
+
+    @OneToOne(
+            cascade = CascadeType.ALL, //Supprimer un utilisateur supprimera sont compte associé
+            orphanRemoval = true, //garantit la non existance de compte orphelin
+            fetch = FetchType.EAGER // Quand on récupére un User on récupére le compte associé
+    )
+    @JoinColumn(name ="paymybuddy_bank_account_id" )
+    private PayMyBuddyBankAccount payMyBuddyBankAccount;
+
+
+    @OneToOne(
+            cascade = CascadeType.ALL, //Supprimer un utilisateur supprimera son compte associé
+            orphanRemoval = true, //garantit la non existance de compte orphelin
+            fetch = FetchType.EAGER // Quand on récupére un User on récupére le compte associé
+    )
+    @JoinColumn(name ="personal_bank_account_id" )
+    private PersonalBankAccount personalBankAccount;
+
 
 
     //Ci-dessous les méthodes utilitaire (helpers methods)
     //aide à la synchronisation des objets
-    //elles sont placés soit du coté OneToMany (la où on gère la liste d'élément)
+    //elles sont placées soit du coté OneToMany (la où on gère la liste d'élément)
     //soit du côté ou il y a le @JoinTable pour ManytoMany (un seul coté ici vu que user est lié à lui-même)
     public void addConnexion (User user) {
         usersConnexions.add(user);
@@ -83,31 +101,11 @@ public class User {
         user.getUsersConnected().remove(this);
     }
 
-       /* @Column(name = "date_of_birth")
-    private LocalDate dateOfBirth;
+    public void addPayMyBuddyBankAccount(PayMyBuddyBankAccount payMyBuddyBankAccount){
+        this.payMyBuddyBankAccount = payMyBuddyBankAccount;
+    }
 
-    @Column(name = "number_and_street")
-    private String streetAndNumber;
-
-    private int zip;
-
-    private String city;
-
-    private String country;
-
-    @Column(name = "city_of_birth")
-    private String cityOfBirth;
-
-    @Column(name = "country_of_birth")
-    private String countryOfBirth;
-
-    private String phone;
-
-    @Column(name = "zip_of_birth")
-    private int zipOfBirth; */
-    // TODO: Attributs retirés pour gain de temps
-    //  trop de ligne à écrire pour les tests unitaire et manuel.
-    //  A voir si on peut retirer définitivement
-
-
+    public void addPersonalBankAccount(PersonalBankAccount personalBankAccount){
+        this.personalBankAccount = personalBankAccount;
+    }
 }

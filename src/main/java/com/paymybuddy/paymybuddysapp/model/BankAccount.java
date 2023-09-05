@@ -1,28 +1,71 @@
 package com.paymybuddy.paymybuddysapp.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+import java.util.ArrayList;
+import java.util.List;
+
+
 @Entity
-@Table(name = "bank_account")
-public class BankAccount {
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+/*Comme l'annotation @MappedSuperclass ,La classe parente ne sera pas persisté en BDD.
+A confirmer : necessaire d'utiliser @GeneratedValue(strategy = GenerationType.AUTO)
+JPA va générer une table nom_de_la_classe_seq (bank_account_seq ici), qui va permettre de garantir
+un identifiant unique entre mes deux classes qui héritent de BankAccount.
+L’id "1" correspondra a un seul BankAccount présent dans l’une ou l’autre des deux tables filles, mais pas les deux */
+@Getter
+@Setter
+public abstract class BankAccount {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @Column(nullable=false)
-    private String iban;
-
-    @Column(nullable=false)
-    private String name;
-
-    @Column(name = "account_balance" ,nullable=false)
+    @Column(name = "account_balance", nullable = false)
     private double accountBalance;
 
-    @Column(name = "user_id")
-    private int userId;
+    @OneToMany(
+            mappedBy = "senderAccount",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+            orphanRemoval = true
+    )
+    private List<Transfer> sentTransfers = new ArrayList<>();
 
-    @Column(name = "bank_id")
-    private int bankId;
+    @OneToMany(
+            mappedBy = "recipientAccount",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+            orphanRemoval = true
+    )
+    private List<Transfer> receivedTransfers = new ArrayList<>();
+
+
+    //Ci-dessous les méthodes utilitaire (helpers methods)
+    //aide à la synchronisation des objets
+    //elles sont placées soit du coté OneToMany (la où on gère la liste d'élément)
+    //soit du côté ou il y a le @JoinTable pour ManytoMany
+    public void addSentTransfer (Transfer transfer) {//TODO: les methodes utilitaires font elle doublon avec JPA?
+        //Si oui, les supprimer
+        sentTransfers.add(transfer);
+        transfer.setSenderAccount(this);
+    }
+    public void removeConnexion (Transfer transfer){ // TODO: ne seras probablement jamais utilisé. effacer en fin de projet
+        sentTransfers.remove(transfer);
+        transfer.setSenderAccount(null);
+    }
+
+    public void addReceivedTransfer(Transfer transfer){
+        receivedTransfers.add(transfer);
+        transfer.setRecipientAccount(this);
+    }
+
+    public void removeReceivedTransfer(Transfer transfer){// TODO: ne seras probablement jamais utilisé. effacer en fin de projet
+        receivedTransfers.remove(transfer);
+        transfer.setRecipientAccount(null);
+    }
+
 }
+
+/*https://www.baeldung.com/hibernate-inheritance*/
+
+/*https://thorben-janssen.com/complete-guide-inheritance-strategies-jpa-hibernate*/

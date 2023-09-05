@@ -1,23 +1,23 @@
 package com.paymybuddy.paymybuddysapp.service;
 
-import com.paymybuddy.paymybuddysapp.dto.UserDto;
+import com.paymybuddy.paymybuddysapp.model.BankAccount;
+import com.paymybuddy.paymybuddysapp.model.PayMyBuddyBankAccount;
 import com.paymybuddy.paymybuddysapp.model.User;
 
 import java.util.List;
 
 public interface UserService {
 
-    List<UserDto> getUsersDto();
-
     User getUserByEmail(String email);
 
-    UserDto getUserDtoByEmail(String email);
+    List<User> getUsers();
 
-    void saveUserDto(UserDto userDto);
+    void createNewUser(User user);
 
     void saveUser(User user);
 
     void deleteUser(int id);
 
+    User getUserByBankAccount(BankAccount bankAccount);
 }
 
