@@ -1,12 +1,10 @@
 package com.paymybuddy.paymybuddysapp.service;
 
-        import com.paymybuddy.paymybuddysapp.model.BankAccount;
-        import com.paymybuddy.paymybuddysapp.model.PayMyBuddyBankAccount;
-        import com.paymybuddy.paymybuddysapp.model.PersonalBankAccount;
-        import com.paymybuddy.paymybuddysapp.model.Transfer;
+        import com.paymybuddy.paymybuddysapp.model.*;
         import com.paymybuddy.paymybuddysapp.repository.BankAccountRepository;
         import com.paymybuddy.paymybuddysapp.repository.PayMyBuddyBankAccountRepository;
         import com.paymybuddy.paymybuddysapp.repository.PersonalBankAccountRepository;
+        import jakarta.transaction.Transactional;
         import org.springframework.beans.factory.annotation.Autowired;
         import org.springframework.stereotype.Service;
 @Service
@@ -48,4 +46,11 @@ public class BankAccountServiceImpl implements BankAccountService {
         String ibanOfMasterBankAccount = "666";
        return bankAccountRepository.findByIban(ibanOfMasterBankAccount);
         }//TODO: ATTENTION prévoir dans le setup de la Bdd la création du compte admin
+
+    //TODO Test a effectuer ci dessous
+
+    public void linkNewPersonalBankAccount(PersonalBankAccount personalBankAccount, User user){
+        user.addPersonalBankAccount(personalBankAccount);
+        bankAccountRepository.save(personalBankAccount);
+    }
 }

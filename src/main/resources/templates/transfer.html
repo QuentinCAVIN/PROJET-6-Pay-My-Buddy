@@ -16,17 +16,13 @@
             <span class="bg-success bg-gradient p-1 rounded-3 text-light">Pay My Buddy</span>
         </div>
         <div class="col d-flex justify-content-end">
-            <a th:href="@{/home}" class="text-dark">Home</a>
-            <a href="#" class="text-primary">Transfer</a>
-            <a href="#" class="text-dark">Profile</a>
-            <a href="#" class="text-dark">Contact</a>
-            <a href="#" class="text-dark">Log Of</a>
+            <a th:href="@{/logout}" class="text-dark">Log Of</a>
         </div>
     </nav>
     <nav class="navbar bg-light p-3 d-flex justify-content-start">
-        <a>Home</a>
+        <a th:href="@{/home}" class="text-dark">Home</a>
         <span> / </span>
-        <a>Transfer</a>
+        <a href="#" class="text-primary">Transfer</a>
     </nav>
 </header>
 
@@ -35,7 +31,6 @@
         <div class=" row ">
             <div class="col bg-white d-flex justify-content-between ">
                 <p>Send Money</p>
-
 
                 <!-- Donnée transmise par un formulaire -->
                 <form method="post" th:action="@{/transfer/addBuddy}" th:object="${buddy}">
