@@ -1,115 +1,93 @@
-package com.paymybuddy.paymybuddysapp.integration;
+package com.paymybuddy.paymybuddysapp.unittest;
 
-
+import com.paymybuddy.paymybuddysapp.controller.AuthentificationController;
+import com.paymybuddy.paymybuddysapp.controller.TransferController;
 import com.paymybuddy.paymybuddysapp.dto.TransferDto;
+import com.paymybuddy.paymybuddysapp.mapper.TransferMapper;
 import com.paymybuddy.paymybuddysapp.model.PayMyBuddyBankAccount;
 import com.paymybuddy.paymybuddysapp.model.PersonalBankAccount;
 import com.paymybuddy.paymybuddysapp.model.Transfer;
 import com.paymybuddy.paymybuddysapp.model.User;
-import com.paymybuddy.paymybuddysapp.repository.BankAccountRepository;
-import com.paymybuddy.paymybuddysapp.repository.TransferRepository;
-import com.paymybuddy.paymybuddysapp.repository.UserRepository;
-
+import com.paymybuddy.paymybuddysapp.service.BankAccountService;
+import com.paymybuddy.paymybuddysapp.service.TransferService;
 import com.paymybuddy.paymybuddysapp.service.UserService;
-import jakarta.transaction.Transactional;
+import net.bytebuddy.matcher.ElementMatcher;
+import org.assertj.core.api.Assertions;
 import org.hamcrest.CoreMatchers;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Transactional
-@SpringBootTest
-@AutoConfigureMockMvc
-public class TransferControllerIT {
+@ExtendWith(SpringExtension.class)
+@WebMvcTest(controllers = TransferController.class)
+@AutoConfigureMockMvc(addFilters = false)
+public class TransferControllerTest {
 
     @Autowired
     MockMvc mockMvc;
 
-    @Autowired
-    UserRepository userRepository;
+    @MockBean
+    UserService userService;
+    @MockBean
+    BankAccountService bankAccountService;
+    @MockBean
+    TransferService transferService;
+    @MockBean
+    TransferMapper transferMapper;
 
-    @Autowired
-    UserService userService ;
+    private User currentUser;
+    private User buddyToAdd;
 
-    @Autowired
-    BankAccountRepository bankAccountRepository;
-
-    @Autowired
-    TransferRepository transferRepository;
-    private static User currentUser;
-    private static User buddyToAdd;
-
-    private static TransferDto transferDto;
-
-    private PersonalBankAccount masterBankAccount;
-
-
-    @BeforeAll
-    public static void setupBeforAll() throws Exception {
-        currentUser = new User();
-        buddyToAdd = new User();
-
-        currentUser.setId(1);
-        currentUser.setEmail("currentUser@test");
-        currentUser.setFirstName("test");
-        currentUser.setLastName("tset");
-        currentUser.setPassword("1234");
-        /*currentUser.setUsersConnexions(Arrays.asList(buddyToAdd));
-        currentUser.setUsersConnected(Arrays.asList(buddyToAdd));*/
-        PayMyBuddyBankAccount currentUserPayMyBuddyBankAccount= new PayMyBuddyBankAccount();
-        currentUserPayMyBuddyBankAccount.setAccountBalance(500.00);
-        currentUser.setPayMyBuddyBankAccount(currentUserPayMyBuddyBankAccount);
-
-        buddyToAdd.setId(2);
-        buddyToAdd.setEmail("buddy@test");
-        buddyToAdd.setFirstName("tset");
-        buddyToAdd.setLastName("test");
-        buddyToAdd.setPassword("4321");
-       /* buddyToAdd.setUsersConnexions(Arrays.asList(currentUser));
-        buddyToAdd.setUsersConnected(Arrays.asList(currentUser));*/
-        PayMyBuddyBankAccount buddyToAddUserPayMyBuddyBankAccount = new PayMyBuddyBankAccount();
-        buddyToAddUserPayMyBuddyBankAccount.setAccountBalance(500.00);
-        buddyToAdd.setPayMyBuddyBankAccount(buddyToAddUserPayMyBuddyBankAccount);
-
-        transferDto = new TransferDto();
-        transferDto.setAmount(50.00);
-        transferDto.setBuddyUsername ("buddy@test");
-        transferDto.setDescription("Test");
-    }
-
+    private TransferDto transferDto;
 
     @BeforeEach
-    public void setup() throws Exception {
-        userRepository.deleteAll();
-        bankAccountRepository.deleteAll();
+    public void setup() {
+        currentUser = getCurrentUser();
+        Mockito.when(userService.getUserByEmail(currentUser.getEmail())).thenReturn(currentUser);
+        Mockito.when(transferService.getTransfersDtoByBankAccount(currentUser.getPayMyBuddyBankAccount()))
+                .thenReturn(Collections.emptyList());
+        Mockito.when(transferMapper.convertListTransferDtoToPageOfTransferDto(
+                        ArgumentMatchers.any(), ArgumentMatchers.any()))
+                .thenReturn(new PageImpl<>(Collections.emptyList(), PageRequest.of(0, 1), 0));
 
-        masterBankAccount = new PersonalBankAccount();
-        masterBankAccount.setAccountBalance(10000);
-        masterBankAccount.setIban("666");
+        buddyToAdd = getBuddyToAdd();
+        Mockito.when(userService.getUserByEmail(buddyToAdd.getEmail())).thenReturn(buddyToAdd);
 
-        bankAccountRepository.save(masterBankAccount);// TODO REMARQUE C'est la preuve que je peux passer par le
-        // BankAccountRepository pour gérer les deux classes qui héritent de BankAccount. Modifier En fin de projet
-
-
-        userRepository.save(currentUser);
-        userRepository.save(buddyToAdd);
+        transferDto = getTransferDto();
     }
 
 
-    @Test
     @WithMockUser("currentUser@test")
-    @DisplayName("Accessing /transfer should display the transfer view")
-    public void transferShouldDisplayTransferPage() throws Exception {
+    @Test
+    public void showTransferPage_returnTransferView() throws Exception {
+       /* User currentUser = getCurrentUser();
+        Mockito.when(userService.getUserByEmail(currentUser.getEmail())).thenReturn(currentUser);
+        Mockito.when(transferService.getTransfersDtoByBankAccount(currentUser.getPayMyBuddyBankAccount()))
+                .thenReturn(Collections.emptyList());
+        Mockito.when(transferMapper.convertListTransferDtoToPageOfTransferDto(
+                        ArgumentMatchers.any(), ArgumentMatchers.any()))
+                .thenReturn(new PageImpl<>(Collections.emptyList(), PageRequest.of(0, 1), 0));*/
 
         mockMvc.perform(MockMvcRequestBuilders.get("/transfer"))
 
@@ -121,14 +99,22 @@ public class TransferControllerIT {
                 .andExpect(MockMvcResultMatchers.model().attributeExists("transfers"));
     }
 
-
-
-    @Test
     @WithMockUser("currentUser@test")
-    @DisplayName("Validate the addBuddy form should create a new connexion")
-    public void validateAddBuddyFormShouldCreateNewConnexionInDB() throws Exception {
+    @Test
+    public void addBuddy_addConnexionToCurrentUserAndSaveIt_whenFormIsWellFilled() throws Exception {
+        // User buddyToAdd = getBuddyToAdd();
 
-        //User Add Buddy
+        /////// COMMUN
+       /* User currentUser = getCurrentUser();
+        Mockito.when(userService.getUserByEmail(currentUser.getEmail())).thenReturn(currentUser);
+        Mockito.when(transferService.getTransfersDtoByBankAccount(currentUser.getPayMyBuddyBankAccount()))
+                .thenReturn(Collections.emptyList());
+        Mockito.when(transferMapper.convertListTransferDtoToPageOfTransferDto(
+                        ArgumentMatchers.any(), ArgumentMatchers.any()))
+                .thenReturn(new PageImpl<>(Collections.emptyList(), PageRequest.of(0, 1), 0));*/
+        ////////
+        //Mockito.when(userService.getUserByEmail(buddyToAdd.getEmail())).thenReturn(buddyToAdd);
+
         mockMvc.perform(MockMvcRequestBuilders.post("/transfer/addBuddy")
                         .param("email", buddyToAdd.getEmail()))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -140,19 +126,14 @@ public class TransferControllerIT {
                 .andExpect(MockMvcResultMatchers.model().attributeExists("transfer"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("transfers"));
 
-        //checks that user and his buddy are connected
-        User currentUser = userService.getUserByEmail(this.currentUser.getEmail());
-        User userAdded = userService.getUserByEmail(buddyToAdd.getEmail());
-        assertThat(currentUser.getUsersConnexions().get(0).getEmail()).isEqualTo(buddyToAdd.getEmail());
-        assertThat(userAdded.getUsersConnected().get(0).getEmail()).isEqualTo(this.currentUser.getEmail());
+        Assertions.assertThat(currentUser.getUsersConnexions().get(0)).isEqualTo(buddyToAdd);
+        Assertions.assertThat(buddyToAdd.getUsersConnected().get(0)).isEqualTo(currentUser);
+        Mockito.verify(userService, Mockito.times(1)).saveUser(currentUser);
     }
 
-
-    @Test
     @WithMockUser("currentUser@test")
-    @DisplayName("Validating the addBuddy form without filling in the fields should display error messages")
-    public void validateBuddysFormWithoutFillingInFieldShouldDisplayErrorMessages() throws Exception {
-
+    @Test
+    public void addBuddy_DisplayErrorMessages_whenFieldAreNotFilled() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/transfer/addBuddy"))
 
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -165,11 +146,9 @@ public class TransferControllerIT {
                 .andExpect(MockMvcResultMatchers.model().attributeExists("transfers"));
     }
 
-
-    @Test
     @WithMockUser("currentUser@test")
-    @DisplayName("Validating the addBuddy's form with a wrong email should display error messages")
-    public void validateBuddysFormWithWrongEmailShouldDisplayErrorMessages() throws Exception {
+    @Test
+    public void addBuddy_DisplayErrorMessages_whenFilledWithWrongEmail() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/transfer/addBuddy")
                         .param("email", "wrong@email"))
@@ -184,11 +163,10 @@ public class TransferControllerIT {
                 .andExpect(MockMvcResultMatchers.model().attributeExists("transfers"));
     }
 
-
     @Test
     @WithMockUser("currentUser@test")
-    @DisplayName("Validating the buddy's form with own email should display error messages")
-    public void validateBuddysFormWithOwnEmailShouldDisplayErrorMessages() throws Exception {
+
+    public void addBuddy_DisplayErrorMessages_whenFilledWithCurrentUserEmail() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/transfer/addBuddy")
                         .param("email", currentUser.getEmail()))
@@ -205,13 +183,14 @@ public class TransferControllerIT {
 
     @Test
     @WithMockUser("currentUser@test")
-    @DisplayName("Validate the buddy's form with an email already registered should display an error message")
-    public void validateBuddysFormWithEmailAlreadyRegisteredShouldDisplayErrorMessage() throws Exception {
 
-        //First buddy's registration
-        validateAddBuddyFormShouldCreateNewConnexionInDB();
+    public void addBuddy_DisplayErrorMessages_whenEmailIsAlreadyRegistered() throws Exception {
 
-        //Second registration with the same email
+        // User buddyToAdd = getBuddyToAdd();
+
+        //Buddy is already added:
+        currentUser.addConnexion(buddyToAdd);
+
         mockMvc.perform(MockMvcRequestBuilders.post("/transfer/addBuddy")
                         .param("email", buddyToAdd.getEmail()))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -219,53 +198,47 @@ public class TransferControllerIT {
                 .andExpect(MockMvcResultMatchers.content()
                         .string(CoreMatchers.containsString(buddyToAdd.getFirstName() + " "
                                 + buddyToAdd.getLastName() + " is already add to your buddies!")))
-
-                // information retrieved in the model attribute
                 .andExpect(MockMvcResultMatchers.model().attributeExists("buddy"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("buddies"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("transfer"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("transfers"));
     }
 
+
     @Test
     @WithMockUser("currentUser@test")
-    @DisplayName("/deleteBuddy should delete current user Buddy's")
-    public void deleteConnectionShouldDeleteUserBuddys() throws Exception {
+    public void deleteBuddy_ShouldDeleteUsersBuddy() throws Exception {
 
-        //mockMvc
-
-        //Add Buddy
-        validateAddBuddyFormShouldCreateNewConnexionInDB();
+        //Check that buddy is already added
+        currentUser.addConnexion(buddyToAdd);
+        assertThat(currentUser.getUsersConnexions().contains(buddyToAdd));
+        assertThat(buddyToAdd.getUsersConnected().contains(currentUser));
 
         //Remove Buddy
         mockMvc.perform(MockMvcRequestBuilders.get("/transfer/deleteBuddy")
-                .param("email", buddyToAdd.getEmail()))
+                        .param("email", buddyToAdd.getEmail()))
                 .andExpect(MockMvcResultMatchers.redirectedUrl("/transfer"));
 
-
         //check that current user and his buddy are not connected anymore
-        User currentUser = userService.getUserByEmail(this.currentUser.getEmail());
-        User userAdded = userService.getUserByEmail(buddyToAdd.getEmail());
         assertThat(currentUser.getUsersConnexions().isEmpty());
-        assertThat(userAdded.getUsersConnected().isEmpty());
+        assertThat(buddyToAdd.getUsersConnected().isEmpty());
     }
+    ///
 
     @Test
     @DisplayName("/sendMoney should transfer money to selected user")
     @WithMockUser("currentUser@test")
-    public void sendMoneyShouldTransferMoneyToSelectedUser() throws Exception {
+    //
+    public void sendMoney_CallTransferMethods_whenFormIsWellFilled() throws Exception {
 
-        TransferDto transferDto = new TransferDto();
-        transferDto.setAmount(50.00);
-        transferDto.setBuddyUsername ("buddy@test");
-        transferDto.setDescription("Test");
 
-        double accountBalanceOfMasterBankAccountBeforeTransfer = masterBankAccount.getAccountBalance();
+        PersonalBankAccount masterBankAccount = getMasterBankAccount();
+        Transfer transfer = new Transfer();
+        PayMyBuddyBankAccount senderAccount = currentUser.getPayMyBuddyBankAccount();
+        Mockito.when(transferMapper.convertTransferDtoToTransfer(
+                        ArgumentMatchers.any(TransferDto.class), ArgumentMatchers.contains(currentUser.getEmail())))
+                .thenReturn(transfer);
 
-        //Add Buddy for transfer
-        validateAddBuddyFormShouldCreateNewConnexionInDB();
-
-        //currentUser send 50€ to his buddy
         mockMvc.perform(MockMvcRequestBuilders.post("/transfer/sendMoney")
                         .param("buddyUsername", transferDto.getBuddyUsername())
                         .param("amount", String.valueOf(transferDto.getAmount()))
@@ -280,43 +253,22 @@ public class TransferControllerIT {
                 .andExpect(MockMvcResultMatchers.model().attributeExists("transfer"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("transfers"));
 
-        //checks that the bank accounts of currentUser and his buddy correspond to the transfer made
-        PayMyBuddyBankAccount currentUserPayMyBuddyBankAccount = (userService.getUserByEmail(currentUser.getEmail())
-                .getPayMyBuddyBankAccount());
-        PayMyBuddyBankAccount receivingUserPayMyBuddyBankAccount = (userService.getUserByEmail(buddyToAdd.getEmail())
-                .getPayMyBuddyBankAccount());
-        assertThat(currentUserPayMyBuddyBankAccount.getAccountBalance())
-                .isEqualTo(500.00 - (50.00 + (50*0.05)));//5% levy
-        assertThat(receivingUserPayMyBuddyBankAccount.getAccountBalance()).isEqualTo(500.00 + 50.00);
-
-        //Checks that the the 5% is well credited to the masterBankAccount
-        assertThat( masterBankAccount.getAccountBalance())
-                .isEqualTo(accountBalanceOfMasterBankAccountBeforeTransfer + (50*0.05));
-
-
-        //Checks that the transfer is present in DB
-        Optional <Transfer> OptionalTransfer = transferRepository.findById(1);
-        Transfer transfer = OptionalTransfer.get();
-        assertThat(transfer.getAmount()).isEqualTo(transferDto.getAmount());
-        //TODO: Dans le processus d'enregistrement d'un transfer je me suis passé des méthodes utilitaires
-        // pour associer transfer et compte banquaire, car Jpa le fait a priori tout seul.
-        // Malheureusement ça ne fonctionne pas dans les test d'intégration, je ne peut pas récupérer un virememt
-        // a partir d'un compte banquaire (a l'éxécution du programme quand un virement est sauvegardé,
-        // il est associé au sentTransfers et receivedTransfers du BankAccount. Ce n'est pas le cas dans les tests)
-        // Pour vérifier qu'un objet transfer à bien été créé, je peux soit utiliser
-        // a nouveau ces méthodes utilitaires, soit créer une méthode pour récupérer un transfer dans le repository
-        // (qui ne servira que pour les tests), soit ne pas tester le faite que la méthode crée un virement
-        // en base de donnée
-        // EDIT j'ai utilisé findById pour ne pas créer une nouvelle methode, ça me semble fragile (si l'id auto généré n'est pas 1)
-
+        Mockito.verify(transferService, Mockito.times(1))
+                .takeTransferPercentage(transferDto.getAmount(), senderAccount);
+        Mockito.verify(transferMapper, Mockito.times(1))
+                .convertTransferDtoToTransfer(
+                        ArgumentMatchers.any(TransferDto.class), ArgumentMatchers.contains(currentUser.getEmail()));
+        Mockito.verify(bankAccountService, Mockito.times(1))
+                .transfer(ArgumentMatchers.any(Transfer.class));
     }
+
     @Test
-    @DisplayName("SendMoney form validation without buddy selection should display an error message")
     @WithMockUser("currentUser@test")
-    public void sendMoneyValidationWithoutBuddyShouldDisplayErrorMessage() throws Exception{
+    //sendMoney_CallTransferMethods_whenFormIsWellFilled
+    public void sendMoney_DisplayErrorMessages_whithNoBuddySelected() throws Exception{
         mockMvc.perform(MockMvcRequestBuilders.post("/transfer/sendMoney")
-                .param("amount", "50")
-                .param("description", "message"))
+                        .param("amount", "50")
+                        .param("description", "message"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.view().name("/transfer"))
                 .andExpect(MockMvcResultMatchers.content()
@@ -328,9 +280,8 @@ public class TransferControllerIT {
     }
 
     @Test
-    @DisplayName("SendMoney form validation with wrong amount selection should display an error message")
     @WithMockUser("currentUser@test")
-    public void sendMoneyWithWrongAmountShouldDisplayErrorMessage() throws Exception{
+    public void sendMoney_DisplayErrorMessages_whenWrongAmountIsSent() throws Exception{
         mockMvc.perform(MockMvcRequestBuilders.post("/transfer/sendMoney")
                         .param("buddyUsername", transferDto.getBuddyUsername())
                         .param("amount", "-10")
@@ -346,9 +297,8 @@ public class TransferControllerIT {
     }
 
     @Test
-    @DisplayName("SendMoney form validation without enough money selection should display an error message")
     @WithMockUser("currentUser@test")
-    public void sendMoneyWithoutEnoughMoneyShouldDisplayErrorMessage() throws Exception{
+    public void sendMoney_DisplayErrorMessages_whenUserDontHaveEnoughMoney() throws Exception{
         mockMvc.perform(MockMvcRequestBuilders.post("/transfer/sendMoney")
                         .param("buddyUsername", transferDto.getBuddyUsername())
                         .param("amount", "100000")
@@ -362,4 +312,51 @@ public class TransferControllerIT {
                 .andExpect(MockMvcResultMatchers.model().attributeExists("transfer"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("transfers"));
     }
+
+
+    //SETUP
+    private User getCurrentUser() {
+        User currentUser = new User();
+        currentUser.setId(1);
+        currentUser.setEmail("currentUser@test");
+        currentUser.setFirstName("test");
+        currentUser.setLastName("tset");
+        currentUser.setPassword("1234");
+
+        PayMyBuddyBankAccount currentUserPayMyBuddyBankAccount = new PayMyBuddyBankAccount();
+        currentUserPayMyBuddyBankAccount.setAccountBalance(500.00);
+        currentUser.setPayMyBuddyBankAccount(currentUserPayMyBuddyBankAccount);
+
+        return currentUser;
+    }
+
+    private User getBuddyToAdd() {
+        User buddyToAdd = new User();
+        buddyToAdd.setId(2);
+        buddyToAdd.setEmail("buddy@test");
+        buddyToAdd.setFirstName("tset");
+        buddyToAdd.setLastName("test");
+        buddyToAdd.setPassword("4321");
+
+        PayMyBuddyBankAccount buddyToAddPayMyBuddyBankAccount = new PayMyBuddyBankAccount();
+        buddyToAddPayMyBuddyBankAccount.setAccountBalance(500.00);
+        buddyToAdd.setPayMyBuddyBankAccount(buddyToAddPayMyBuddyBankAccount);
+        return buddyToAdd;
+    }
+
+    private TransferDto getTransferDto() {
+        TransferDto transferDto = new TransferDto();
+        transferDto.setAmount(50.00);
+        transferDto.setBuddyUsername("buddy@test");
+        transferDto.setDescription("Test");
+        return transferDto;
+    }
+
+    private PersonalBankAccount getMasterBankAccount() {
+        PersonalBankAccount masterBankAccount = new PersonalBankAccount();
+        masterBankAccount.setAccountBalance(10000);
+        masterBankAccount.setIban("666");
+        return masterBankAccount;
+    }
 }
+

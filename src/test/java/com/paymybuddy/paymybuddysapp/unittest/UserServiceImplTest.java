@@ -186,35 +186,4 @@ public class UserServiceImplTest {
                 .findByPersonalBankAccount(dummyPersonnalAccount);
         Assertions.assertThat(user).isEqualTo(dummy);
     }
-
-    //TODO: ATTENTION le test ci-dessous a été déplacé, le set up est a revoir, récupérer des éléments de
-    // UserServiceTest pour gagner du temps.
-    /*@Test
-    public void getAllTransferSentByUserTest () {
-        Transfer transferSend1 = new Transfer();
-        transferSend1.setId(1);
-        transferSend1.setAmount(69);
-        transferSend1.setSenderAccount(dummyAccount);
-        transferSend1.setRecipientAccount(ymmudAccount);
-        transferSend1.setDescription("for my ymmud");
-        transferSend1.setDate("30/08/2023");
-
-        PersonalBankAccount personalBankAccountOfdummy = new PersonalBankAccount();
-        personalBankAccountOfdummy.setId(5);
-        personalBankAccountOfdummy.setAccountBalance(1000);
-        personalBankAccountOfdummy.setIban("11111111");
-
-        Transfer transferSend2 = new Transfer();
-        transferSend1.setId(1);
-        transferSend1.setAmount(96);
-        transferSend1.setSenderAccount(personalBankAccountOfdummy);
-        transferSend1.setRecipientAccount(ymmudAccount);
-        transferSend1.setDescription("for my ymmud");
-        transferSend1.setDate("30/08/2023");
-
-        dummyAccount.addSentTransfer(transferSend1);
-
-
-        userService.getAllTransfersSentByUser(dummy);
-    }*/
 }

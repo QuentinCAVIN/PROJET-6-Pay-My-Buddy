@@ -83,7 +83,7 @@ public class User {
             fetch = FetchType.EAGER // Quand on récupére un User on récupére le compte associé
     )
     @JoinColumn(name ="personal_bank_account_id" )
-    private PersonalBankAccount personalBankAccount; // TODO: ON TEST DE DEPLACER VERS USER
+    private PersonalBankAccount personalBankAccount;
 
 
 
@@ -108,34 +108,4 @@ public class User {
     public void addPersonalBankAccount(PersonalBankAccount personalBankAccount){
         this.personalBankAccount = personalBankAccount;
     }
-
-
-
-       /* @Column(name = "date_of_birth")
-    private LocalDate dateOfBirth;
-
-    @Column(name = "number_and_street")
-    private String streetAndNumber;
-
-    private int zip;
-
-    private String city;
-
-    private String country;
-
-    @Column(name = "city_of_birth")
-    private String cityOfBirth;
-
-    @Column(name = "country_of_birth")
-    private String countryOfBirth;
-
-    private String phone;
-
-    @Column(name = "zip_of_birth")
-    private int zipOfBirth; */
-    // TODO: Attributs retirés pour gain de temps
-    //  trop de ligne à écrire pour les tests unitaire et manuel.
-    //  A voir si on peut retirer définitivement
-
-
 }

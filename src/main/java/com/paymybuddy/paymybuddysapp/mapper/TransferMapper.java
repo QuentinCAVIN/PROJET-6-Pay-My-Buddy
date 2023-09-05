@@ -22,10 +22,6 @@ public class TransferMapper {
         this.userService = userService;
     }
 
-    //TODO : La classe transferMapper va contenir les méthodes necessaires
-    // pour convertir les ExternalTransferDto et les TransferDto en objet Transfer.
-    // J'ajoute les méthodes de conversion au fur et a mesure que je rencontre un besoin
-    // Je fais les test en suivant
     public Transfer convertTransferDtoToTransfer(TransferDto transferDto, String currentUsername) {
 
         User senderUser = userService.getUserByEmail(currentUsername);

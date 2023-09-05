@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
     public void createNewUser(User user) {
 
         PayMyBuddyBankAccount payMyBuddyBankAccount = new PayMyBuddyBankAccount();
-        payMyBuddyBankAccount.setAccountBalance(1000); // TODO modifier à 0 quand les test seront finis
+        payMyBuddyBankAccount.setAccountBalance(0);
 
         user.addPayMyBuddyBankAccount(payMyBuddyBankAccount);
         user.setPassword(passwordEncoder.encode(user.getPassword()));

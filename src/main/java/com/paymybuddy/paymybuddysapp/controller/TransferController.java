@@ -168,11 +168,10 @@ public class TransferController {
         currentUser.addConnexion(buddyToAdd); //TODO passer par une classe Service pour faire ça? Voir pour simplement supprimer cette ligne
         userService.saveUser(currentUser);
 
-        model.addAttribute("successMessageSendMoney", "Your new buddy is added!");
+        model.addAttribute("successMessageAddBuddy", "Your new buddy is added!");
         loadTransferPageElements(currentUser , model);
         //return "redirect:/transfer?success";
         return "/transfer";
-        // TODO : rajouter un message de confirmation attention a ne pas générer d'autre message de succès inappropriées
         //On recharge la page
     }
 
@@ -190,9 +189,6 @@ public class TransferController {
         return "redirect:/transfer";
     }
 
-    // TODO: Ci-dessous pas de test effectué.
-    // TODO: METHODE EN COURS DE DEVELOPPEMENT, Gerer les valeur negatives et autre exceptions + ajout de la possibilité
-    //  de faire des virement sur son compte perso + reflechir si placer les virement perso au même endroit dans le html
     @Transactional
     @PostMapping("/transfer/sendMoney")
     public String sendMoney(@ModelAttribute("transfer") TransferDto transferDto,
@@ -209,7 +205,7 @@ public class TransferController {
             result.rejectValue("buddyUsername", null,
                     "Please select a buddy");
         }
-        //TODO A TESTER
+
         transferService.takeTransferPercentage(transferAmount,senderAccount);
         //TODO : A confirmer, le Transactional empéche le compte d'être débité si la transaction ne se fait pas
         // a cause de "plus assez d'argent sur le compte apres le prélévement des 5%"
