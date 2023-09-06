@@ -24,9 +24,9 @@ public class UserMapper {
         List<ReducedUserDto> reducedUsersDto = new ArrayList<>();
 
         List<User> userConnexions = user.getUsersConnexions();
-        if (userConnexions != null && !userConnexions.isEmpty()){
-        user.getUsersConnexions().forEach(buddy ->reducedUsersDto.add(convertUserToReducedUserDto(buddy)));
-        userDto.setUsersConnexions(reducedUsersDto);
+        if (userConnexions != null && !userConnexions.isEmpty()) {
+            user.getUsersConnexions().forEach(buddy -> reducedUsersDto.add(convertUserToReducedUserDto(buddy)));
+            userDto.setUsersConnexions(reducedUsersDto);
         }
 
         return userDto;
@@ -55,30 +55,11 @@ public class UserMapper {
         user.setPassword(userDto.getPassword());
         user.setPayMyBuddyBankAccount(userDto.getPayMyBuddyBankAccount());
         user.setPersonalBankAccount(userDto.getPersonalBankAccount());
-        // TODO : la methode ne transforme pas List<ReducedUser> UsersConnexions trop compliqué pour moi,
-        //  et inutile pour le moment. Modifier si besoin.
 
         return user;
     }
 
-
-    // TODO: methode inutilisée pour le moment. L'effacer en fin de projet si pas utilisé
-  /*  public static List<User> convertUserDtoListToUserList(List<UserDto> usersDto) {
-
-        List<User> users = new ArrayList<>();
-
-        usersDto.forEach(userDto -> {
-            User user = convertUserDtotoUser(userDto);
-            users.add(user);
-        });
-
-        return users;
-    }*/
-
-
-
-    //TODO: Pas de test ci dessous
-    public static ReducedUserDto convertUserToReducedUserDto(User user){
+    public static ReducedUserDto convertUserToReducedUserDto(User user) {
 
         ReducedUserDto reducedUserDto = new ReducedUserDto();
         reducedUserDto.setId(user.getId());
@@ -90,19 +71,4 @@ public class UserMapper {
 
         return reducedUserDto;
     }
-
- /*   public static  User convertReducedUserDtoToUser(ReducedUserDto reducedUserDto){
-        User user = new User();
-        user.setId(reducedUserDto.getId());
-        user.setEmail(reducedUserDto.getEmail());
-        user.setFirstName(reducedUserDto.getFirstName());
-        user.setLastName(reducedUserDto.getLastName());
-        user.setPassword(reducedUserDto.getPassword());
-        user.setPayMyBuddyBankAccount(reducedUserDto.getPayMyBuddyBankAccount());
-
-        // Je n'ai pas réglé l'attribut connexions et connected
-        return user;
-        //TODO : la classe convertUserDtotoUser n'a pas besoin pour le moment de fournir de
-        // l'attribut  List<User>Connexions de User. Et donc pas besoin de convertReducedUserDtoToUser
-    }*/
 }

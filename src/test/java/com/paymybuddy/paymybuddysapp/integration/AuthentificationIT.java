@@ -1,6 +1,5 @@
 package com.paymybuddy.paymybuddysapp.integration;
 
-
 import com.paymybuddy.paymybuddysapp.dto.UserDto;
 import com.paymybuddy.paymybuddysapp.model.User;
 import com.paymybuddy.paymybuddysapp.repository.UserRepository;
@@ -17,15 +16,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithAnonymousUser;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
-
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -73,7 +69,6 @@ public class AuthentificationIT {
                 .andExpect(MockMvcResultMatchers.redirectedUrl("http://localhost/login"));
     }
 
-
     @Test
     @WithAnonymousUser
     @DisplayName("Accessing /login should display the login view ")
@@ -83,7 +78,6 @@ public class AuthentificationIT {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.view().name("login"));
     }
-
 
     @Test
     @WithAnonymousUser
@@ -95,7 +89,6 @@ public class AuthentificationIT {
                         .param("password", dummy.getPassword()))
                 .andExpect(MockMvcResultMatchers.redirectedUrl("/login?error"));
     }
-
 
     @Test
     @WithAnonymousUser
@@ -113,7 +106,6 @@ public class AuthentificationIT {
                 .andExpect(MockMvcResultMatchers.redirectedUrl("/home"));
     }
 
-
     @Test
     @WithAnonymousUser
     @DisplayName("Accessing /registration should display the registration view with a user model attribute")
@@ -125,7 +117,6 @@ public class AuthentificationIT {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.model().attributeExists("user"));
     }
-
 
     @Test
     @WithAnonymousUser
@@ -153,7 +144,6 @@ public class AuthentificationIT {
         assertThat(userInDB.getPayMyBuddyBankAccount()).isNotNull();
     }
 
-
     @Test
     @WithAnonymousUser
     @DisplayName("Validate the form with an email already registered should display an error message")
@@ -176,9 +166,6 @@ public class AuthentificationIT {
                                 + dummy.getEmail() + " email.")))
 
                 .andExpect(MockMvcResultMatchers.model().attributeExists("user"));
-        /*andExpect(MockMvcResultMatchers.model().attribute("user", dummy.getEmail()));*/
-        //Nécessaire de redéfinir la methode equals pour utiliser cette ligne
-        //Permet d'être plus précis dans la vérification
     }
 
     @Test
@@ -200,7 +187,6 @@ public class AuthentificationIT {
                         .string(CoreMatchers.containsString("Password should not be empty")));
     }
 
-
     @Test
     @WithAnonymousUser
     @DisplayName("A user can log out")
@@ -215,5 +201,4 @@ public class AuthentificationIT {
         //User cant connect to his home page
         unauthenticatedUserShouldBeRedirectedToLoginPage();
     }
-
 }

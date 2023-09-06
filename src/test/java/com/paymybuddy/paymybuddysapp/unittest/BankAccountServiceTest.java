@@ -64,14 +64,14 @@ public class BankAccountServiceTest {
     }
 
     @Test
-    public void saveBankAccountWithPayMyBuddyAccountTest(){
+    public void saveBankAccountWithPayMyBuddyAccountTest() {
         bankAccountService.saveBankAccount(payMyBuddySenderBankAccount);
         Mockito.verify(payMyBuddyBankAccountRepository, Mockito.times(1))
                 .save(ArgumentMatchers.any(PayMyBuddyBankAccount.class));
     }
 
     @Test
-    public void saveBankAccountWithPersonalAccountTest(){
+    public void saveBankAccountWithPersonalAccountTest() {
         bankAccountService.saveBankAccount(personalBankAccount);
         Mockito.verify(personalBankAccountRepository, Mockito.times(1))
                 .save(ArgumentMatchers.any(PersonalBankAccount.class));
@@ -120,7 +120,7 @@ public class BankAccountServiceTest {
     }
 
     @Test
-    public void getMasterBankAccountTest(){
+    public void getMasterBankAccountTest() {
         PersonalBankAccount masterBankAccount = new PersonalBankAccount();
         masterBankAccount.setAccountBalance(10000);
         masterBankAccount.setIban("666");

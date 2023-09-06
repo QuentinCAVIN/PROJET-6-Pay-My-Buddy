@@ -72,15 +72,15 @@ public class AuthentificationControllerTest {
         Mockito.when(userService.getUserByEmail(dummy.getEmail())).thenReturn(null);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/registration/saveUser")
-                .param("firstName", dummy.getFirstName())
-                .param("lastName", dummy.getLastName())
-                .param("email", dummy.getEmail())
-                .param("password", dummy.getPassword()))
+                        .param("firstName", dummy.getFirstName())
+                        .param("lastName", dummy.getLastName())
+                        .param("email", dummy.getEmail())
+                        .param("password", dummy.getPassword()))
 
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
                 .andExpect(MockMvcResultMatchers.redirectedUrl("/login?success"));
 
-        Mockito.verify(userService,Mockito.times(1)).createNewUser(any(User.class));
+        Mockito.verify(userService, Mockito.times(1)).createNewUser(any(User.class));
     }
 
     @Test
@@ -102,7 +102,7 @@ public class AuthentificationControllerTest {
 
                 .andExpect(MockMvcResultMatchers.model().attributeExists("user"));
 
-        Mockito.verify(userService,Mockito.times(0)).createNewUser(any(User.class));
+        Mockito.verify(userService, Mockito.times(0)).createNewUser(any(User.class));
     }
 
     @Test
@@ -110,7 +110,6 @@ public class AuthentificationControllerTest {
     public void saveUser_dontCreateUserAndDisplayErrorMessage_whenFormIsValidateWithoutFillingInField() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/registration/saveUser"))
-
 
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.view().name("/newAccount"))
@@ -124,6 +123,6 @@ public class AuthentificationControllerTest {
                         .string(CoreMatchers.containsString("Password should not be empty")))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("user"));
 
-        Mockito.verify(userService,Mockito.times(0)).createNewUser(any(User.class));
+        Mockito.verify(userService, Mockito.times(0)).createNewUser(any(User.class));
     }
 }

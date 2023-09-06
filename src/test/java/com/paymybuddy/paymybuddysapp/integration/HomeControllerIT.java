@@ -19,8 +19,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @SpringBootTest
 @AutoConfigureMockMvc
 
-
-
 public class HomeControllerIT {
 
     @Autowired
@@ -30,8 +28,9 @@ public class HomeControllerIT {
     UserRepository userRepository;
 
     private static User currentUser;
+
     @BeforeAll
-    public static void  setupBeforeAll (){
+    public static void setupBeforeAll() {
         currentUser = new User();
         currentUser.setId(1);
         currentUser.setEmail("currentUser@test");
@@ -41,7 +40,7 @@ public class HomeControllerIT {
     }
 
     @BeforeEach
-    public void setupBeforeEach(){
+    public void setupBeforeEach() {
         userRepository.deleteAll();
         userRepository.save(currentUser);
     }
@@ -66,22 +65,20 @@ public class HomeControllerIT {
     //TODO: Ci-dessous réaliser les tests
     @WithMockUser("currentUser@test")
     @Test
-    public void linkPersonalBankAccountTest()throws Exception{
+    public void linkPersonalBankAccountTest() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/home/linkPersonalBankAccount")
-                .param("iban", "666")
-                .param("accountBalance","1000"))
+                        .param("iban", "666")
+                        .param("accountBalance", "1000"))
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection());
     }
 
     @WithMockUser("currentUser@test")
     @Test
-    public void creditAndCashInTest()throws Exception{
+    public void creditAndCashInTest() throws Exception {
         linkPersonalBankAccountTest();
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/home/creditAndCashIn")
-                .param("button","credit"))
+                        .param("button", "credit"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
-
-
 }

@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-
 @ExtendWith(MockitoExtension.class)
 public class UserServiceImplTest {
 
@@ -38,7 +37,6 @@ public class UserServiceImplTest {
     private static User ymmud;
     private static List<User> dummies;
     private static UserDto dummyDto;
-
 
     @BeforeEach
     public void setup() {
@@ -147,7 +145,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void getUserByPayMyBuddyBankAccountTest(){
+    public void getUserByPayMyBuddyBankAccountTest() {
 
         Mockito.when(userRepository.findByPayMyBuddyBankAccount(dummyAccount)).thenReturn(dummy);
 
@@ -172,7 +170,7 @@ public class UserServiceImplTest {
 
         User user = userService.getUserByBankAccount(dummyAccount);
 
-        Mockito.verify(userRepository,Mockito.times(1))
+        Mockito.verify(userRepository, Mockito.times(1))
                 .findByPayMyBuddyBankAccount(dummyAccount);
         Assertions.assertThat(user).isEqualTo(dummy);
     }
@@ -182,7 +180,7 @@ public class UserServiceImplTest {
         Mockito.when(userRepository.findByPersonalBankAccount(dummyPersonnalAccount)).thenReturn(dummy);
 
         User user = userService.getUserByBankAccount(dummyPersonnalAccount);
-        Mockito.verify(userRepository,Mockito.times(1))
+        Mockito.verify(userRepository, Mockito.times(1))
                 .findByPersonalBankAccount(dummyPersonnalAccount);
         Assertions.assertThat(user).isEqualTo(dummy);
     }

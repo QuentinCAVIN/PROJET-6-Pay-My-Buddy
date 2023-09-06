@@ -7,9 +7,7 @@ import com.paymybuddy.paymybuddysapp.model.Transfer;
 import com.paymybuddy.paymybuddysapp.model.User;
 import com.paymybuddy.paymybuddysapp.service.UserService;
 import org.assertj.core.api.Assertions;
-import org.glassfish.jaxb.core.v2.TODO;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,12 +15,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.web.servlet.MvcResult;
 
-import java.awt.print.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +26,7 @@ public class TransferMapperTest {
     private UserService userService;
     @InjectMocks
     private TransferMapper transferMapper;
+
     private static User senderUser;
     private static User receivingUser;
     private static TransferDto transferDto;
@@ -134,7 +129,6 @@ public class TransferMapperTest {
         return transfersDto;
     }
 
-
     @Test
     public void convertInternalTransferDtoToTransferTest() {
         String currentUsername = "current@user";
@@ -182,7 +176,7 @@ public class TransferMapperTest {
     @Test
     public void convertListTransferDtoToPageOfTransferDtoWithShortListTest() {
         List<TransferDto> transfersDto = getShortListTransfersDto();
-        PageRequest pageable = PageRequest.of(1 - 1 , 5);
+        PageRequest pageable = PageRequest.of(1 - 1, 5);
 
         Page<TransferDto> transferDtoPage =
                 transferMapper.convertListTransferDtoToPageOfTransferDto(pageable, transfersDto);
@@ -195,7 +189,7 @@ public class TransferMapperTest {
     @Test
     public void convertListTransferDtoToPageOfTransferDtoWhitLongListTest() {
         List<TransferDto> transfersDto = getLongListTransfersDto();
-        PageRequest pageable = PageRequest.of(2 - 1 , 5);
+        PageRequest pageable = PageRequest.of(2 - 1, 5);
 
         Page<TransferDto> transferDtoPage =
                 transferMapper.convertListTransferDtoToPageOfTransferDto(pageable, transfersDto);

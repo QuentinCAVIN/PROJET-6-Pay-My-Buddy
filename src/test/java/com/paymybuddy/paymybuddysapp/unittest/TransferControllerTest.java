@@ -1,6 +1,5 @@
 package com.paymybuddy.paymybuddysapp.unittest;
 
-import com.paymybuddy.paymybuddysapp.controller.AuthentificationController;
 import com.paymybuddy.paymybuddysapp.controller.TransferController;
 import com.paymybuddy.paymybuddysapp.dto.TransferDto;
 import com.paymybuddy.paymybuddysapp.mapper.TransferMapper;
@@ -11,10 +10,8 @@ import com.paymybuddy.paymybuddysapp.model.User;
 import com.paymybuddy.paymybuddysapp.service.BankAccountService;
 import com.paymybuddy.paymybuddysapp.service.TransferService;
 import com.paymybuddy.paymybuddysapp.service.UserService;
-import net.bytebuddy.matcher.ElementMatcher;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.CoreMatchers;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,9 +30,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,7 +41,6 @@ public class TransferControllerTest {
 
     @Autowired
     MockMvc mockMvc;
-
     @MockBean
     UserService userService;
     @MockBean
@@ -58,7 +52,6 @@ public class TransferControllerTest {
 
     private User currentUser;
     private User buddyToAdd;
-
     private TransferDto transferDto;
 
     @BeforeEach
@@ -77,17 +70,9 @@ public class TransferControllerTest {
         transferDto = getTransferDto();
     }
 
-
     @WithMockUser("currentUser@test")
     @Test
     public void showTransferPage_returnTransferView() throws Exception {
-       /* User currentUser = getCurrentUser();
-        Mockito.when(userService.getUserByEmail(currentUser.getEmail())).thenReturn(currentUser);
-        Mockito.when(transferService.getTransfersDtoByBankAccount(currentUser.getPayMyBuddyBankAccount()))
-                .thenReturn(Collections.emptyList());
-        Mockito.when(transferMapper.convertListTransferDtoToPageOfTransferDto(
-                        ArgumentMatchers.any(), ArgumentMatchers.any()))
-                .thenReturn(new PageImpl<>(Collections.emptyList(), PageRequest.of(0, 1), 0));*/
 
         mockMvc.perform(MockMvcRequestBuilders.get("/transfer"))
 
@@ -102,18 +87,6 @@ public class TransferControllerTest {
     @WithMockUser("currentUser@test")
     @Test
     public void addBuddy_addConnexionToCurrentUserAndSaveIt_whenFormIsWellFilled() throws Exception {
-        // User buddyToAdd = getBuddyToAdd();
-
-        /////// COMMUN
-       /* User currentUser = getCurrentUser();
-        Mockito.when(userService.getUserByEmail(currentUser.getEmail())).thenReturn(currentUser);
-        Mockito.when(transferService.getTransfersDtoByBankAccount(currentUser.getPayMyBuddyBankAccount()))
-                .thenReturn(Collections.emptyList());
-        Mockito.when(transferMapper.convertListTransferDtoToPageOfTransferDto(
-                        ArgumentMatchers.any(), ArgumentMatchers.any()))
-                .thenReturn(new PageImpl<>(Collections.emptyList(), PageRequest.of(0, 1), 0));*/
-        ////////
-        //Mockito.when(userService.getUserByEmail(buddyToAdd.getEmail())).thenReturn(buddyToAdd);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/transfer/addBuddy")
                         .param("email", buddyToAdd.getEmail()))
@@ -134,6 +107,7 @@ public class TransferControllerTest {
     @WithMockUser("currentUser@test")
     @Test
     public void addBuddy_DisplayErrorMessages_whenFieldAreNotFilled() throws Exception {
+
         mockMvc.perform(MockMvcRequestBuilders.post("/transfer/addBuddy"))
 
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -186,9 +160,6 @@ public class TransferControllerTest {
 
     public void addBuddy_DisplayErrorMessages_whenEmailIsAlreadyRegistered() throws Exception {
 
-        // User buddyToAdd = getBuddyToAdd();
-
-        //Buddy is already added:
         currentUser.addConnexion(buddyToAdd);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/transfer/addBuddy")
@@ -204,7 +175,6 @@ public class TransferControllerTest {
                 .andExpect(MockMvcResultMatchers.model().attributeExists("transfers"));
     }
 
-
     @Test
     @WithMockUser("currentUser@test")
     public void deleteBuddy_ShouldDeleteUsersBuddy() throws Exception {
@@ -217,20 +187,18 @@ public class TransferControllerTest {
         //Remove Buddy
         mockMvc.perform(MockMvcRequestBuilders.get("/transfer/deleteBuddy")
                         .param("email", buddyToAdd.getEmail()))
-                .andExpect(MockMvcResultMatchers.redirectedUrl("/transfer"));
+                .andExpect(MockMvcResultMatchers.redirectedUrl("/home"));
 
         //check that current user and his buddy are not connected anymore
         assertThat(currentUser.getUsersConnexions().isEmpty());
         assertThat(buddyToAdd.getUsersConnected().isEmpty());
     }
-    ///
 
     @Test
     @DisplayName("/sendMoney should transfer money to selected user")
     @WithMockUser("currentUser@test")
     //
     public void sendMoney_CallTransferMethods_whenFormIsWellFilled() throws Exception {
-
 
         PersonalBankAccount masterBankAccount = getMasterBankAccount();
         Transfer transfer = new Transfer();
@@ -265,7 +233,7 @@ public class TransferControllerTest {
     @Test
     @WithMockUser("currentUser@test")
     //sendMoney_CallTransferMethods_whenFormIsWellFilled
-    public void sendMoney_DisplayErrorMessages_whithNoBuddySelected() throws Exception{
+    public void sendMoney_DisplayErrorMessages_whithNoBuddySelected() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/transfer/sendMoney")
                         .param("amount", "50")
                         .param("description", "message"))
@@ -281,7 +249,7 @@ public class TransferControllerTest {
 
     @Test
     @WithMockUser("currentUser@test")
-    public void sendMoney_DisplayErrorMessages_whenWrongAmountIsSent() throws Exception{
+    public void sendMoney_DisplayErrorMessages_whenWrongAmountIsSent() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/transfer/sendMoney")
                         .param("buddyUsername", transferDto.getBuddyUsername())
                         .param("amount", "-10")
@@ -298,7 +266,7 @@ public class TransferControllerTest {
 
     @Test
     @WithMockUser("currentUser@test")
-    public void sendMoney_DisplayErrorMessages_whenUserDontHaveEnoughMoney() throws Exception{
+    public void sendMoney_DisplayErrorMessages_whenUserDontHaveEnoughMoney() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/transfer/sendMoney")
                         .param("buddyUsername", transferDto.getBuddyUsername())
                         .param("amount", "100000")
@@ -312,7 +280,6 @@ public class TransferControllerTest {
                 .andExpect(MockMvcResultMatchers.model().attributeExists("transfer"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("transfers"));
     }
-
 
     //SETUP
     private User getCurrentUser() {
@@ -359,4 +326,3 @@ public class TransferControllerTest {
         return masterBankAccount;
     }
 }
-

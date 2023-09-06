@@ -2,7 +2,7 @@ package com.paymybuddy.paymybuddysapp.dto;
 
 import com.paymybuddy.paymybuddysapp.model.PayMyBuddyBankAccount;
 import com.paymybuddy.paymybuddysapp.model.PersonalBankAccount;
-import com.paymybuddy.paymybuddysapp.model.User;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
@@ -18,9 +18,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDto
-        // La classe UserDto sert a faire le transfert entre la la couche controller et la vue
-{
+public class UserDto {
     private int id;
 
     @NotEmpty(message = "First name should not be empty")

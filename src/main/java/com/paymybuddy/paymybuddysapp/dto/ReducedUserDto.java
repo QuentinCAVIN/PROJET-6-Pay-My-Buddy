@@ -1,23 +1,18 @@
 package com.paymybuddy.paymybuddysapp.dto;
 
 import com.paymybuddy.paymybuddysapp.model.PayMyBuddyBankAccount;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReducedUserDto{
-        // La classe ReducedUserDto sert a remplacer l'attribut List<User>connexions de la classe User
-        //par List<ReducedUserDto>connexions de la classe UserDto
+public class ReducedUserDto {
+    // The ReducedUserDto class is used to replace the List<User>connections attribute of the User class
+    //by List<ReducedUserDto>connections of class UserDto
 
     private int id;
 
