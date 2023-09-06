@@ -27,6 +27,8 @@ public class BankAccountServiceImpl implements BankAccountService {
         }
     }
 
+
+    //TODO: a déplacer dans la classe Transfer? ou changer le nom de la methode
     public void transfer(Transfer transfer) {
 
         BankAccount senderAccount = transfer.getSenderAccount();
