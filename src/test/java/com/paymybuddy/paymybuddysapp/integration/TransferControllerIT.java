@@ -94,9 +94,7 @@ public class TransferControllerIT {
         masterBankAccount.setAccountBalance(10000);
         masterBankAccount.setIban("666");
 
-        bankAccountRepository.save(masterBankAccount);// TODO REMARQUE C'est la preuve que je peux passer par le
-        // BankAccountRepository pour gérer les deux classes qui héritent de BankAccount. Modifier En fin de projet
-
+        bankAccountRepository.save(masterBankAccount);
 
         userRepository.save(currentUser);
         userRepository.save(buddyToAdd);

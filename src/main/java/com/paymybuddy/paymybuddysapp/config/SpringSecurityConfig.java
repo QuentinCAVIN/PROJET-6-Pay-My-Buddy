@@ -42,15 +42,11 @@ public class SpringSecurityConfig {
                         form -> form
                                 .loginPage("/login")
                                 .loginProcessingUrl("/login")
-                                .defaultSuccessUrl("/home", true) // false par defaut?
-                                //TODO à comprendre : sans le paramètre "true" les url chargées sont erratiques
-                                // (/style.css ou /?continue)
+                                .defaultSuccessUrl("/home", true)
                                 .permitAll()
                 ).logout(
                         logout -> logout
                                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                                //Quand l'utilisateur accede a /logout, il est déconnecté.
-                                // Pas besoin de définir un endpoint
                                 .permitAll()
                 );
         return http.build();

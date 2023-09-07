@@ -24,7 +24,7 @@ public class Transfer {
     @ManyToOne(
             cascade = CascadeType.ALL
     )
-    @JoinColumn(name = "sender_account_id")
+    @JoinColumn(name = "sender_account_id", nullable = false)
 
     private BankAccount senderAccount;
 

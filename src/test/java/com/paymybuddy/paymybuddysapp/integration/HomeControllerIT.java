@@ -62,7 +62,6 @@ public class HomeControllerIT {
                 .andExpect(MockMvcResultMatchers.model().attributeExists("transfer"));
     }
 
-    //TODO: Ci-dessous réaliser les tests
     @WithMockUser("currentUser@test")
     @Test
     public void linkPersonalBankAccountTest() throws Exception {
