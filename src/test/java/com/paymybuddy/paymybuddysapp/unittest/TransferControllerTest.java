@@ -205,6 +205,7 @@ public class TransferControllerTest {
     }
 
 
+    //TODO : a déplacer vers HomeControllerTest
     @Test
     @WithMockUser("currentUser@test")
     public void deleteBuddy_ShouldDeleteUsersBuddy() throws Exception {
@@ -217,7 +218,7 @@ public class TransferControllerTest {
         //Remove Buddy
         mockMvc.perform(MockMvcRequestBuilders.get("/transfer/deleteBuddy")
                         .param("email", buddyToAdd.getEmail()))
-                .andExpect(MockMvcResultMatchers.redirectedUrl("/transfer"));
+                .andExpect(MockMvcResultMatchers.redirectedUrl("/home"));
 
         //check that current user and his buddy are not connected anymore
         assertThat(currentUser.getUsersConnexions().isEmpty());
