@@ -28,14 +28,14 @@ public class UserDto {
     private String lastName;
 
     @NotEmpty(message = "Email should not be empty")
-    // Les messages s'affichent dans le champ <th:errors = "*{email}"> de la page html
+
     @Email
     private String email;
 
     @NotEmpty(message = "Password should not be empty")
     private String password;
 
-    private List<ReducedUserDto> usersConnexions = new ArrayList<>(); //Todo convertir en liste de UserDto
+    private List<ReducedUserDto> usersConnexions = new ArrayList<>();
 
     private PayMyBuddyBankAccount payMyBuddyBankAccount;
 
