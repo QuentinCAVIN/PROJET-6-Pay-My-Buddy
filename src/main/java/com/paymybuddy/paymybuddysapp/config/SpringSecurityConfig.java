@@ -36,7 +36,7 @@ public class SpringSecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/registration/**").permitAll()
                         .requestMatchers("/login").permitAll()
-                        .requestMatchers("/home").hasRole("USER")
+                        .requestMatchers("/home/**").hasRole("USER")
                         .requestMatchers("/transfer/**").hasRole("USER")
                         .requestMatchers("/deleteUser/**").hasRole("USER")
                 ).formLogin(
