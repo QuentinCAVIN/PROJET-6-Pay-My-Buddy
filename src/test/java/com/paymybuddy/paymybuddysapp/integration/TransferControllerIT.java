@@ -240,7 +240,7 @@ public class TransferControllerIT {
         //Remove Buddy
         mockMvc.perform(MockMvcRequestBuilders.get("/transfer/deleteBuddy")
                 .param("email", buddyToAdd.getEmail()))
-                .andExpect(MockMvcResultMatchers.redirectedUrl("/transfer"));
+                .andExpect(MockMvcResultMatchers.redirectedUrl("/home"));
 
 
         //check that current user and his buddy are not connected anymore
