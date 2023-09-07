@@ -176,7 +176,7 @@ public class TransferController {
     }
 
 
-    @GetMapping("/transfer/deleteBuddy")
+    @GetMapping("/transfer/deleteBuddy")  
     public String deleteBuddy(@RequestParam("email") final String buddysEmailToRemove,
                               @AuthenticationPrincipal UserDetails userDetails) {
 
@@ -186,7 +186,8 @@ public class TransferController {
         currentUser.removeConnexion(buddyToRemove);
         userService.saveUser(currentUser);
 
-        return "redirect:/transfer";
+        return "redirect:/home"; // la fonctionalité delete buddy a été déplacé sur la page home
+        // la methode devrait être également déplacé dans le HomeController
     }
 
     @Transactional
