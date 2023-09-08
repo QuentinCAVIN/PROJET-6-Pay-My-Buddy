@@ -31,7 +31,7 @@ public class HomeController {
     BankAccountService bankAccountService;
 
     @GetMapping("/home")
-    public String home(@AuthenticationPrincipal UserDetails userDetails, Model model) { // Spring va fournir une instance de cet objet Model (keske C?)
+    public String home(@AuthenticationPrincipal UserDetails userDetails, Model model) {
 
         User currentUser = userService.getUserByEmail(userDetails.getUsername());
 
@@ -40,7 +40,7 @@ public class HomeController {
         // to display the amount of the pay my buddy account
         loadHomePageElementsToDisplay(currentUser, model);
 
-        //Echanger argent entre les deux comptes
+        //To exchange money between the two accounts
         TransferDto transferDto = new TransferDto();
         model.addAttribute("transfer", transferDto);
 
@@ -83,7 +83,7 @@ public class HomeController {
 
         if (button.equals("credit")) {
 
-            if (personalBankAccount.getAccountBalance() <= transferAmount) {
+            if (personalBankAccount.getAccountBalance() < transferAmount) {
                 result.rejectValue("amount", null,
                         "you do not have enough money in your personal account. Wait for payday");
             } else {
@@ -93,7 +93,7 @@ public class HomeController {
 
         } else if ("cashIn".equals(button)) {
 
-            if (payMyBuddyBankAccount.getAccountBalance() <= transferAmount) {
+            if (payMyBuddyBankAccount.getAccountBalance() < transferAmount) {
                 result.rejectValue("amount", null,
                         "you do not have enough money in your Pay My Buddy account. We don't give credit");
             } else {

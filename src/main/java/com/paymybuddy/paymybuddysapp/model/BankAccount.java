@@ -40,7 +40,7 @@ public abstract class BankAccount {
         transfer.setSenderAccount(this);
     }
 
-    public void removeConnexion(Transfer transfer) {
+    public void removeSentTransfer(Transfer transfer) {
         sentTransfers.remove(transfer);
         transfer.setSenderAccount(null);
     }

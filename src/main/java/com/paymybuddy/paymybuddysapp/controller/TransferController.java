@@ -193,13 +193,11 @@ public class TransferController {
                     "Please select a buddy");
         }
 
-        transferService.takeTransferPercentage(transferAmount, senderAccount);
-
         if (transferAmount <= 0) {
             result.rejectValue("amount", null,
                     "Incorrect amount value");
 
-        } else if (senderAccount.getAccountBalance() <= transferAmount) {
+        } else if (senderAccount.getAccountBalance() < transferAmount + (transferAmount * 0.05) ) {
             result.rejectValue("amount", null,
                     "you do not have enough money in your account");
         }
@@ -208,6 +206,8 @@ public class TransferController {
             loadTransferPageElements(currentUser, model, transferDto);
             return "/transfer";
         }
+
+        transferService.takeTransferPercentage(transferAmount, senderAccount);
 
         Transfer transfer = transferMapper.convertTransferDtoToTransfer(transferDto, currentUser.getEmail());
         transferService.createNewTransfer(transfer);
