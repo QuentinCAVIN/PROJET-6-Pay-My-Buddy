@@ -133,23 +133,6 @@ public class UserMapperTest {
         Assertions.assertThat(user.getPayMyBuddyBankAccount()).isEqualTo(dummyDto.getPayMyBuddyBankAccount());
         Assertions.assertThat(user.getPersonalBankAccount()).isEqualTo(dummyDto.getPersonalBankAccount());
     }
-
-    //TODO: methode inutilisée pour le moment. L'effacer? On verra a la fin du projet
-    /*@Test
-    public void convertUserDtoListToUserListTest() {
-        List <User> users = userMapperUnderTest.convertUserDtoListToUserList(dummiesDto);
-
-        for (int i =0; i<2; i++){
-            Assertions.assertThat(users.get(i).getId()).isEqualTo(dummiesDto.get(i).getId());
-            Assertions.assertThat(users.get(i).getEmail()).isEqualTo(dummiesDto.get(i).getEmail());
-            Assertions.assertThat(users.get(i).getFirstName()).isEqualTo(dummiesDto.get(i).getFirstName());
-            Assertions.assertThat(users.get(i).getLastName()).isEqualTo(dummiesDto.get(i).getLastName());
-            Assertions.assertThat(users.get(i).getPassword()).isEqualTo(dummiesDto.get(i).getPassword());
-            Assertions.assertThat(users.get(i).getUsersConnexions()).isEqualTo(dummiesDto.get(i).getUsersConnexions());
-            Assertions.assertThat(users.get(i).getPayMyBuddyBankAccount())
-                    .isEqualTo(dummiesDto.get(i).getPayMyBuddyBankAccount());
-        }
-    }*/
 }
 
 

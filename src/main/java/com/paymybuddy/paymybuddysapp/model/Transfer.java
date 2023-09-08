@@ -18,23 +18,23 @@ public class Transfer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private double amount;
 
     @ManyToOne(
             cascade = CascadeType.ALL
     )
-    @JoinColumn(name="sender_account_id")
+    @JoinColumn(name = "sender_account_id", nullable = false)
 
     private BankAccount senderAccount;
 
-    @JoinColumn(name="recipient_account_id", nullable=false)
+    @JoinColumn(name = "recipient_account_id", nullable = false)
     @ManyToOne
     private BankAccount recipientAccount;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String description;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String date;
 }

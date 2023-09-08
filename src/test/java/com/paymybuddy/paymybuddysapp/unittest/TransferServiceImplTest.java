@@ -1,15 +1,11 @@
 package com.paymybuddy.paymybuddysapp.unittest;
 
 import com.paymybuddy.paymybuddysapp.dto.TransferDto;
-import com.paymybuddy.paymybuddysapp.dto.UserDto;
 import com.paymybuddy.paymybuddysapp.mapper.TransferMapper;
 import com.paymybuddy.paymybuddysapp.model.*;
 import com.paymybuddy.paymybuddysapp.repository.TransferRepository;
-import com.paymybuddy.paymybuddysapp.repository.UserRepository;
 import com.paymybuddy.paymybuddysapp.service.*;
-import net.bytebuddy.matcher.ElementMatcher;
 import org.assertj.core.api.Assertions;
-import org.glassfish.jaxb.core.v2.TODO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,9 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.text.DateFormat;
 import java.util.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,7 +26,6 @@ public class TransferServiceImplTest {
     private DateProvider dateProvider;
     @Mock
     private TransferMapper transferMapper;
-
     @Mock
     BankAccountService bankAccountService;
     @InjectMocks
@@ -99,7 +92,7 @@ public class TransferServiceImplTest {
         transferSendFromPayMyBuddyAccount2.setDescription("for my ymmud again");
         transferSendFromPayMyBuddyAccount2.setDate("31/08/2023");
 
-        dummyAccount.setSentTransfers(Arrays.asList(transferSendFromPayMyBuddyAccount1,transferSendFromPayMyBuddyAccount2));
+        dummyAccount.setSentTransfers(Arrays.asList(transferSendFromPayMyBuddyAccount1, transferSendFromPayMyBuddyAccount2));
 
         transferReceived = new Transfer();
         transferReceived.setId(3);
@@ -110,16 +103,7 @@ public class TransferServiceImplTest {
         transferReceived.setDate("30/08/2023");
 
         dummyAccount.setReceivedTransfers(Arrays.asList(transferReceived));
-
-        /*PersonalBankAccount personalBankAccountOfdummy = new PersonalBankAccount();
-        personalBankAccountOfdummy.setId(5);
-        personalBankAccountOfdummy.setAccountBalance(1000);
-        personalBankAccountOfdummy.setIban("11111111");
-
-*/
     }
-
-
 
     @Test
     public void createNewTransferTest() {
@@ -170,26 +154,26 @@ public class TransferServiceImplTest {
         transferDtoReceived.setAmount(12);
         transferDtoReceived.setDescription("transfer received");
 
-        List<TransferDto> listToCompare = Arrays.asList(transferDtoSent1,transferDtoSent2,transferDtoReceived);
+        List<TransferDto> listToCompare = Arrays.asList(transferDtoSent1, transferDtoSent2, transferDtoReceived);
 
-        Mockito.when(transferMapper.convertTransferToTransferDto(transferSendFromPayMyBuddyAccount1,true))
+        Mockito.when(transferMapper.convertTransferToTransferDto(transferSendFromPayMyBuddyAccount1, true))
                 .thenReturn(transferDtoSent1);
-        Mockito.when(transferMapper.convertTransferToTransferDto(transferSendFromPayMyBuddyAccount2,true))
+        Mockito.when(transferMapper.convertTransferToTransferDto(transferSendFromPayMyBuddyAccount2, true))
                 .thenReturn(transferDtoSent2);
-        Mockito.when(transferMapper.convertTransferToTransferDto(transferReceived,false))
+        Mockito.when(transferMapper.convertTransferToTransferDto(transferReceived, false))
                 .thenReturn(transferDtoReceived);
 
         List<TransferDto> transfersDto = transferService.getTransfersDtoByBankAccount(dummyAccount);
 
         Assertions.assertThat(transfersDto).containsExactlyInAnyOrderElementsOf(listToCompare);
-        Mockito.verify(transferMapper,Mockito.times(2))
-                .convertTransferToTransferDto(ArgumentMatchers.any(Transfer.class),ArgumentMatchers.eq(true));
-        Mockito.verify(transferMapper,Mockito.times(1))
-                .convertTransferToTransferDto(ArgumentMatchers.any(Transfer.class),ArgumentMatchers.eq(false));
+        Mockito.verify(transferMapper, Mockito.times(2))
+                .convertTransferToTransferDto(ArgumentMatchers.any(Transfer.class), ArgumentMatchers.eq(true));
+        Mockito.verify(transferMapper, Mockito.times(1))
+                .convertTransferToTransferDto(ArgumentMatchers.any(Transfer.class), ArgumentMatchers.eq(false));
     }
 
     @Test
-    public void takeTransferPercentage(){
+    public void takeTransferPercentage() {
 
         PersonalBankAccount masterBankAccount = new PersonalBankAccount();
         masterBankAccount.setAccountBalance(10000);
@@ -198,10 +182,10 @@ public class TransferServiceImplTest {
         Double senderAccountBeforeLevy = dummyAccount.getAccountBalance();
 
         Mockito.when(bankAccountService.getMasterBankAccount()).thenReturn(masterBankAccount);
-        transferService.takeTransferPercentage(100 , dummyAccount);
+        transferService.takeTransferPercentage(100, dummyAccount);
 
         Assertions.assertThat(dummyAccount.getAccountBalance()).isEqualTo(
-                senderAccountBeforeLevy -(100 * 0.05));
+                senderAccountBeforeLevy - (100 * 0.05));
 
         Mockito.verify(bankAccountService, Mockito.times(1)).saveBankAccount(dummyAccount);
         Mockito.verify(bankAccountService, Mockito.times(1)).saveBankAccount(masterBankAccount);

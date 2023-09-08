@@ -1,6 +1,5 @@
 package com.paymybuddy.paymybuddysapp.integration;
 
-
 import com.paymybuddy.paymybuddysapp.dto.TransferDto;
 import com.paymybuddy.paymybuddysapp.model.PayMyBuddyBankAccount;
 import com.paymybuddy.paymybuddysapp.model.PersonalBankAccount;
@@ -22,7 +21,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,7 +37,7 @@ public class TransferControllerIT {
     UserRepository userRepository;
 
     @Autowired
-    UserService userService ;
+    UserService userService;
 
     @Autowired
     BankAccountRepository bankAccountRepository;
@@ -66,7 +64,7 @@ public class TransferControllerIT {
         currentUser.setPassword("1234");
         /*currentUser.setUsersConnexions(Arrays.asList(buddyToAdd));
         currentUser.setUsersConnected(Arrays.asList(buddyToAdd));*/
-        PayMyBuddyBankAccount currentUserPayMyBuddyBankAccount= new PayMyBuddyBankAccount();
+        PayMyBuddyBankAccount currentUserPayMyBuddyBankAccount = new PayMyBuddyBankAccount();
         currentUserPayMyBuddyBankAccount.setAccountBalance(500.00);
         currentUser.setPayMyBuddyBankAccount(currentUserPayMyBuddyBankAccount);
 
@@ -83,10 +81,9 @@ public class TransferControllerIT {
 
         transferDto = new TransferDto();
         transferDto.setAmount(50.00);
-        transferDto.setBuddyUsername ("buddy@test");
+        transferDto.setBuddyUsername("buddy@test");
         transferDto.setDescription("Test");
     }
-
 
     @BeforeEach
     public void setup() throws Exception {
@@ -97,14 +94,11 @@ public class TransferControllerIT {
         masterBankAccount.setAccountBalance(10000);
         masterBankAccount.setIban("666");
 
-        bankAccountRepository.save(masterBankAccount);// TODO REMARQUE C'est la preuve que je peux passer par le
-        // BankAccountRepository pour gérer les deux classes qui héritent de BankAccount. Modifier En fin de projet
-
+        bankAccountRepository.save(masterBankAccount);
 
         userRepository.save(currentUser);
         userRepository.save(buddyToAdd);
     }
-
 
     @Test
     @WithMockUser("currentUser@test")
@@ -120,8 +114,6 @@ public class TransferControllerIT {
                 .andExpect(MockMvcResultMatchers.model().attributeExists("transfer"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("transfers"));
     }
-
-
 
     @Test
     @WithMockUser("currentUser@test")
@@ -147,7 +139,6 @@ public class TransferControllerIT {
         assertThat(userAdded.getUsersConnected().get(0).getEmail()).isEqualTo(this.currentUser.getEmail());
     }
 
-
     @Test
     @WithMockUser("currentUser@test")
     @DisplayName("Validating the addBuddy form without filling in the fields should display error messages")
@@ -164,7 +155,6 @@ public class TransferControllerIT {
                 .andExpect(MockMvcResultMatchers.model().attributeExists("transfer"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("transfers"));
     }
-
 
     @Test
     @WithMockUser("currentUser@test")
@@ -183,7 +173,6 @@ public class TransferControllerIT {
                 .andExpect(MockMvcResultMatchers.model().attributeExists("transfer"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("transfers"));
     }
-
 
     @Test
     @WithMockUser("currentUser@test")
@@ -232,16 +221,13 @@ public class TransferControllerIT {
     @DisplayName("/deleteBuddy should delete current user Buddy's")
     public void deleteConnectionShouldDeleteUserBuddys() throws Exception {
 
-        //mockMvc
-
         //Add Buddy
         validateAddBuddyFormShouldCreateNewConnexionInDB();
 
         //Remove Buddy
         mockMvc.perform(MockMvcRequestBuilders.get("/transfer/deleteBuddy")
-                .param("email", buddyToAdd.getEmail()))
-                .andExpect(MockMvcResultMatchers.redirectedUrl("/transfer"));
-
+                        .param("email", buddyToAdd.getEmail()))
+                .andExpect(MockMvcResultMatchers.redirectedUrl("/home"));
 
         //check that current user and his buddy are not connected anymore
         User currentUser = userService.getUserByEmail(this.currentUser.getEmail());
@@ -257,7 +243,7 @@ public class TransferControllerIT {
 
         TransferDto transferDto = new TransferDto();
         transferDto.setAmount(50.00);
-        transferDto.setBuddyUsername ("buddy@test");
+        transferDto.setBuddyUsername("buddy@test");
         transferDto.setDescription("Test");
 
         double accountBalanceOfMasterBankAccountBeforeTransfer = masterBankAccount.getAccountBalance();
@@ -286,37 +272,27 @@ public class TransferControllerIT {
         PayMyBuddyBankAccount receivingUserPayMyBuddyBankAccount = (userService.getUserByEmail(buddyToAdd.getEmail())
                 .getPayMyBuddyBankAccount());
         assertThat(currentUserPayMyBuddyBankAccount.getAccountBalance())
-                .isEqualTo(500.00 - (50.00 + (50*0.05)));//5% levy
+                .isEqualTo(500.00 - (50.00 + (50 * 0.05)));//5% levy
         assertThat(receivingUserPayMyBuddyBankAccount.getAccountBalance()).isEqualTo(500.00 + 50.00);
 
         //Checks that the the 5% is well credited to the masterBankAccount
-        assertThat( masterBankAccount.getAccountBalance())
-                .isEqualTo(accountBalanceOfMasterBankAccountBeforeTransfer + (50*0.05));
-
+        assertThat(masterBankAccount.getAccountBalance())
+                .isEqualTo(accountBalanceOfMasterBankAccountBeforeTransfer + (50 * 0.05));
 
         //Checks that the transfer is present in DB
-        Optional <Transfer> OptionalTransfer = transferRepository.findById(1);
+        Optional<Transfer> OptionalTransfer = transferRepository.findById(1);
         Transfer transfer = OptionalTransfer.get();
         assertThat(transfer.getAmount()).isEqualTo(transferDto.getAmount());
-        //TODO: Dans le processus d'enregistrement d'un transfer je me suis passé des méthodes utilitaires
-        // pour associer transfer et compte banquaire, car Jpa le fait a priori tout seul.
-        // Malheureusement ça ne fonctionne pas dans les test d'intégration, je ne peut pas récupérer un virememt
-        // a partir d'un compte banquaire (a l'éxécution du programme quand un virement est sauvegardé,
-        // il est associé au sentTransfers et receivedTransfers du BankAccount. Ce n'est pas le cas dans les tests)
-        // Pour vérifier qu'un objet transfer à bien été créé, je peux soit utiliser
-        // a nouveau ces méthodes utilitaires, soit créer une méthode pour récupérer un transfer dans le repository
-        // (qui ne servira que pour les tests), soit ne pas tester le faite que la méthode crée un virement
-        // en base de donnée
-        // EDIT j'ai utilisé findById pour ne pas créer une nouvelle methode, ça me semble fragile (si l'id auto généré n'est pas 1)
 
     }
+
     @Test
     @DisplayName("SendMoney form validation without buddy selection should display an error message")
     @WithMockUser("currentUser@test")
-    public void sendMoneyValidationWithoutBuddyShouldDisplayErrorMessage() throws Exception{
+    public void sendMoneyValidationWithoutBuddyShouldDisplayErrorMessage() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/transfer/sendMoney")
-                .param("amount", "50")
-                .param("description", "message"))
+                        .param("amount", "50")
+                        .param("description", "message"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.view().name("/transfer"))
                 .andExpect(MockMvcResultMatchers.content()
@@ -330,7 +306,7 @@ public class TransferControllerIT {
     @Test
     @DisplayName("SendMoney form validation with wrong amount selection should display an error message")
     @WithMockUser("currentUser@test")
-    public void sendMoneyWithWrongAmountShouldDisplayErrorMessage() throws Exception{
+    public void sendMoneyWithWrongAmountShouldDisplayErrorMessage() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/transfer/sendMoney")
                         .param("buddyUsername", transferDto.getBuddyUsername())
                         .param("amount", "-10")
@@ -348,7 +324,7 @@ public class TransferControllerIT {
     @Test
     @DisplayName("SendMoney form validation without enough money selection should display an error message")
     @WithMockUser("currentUser@test")
-    public void sendMoneyWithoutEnoughMoneyShouldDisplayErrorMessage() throws Exception{
+    public void sendMoneyWithoutEnoughMoneyShouldDisplayErrorMessage() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/transfer/sendMoney")
                         .param("buddyUsername", transferDto.getBuddyUsername())
                         .param("amount", "100000")

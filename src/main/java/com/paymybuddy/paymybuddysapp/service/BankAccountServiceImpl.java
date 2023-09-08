@@ -27,8 +27,6 @@ public class BankAccountServiceImpl implements BankAccountService {
         }
     }
 
-
-    //TODO: a déplacer dans la classe Transfer? ou changer le nom de la methode
     public void transfer(Transfer transfer) {
 
         BankAccount senderAccount = transfer.getSenderAccount();
@@ -47,9 +45,7 @@ public class BankAccountServiceImpl implements BankAccountService {
     public PersonalBankAccount getMasterBankAccount(){
         String ibanOfMasterBankAccount = "666";
        return bankAccountRepository.findByIban(ibanOfMasterBankAccount);
-        }//TODO: ATTENTION prévoir dans le setup de la Bdd la création du compte admin
-
-    //TODO Test a effectuer ci dessous
+        }
 
     public void linkNewPersonalBankAccount(PersonalBankAccount personalBankAccount, User user){
         user.addPersonalBankAccount(personalBankAccount);

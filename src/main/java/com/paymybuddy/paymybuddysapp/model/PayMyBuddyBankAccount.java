@@ -9,7 +9,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name ="paymybuddy_bank_account" )
-public class PayMyBuddyBankAccount extends BankAccount{
-
+@Table(name = "paymybuddy_bank_account")
+public class PayMyBuddyBankAccount extends BankAccount {
 }

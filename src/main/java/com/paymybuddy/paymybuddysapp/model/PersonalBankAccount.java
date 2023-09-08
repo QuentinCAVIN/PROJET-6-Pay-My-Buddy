@@ -11,8 +11,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name ="personal_bank_account" )
+@Table(name = "personal_bank_account")
 public class PersonalBankAccount extends BankAccount {
-    @Column(nullable=false, unique=true)
+    @Column(nullable = false, unique = true)
     private String iban;
 }
