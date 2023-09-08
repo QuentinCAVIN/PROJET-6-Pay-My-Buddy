@@ -164,6 +164,7 @@ public class TransferController {
     }
 
     @GetMapping("/transfer/deleteBuddy")
+
     public String deleteBuddy(@RequestParam("email") final String buddysEmailToRemove,
                               @AuthenticationPrincipal UserDetails userDetails) {
 
@@ -174,6 +175,7 @@ public class TransferController {
         userService.saveUser(currentUser);
 
         return "redirect:/home";
+
     }
 
     @Transactional
