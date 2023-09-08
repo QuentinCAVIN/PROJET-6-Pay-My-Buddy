@@ -58,7 +58,7 @@ public class User {
             orphanRemoval = true,
             fetch = FetchType.EAGER
     )
-    @JoinColumn(name = "paymybuddy_bank_account_id")
+    @JoinColumn(name = "paymybuddy_bank_account_id", nullable = false)
     private PayMyBuddyBankAccount payMyBuddyBankAccount;
 
     @OneToOne(
