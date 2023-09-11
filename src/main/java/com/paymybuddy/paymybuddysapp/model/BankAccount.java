@@ -35,7 +35,6 @@ public abstract class BankAccount {
     private List<Transfer> receivedTransfers = new ArrayList<>();
 
     public void addSentTransfer(Transfer transfer) {
-        //Si oui, les supprimer
         sentTransfers.add(transfer);
         transfer.setSenderAccount(this);
     }

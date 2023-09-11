@@ -1,5 +1,6 @@
 package com.paymybuddy.paymybuddysapp.integration;
 
+import com.paymybuddy.paymybuddysapp.model.PayMyBuddyBankAccount;
 import com.paymybuddy.paymybuddysapp.model.User;
 import com.paymybuddy.paymybuddysapp.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -37,6 +38,7 @@ public class HomeControllerIT {
         currentUser.setFirstName("test");
         currentUser.setLastName("tset");
         currentUser.setPassword("1234");
+        currentUser.setPayMyBuddyBankAccount(new PayMyBuddyBankAccount());
     }
 
     @BeforeEach
