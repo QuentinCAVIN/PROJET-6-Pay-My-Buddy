@@ -82,7 +82,7 @@
                         <div class="mb-3">
                             <label for="amount" class="form-label">amount to transfer</label>
                             <input type="number" class="form-control" th:field="*{amount}" step="0.01"
-                                   id="amount" placeholder="0€">
+                                   id="amount" placeholder="0€" required>
                             <p th:errors=*{amount} class="text-danger"
                                th:if="${#fields.hasErrors('amount')}"></p>
                         </div>
