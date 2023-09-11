@@ -69,7 +69,7 @@
                 </div>
                 <div class="col form-group">
                     <input type="number" class="form-control" id="amount" th:field="*{amount}" step="0.01"
-                           placeholder="0€">
+                           placeholder="0€" required>
                     <p th:errors=*{amount} class="text-danger"
                        th:if="${#fields.hasErrors('amount')}"></p>
                 </div>
