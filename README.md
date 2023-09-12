@@ -5,10 +5,9 @@ PAY MY BUDDY : application de transfert d’argent
 
 
 
-[Diagramme de classe UML Pay My Buddy.pdf](https://github.com/QuentinCAVIN/PROJET-6-Pay-My-Buddy/files/12561100/Diagramme.de.classe.UML.Pay.My.Buddy.pdf)
+[Diagramme de classe UML Pay My Buddy.pdf](https://github.com/QuentinCAVIN/PROJET-6-Pay-My-Buddy/files/12583163/Diagramme.de.classe.UML.Pay.My.Buddy.pdf)
 
-![Diagramme de classe UML Pay My Buddy](https://github.com/QuentinCAVIN/PROJET-6-Pay-My-Buddy/assets/117484688/55cde85a-d24c-4d94-986f-6c8649aa73a0)
-
+![Diagramme de classe UML Pay My Buddy](https://github.com/QuentinCAVIN/PROJET-6-Pay-My-Buddy/assets/117484688/e1d0aef7-6433-44d2-af64-97f3e04605ad)
 
 
 [Modèle physique de données Pay My Buddy.pdf](https://github.com/QuentinCAVIN/PROJET-6-Pay-My-Buddy/files/12561103/Modele.physique.de.donnees.Pay.My.Buddy.pdf)
